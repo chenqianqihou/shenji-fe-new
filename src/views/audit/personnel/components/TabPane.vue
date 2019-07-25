@@ -1,6 +1,6 @@
 <template>
   <div class="audit-personnel-container">
-    <el-form :inline="true" class="filter-container">
+    <el-form :inline="true" class="filter-container audit-personnel-filter">
       <el-form-item label="查询条件">
         <el-input
           v-model="listQuery.title"
@@ -33,11 +33,10 @@
     <div>
       <el-button
         class="filter-item"
-        style="margin-left: 10px"
         type="primary"
         icon="el-icon-edit"
         @click="handleCreate"
-      >Add</el-button>
+      >新增人员</el-button>
       <el-button
         v-waves
         :loading="downloadLoading"
@@ -45,7 +44,14 @@
         type="primary"
         icon="el-icon-download"
         @click="handleDownload"
-      >Export</el-button>
+      >批量删除</el-button>
+      <el-button
+        v-waves
+        :loading="downloadLoading"
+        class="filter-item"
+        type="primary"
+        @click="handleDownload"
+      >导入人员</el-button>
     </div>
 
     <el-table
@@ -490,3 +496,11 @@ export default {
   }
 }
 </script>
+<style lang="scss">
+.audit-personnel-filter {
+  .el-form-item {
+    padding-bottom: 0;
+    margin-bottom: 0;
+  }
+}
+</style>
