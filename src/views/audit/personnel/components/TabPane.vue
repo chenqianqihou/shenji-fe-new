@@ -3,7 +3,7 @@
     <el-form :inline="true" class="filter-container audit-personnel-filter">
       <el-form-item label="查询条件">
         <el-input
-          v-model="listQuery.title"
+          v-model="listQuery.query"
           placeholder="请输入姓名/人员ID"
           style="width: 200px"
           class="filter-item"
@@ -11,13 +11,13 @@
       </el-form-item>
       <el-form-item label="工作状态">
         <el-select
-          v-model="listQuery.importance"
-          placeholder="Imp"
+          v-model="listQuery.status"
+          placeholder="请选择"
           clearable
-          style="width: 90px"
+          style="width: 150px"
           class="filter-item"
         >
-          <el-option v-for="item in importanceOptions" :key="item" :label="item" :value="item" />
+          <el-option v-for="(value, name) in selectConfig.status" :key="name" :label="value" :value="+name" />
         </el-select>
       </el-form-item>
       <el-button
@@ -27,23 +27,22 @@
       >查询</el-button>
       <el-button
         class="filter-item"
-        @click="handleFilter"
+        @click="handleResetFilter"
       >重置</el-button>
     </el-form>
-    <div>
+    <div class="audit-personnel-actions">
       <el-button
         class="filter-item"
         type="primary"
-        icon="el-icon-edit"
-        @click="handleCreate"
+        icon="el-icon-plus"
+        @click="$router.replace('/audit/personnel/create')"
       >新增人员</el-button>
       <el-button
         v-waves
-        :loading="downloadLoading"
+        :disabled="checkedOptions.length === 0"
         class="filter-item"
         type="primary"
-        icon="el-icon-download"
-        @click="handleDownload"
+        @click="handleDelete('')"
       >批量删除</el-button>
       <el-button
         v-waves
@@ -52,6 +51,13 @@
         type="primary"
         @click="handleDownload"
       >导入人员</el-button>
+      <el-button
+        v-waves
+        :loading="downloadLoading"
+        class="filter-item"
+        icon="el-icon-download"
+        @click="handleDownload"
+      >下载模板</el-button>
     </div>
 
     <el-table
@@ -62,75 +68,42 @@
       fit
       highlight-current-row
       style="width: 100%"
-      @sort-change="sortChange"
+      @selection-change="handleSelectionChange"
     >
-      <el-table-column label="姓名">
+      <el-table-column type="selection" />
+      <el-table-column label="姓名" align="center" prop="name" />
+      <el-table-column label="人员ID" prop="pid" align="center" />
+      <el-table-column label="性别" align="center" prop="sex">
         <template slot-scope="{row}">
-          <span class="link-type" @click="handleUpdate(row)">{{ row.title }}</span>
-          <el-tag>{{ row.type | typeFilter }}</el-tag>
+          {{ selectConfig.sex[row.sex] }}
         </template>
       </el-table-column>
+      <el-table-column label="所在机构" align="center" prop="organization" />
+      <el-table-column label="所在部门" align="center" prop="department" />
+      <el-table-column label="工作状态" align="center" prop="status">
+        <template slot-scope="{row}">
+          {{ selectConfig.status[row.status] || row.status }}
+        </template>
+      </el-table-column>
+      <el-table-column label="在途项目" align="center" prop="projectnum" />
       <el-table-column
-        label="人员ID"
-        prop="id"
-        sortable="custom"
+        label="操作"
         align="center"
-        :class-name="getSortClass('id')"
-      >
-        <template slot-scope="scope">
-          <span>{{ scope.row.id }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="性别" align="center">
-        <template slot-scope="scope">
-          <span>{{ scope.row.author }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="所在机构" align="center">
-        <template slot-scope="scope">
-          <span>{{ scope.row.author }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="所在部门" align="center">
-        <template slot-scope="scope">
-          <span>{{ scope.row.author }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="工作状态" align="center">
-        <template slot-scope="scope">
-          <span>{{ scope.row.author }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="在途项目" align="center">
-        <template slot-scope="scope">
-          <span>{{ scope.row.author }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column
-        label="Actions"
-        align="center"
-        width="230"
-        class-name="small-padding fixed-width"
+        width="300"
       >
         <template slot-scope="{row}">
-          <el-button type="primary" size="mini" @click="handleUpdate(row)">Edit</el-button>
           <el-button
-            v-if="row.status!='published'"
             size="mini"
-            type="success"
-            @click="handleModifyStatus(row,'published')"
-          >Publish</el-button>
+            type="text"
+            @click="handleDelete(row)"
+          >删除</el-button>
           <el-button
-            v-if="row.status!='draft'"
             size="mini"
-            @click="handleModifyStatus(row,'draft')"
-          >Draft</el-button>
-          <el-button
-            v-if="row.status!='deleted'"
-            size="mini"
-            type="danger"
-            @click="handleModifyStatus(row,'deleted')"
-          >Delete</el-button>
+            type="text"
+          >编辑</el-button>
+          <el-button type="text" size="mini">详情</el-button>
+          <el-button type="text" size="mini">重置密码</el-button>
+          <el-button type="text" size="mini">分配角色</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -139,149 +112,36 @@
       v-show="total>0"
       :total="total"
       :page.sync="listQuery.page"
-      :limit.sync="listQuery.limit"
+      :limit.sync="listQuery.length"
       @pagination="getList"
     />
-
-    <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
-      <el-form
-        ref="dataForm"
-        :rules="rules"
-        :model="temp"
-        label-position="left"
-        label-width="70px"
-        style="width: 400px margin-left:50px"
-      >
-        <el-form-item label="Type" prop="type">
-          <el-select v-model="temp.type" class="filter-item" placeholder="Please select">
-            <el-option
-              v-for="item in calendarTypeOptions"
-              :key="item.key"
-              :label="item.display_name"
-              :value="item.key"
-            />
-          </el-select>
-        </el-form-item>
-        <el-form-item label="Date" prop="timestamp">
-          <el-date-picker
-            v-model="temp.timestamp"
-            type="datetime"
-            placeholder="Please pick a date"
-          />
-        </el-form-item>
-        <el-form-item label="Title" prop="title">
-          <el-input v-model="temp.title" />
-        </el-form-item>
-        <el-form-item label="Status">
-          <el-select v-model="temp.status" class="filter-item" placeholder="Please select">
-            <el-option v-for="item in statusOptions" :key="item" :label="item" :value="item" />
-          </el-select>
-        </el-form-item>
-        <el-form-item label="Imp">
-          <el-rate
-            v-model="temp.importance"
-            :colors="['#99A9BF', '#F7BA2A', '#FF9900']"
-            :max="3"
-            style="margin-top:8px"
-          />
-        </el-form-item>
-        <el-form-item label="Remark">
-          <el-input
-            v-model="temp.remark"
-            :autosize="{ minRows: 2, maxRows: 4}"
-            type="textarea"
-            placeholder="Please input"
-          />
-        </el-form-item>
-      </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button @click="dialogFormVisible = false">Cancel</el-button>
-        <el-button type="primary" @click="dialogStatus==='create'?createData():updateData()">Confirm</el-button>
-      </div>
-    </el-dialog>
-
-    <el-dialog :visible.sync="dialogPvVisible" title="Reading statistics">
-      <el-table :data="pvData" border fit highlight-current-row style="width: 100%">
-        <el-table-column prop="key" label="Channel" />
-        <el-table-column prop="pv" label="Pv" />
-      </el-table>
-      <span slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="dialogPvVisible = false">Confirm</el-button>
-      </span>
-    </el-dialog>
   </div>
 </template>
 
 <script>
-import { fetchList } from '@/api/user'
-import {
-  fetchPv,
-  createArticle,
-  updateArticle
-} from '@/api/article'
+import { fetchList, deleteUser } from '@/api/user'
 import waves from '@/directive/waves' // waves directive
 import { parseTime } from '@/utils'
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
 
-const calendarTypeOptions = [
-  { display_name: '审计机关', key: 1 },
-  { display_name: '第三方机构', key: 2 }
-]
-
-// arr to obj, such as { CN : "China", US : "USA" }
-const calendarTypeKeyValue = calendarTypeOptions.reduce((acc, cur) => {
-  acc[cur.key] = cur.display_name
-  return acc
-}, {})
+const queryString = {
+  query: '',
+  status: '',
+  page: 1,
+  length: 20,
+  organization: 1 // +this.$route.query.tab || ''
+}
 
 export default {
-  name: 'ComplexTable',
   components: { Pagination },
   directives: { waves },
-  filters: {
-    statusFilter(status) {
-      const statusMap = {
-        published: 'success',
-        draft: 'info',
-        deleted: 'danger'
-      }
-      return statusMap[status]
-    },
-    typeFilter(type) {
-      return calendarTypeKeyValue[type]
-    }
-  },
   data() {
     return {
-      tableKey: 0,
+      tableKey: 2,
       list: null,
       total: 0,
       listLoading: true,
-      listQuery: {
-        page: 1,
-        limit: 20,
-        importance: undefined,
-        title: undefined,
-        type: undefined,
-        sort: '+id'
-      },
-      importanceOptions: [1, 2, 3],
-      calendarTypeOptions,
-      sortOptions: [
-        { label: 'ID Ascending', key: '+id' },
-        { label: 'ID Descending', key: '-id' }
-      ],
-      statusOptions: ['published', 'draft', 'deleted'],
-      showReviewer: false,
-      temp: {
-        id: undefined,
-        importance: 1,
-        remark: '',
-        timestamp: new Date(),
-        title: '',
-        type: '',
-        status: 'published'
-      },
+      listQuery: queryString,
       dialogFormVisible: false,
       dialogStatus: '',
       textMap: {
@@ -289,24 +149,9 @@ export default {
         create: 'Create'
       },
       dialogPvVisible: false,
-      pvData: [],
-      rules: {
-        type: [
-          { required: true, message: 'type is required', trigger: 'change' }
-        ],
-        timestamp: [
-          {
-            type: 'date',
-            required: true,
-            message: 'timestamp is required',
-            trigger: 'change'
-          }
-        ],
-        title: [
-          { required: true, message: 'title is required', trigger: 'blur' }
-        ]
-      },
-      downloadLoading: false
+      downloadLoading: false,
+      checkedOptions: [],
+      selectConfig: this.$store.getters.userSelectConfig
     }
   },
   created() {
@@ -314,10 +159,11 @@ export default {
   },
   methods: {
     getList() {
+      const _params = Object.assign({}, this.listQuery)
       this.listLoading = true
-      fetchList(this.listQuery).then(response => {
-        this.list = response.data.items
-        this.total = response.data.total
+      fetchList(_params).then(response => {
+        this.list = response.data.list
+        this.total = +response.data.total
 
         // Just to simulate the time of the request
         setTimeout(() => {
@@ -329,112 +175,34 @@ export default {
       this.listQuery.page = 1
       this.getList()
     },
+    handleResetFilter() {
+      this.listQuery = Object.assign({}, queryString)
+      this.getList()
+    },
+    handleSelectionChange(rows) {
+      this.checkedOptions = rows
+    },
+    handleDelete(row = '') {
+      const rows = row ? [row.pid] : this.checkedOptions.map(row => row.pid)
+      this.$confirm('此操作将永久删除, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        deleteUser({
+          pid: rows
+        }).then(res => {
+          this.$message.success('删除成功!')
+          this.getList()
+        })
+      })
+    },
     handleModifyStatus(row, status) {
       this.$message({
         message: '操作Success',
         type: 'success'
       })
       row.status = status
-    },
-    sortChange(data) {
-      const { prop, order } = data
-      if (prop === 'id') {
-        this.sortByID(order)
-      }
-    },
-    sortByID(order) {
-      if (order === 'ascending') {
-        this.listQuery.sort = '+id'
-      } else {
-        this.listQuery.sort = '-id'
-      }
-      this.handleFilter()
-    },
-    resetTemp() {
-      this.temp = {
-        id: undefined,
-        importance: 1,
-        remark: '',
-        timestamp: new Date(),
-        title: '',
-        status: 'published',
-        type: ''
-      }
-    },
-    handleCreate() {
-      this.resetTemp()
-      this.dialogStatus = 'create'
-      this.dialogFormVisible = true
-      this.$nextTick(() => {
-        this.$refs['dataForm'].clearValidate()
-      })
-    },
-    createData() {
-      this.$refs['dataForm'].validate(valid => {
-        if (valid) {
-          this.temp.id = parseInt(Math.random() * 100) + 1024 // mock a id
-          this.temp.author = 'vue-element-admin'
-          createArticle(this.temp).then(() => {
-            this.list.unshift(this.temp)
-            this.dialogFormVisible = false
-            this.$notify({
-              title: 'Success',
-              message: 'Created Successfully',
-              type: 'success',
-              duration: 2000
-            })
-          })
-        }
-      })
-    },
-    handleUpdate(row) {
-      this.temp = Object.assign({}, row) // copy obj
-      this.temp.timestamp = new Date(this.temp.timestamp)
-      this.dialogStatus = 'update'
-      this.dialogFormVisible = true
-      this.$nextTick(() => {
-        this.$refs['dataForm'].clearValidate()
-      })
-    },
-    updateData() {
-      this.$refs['dataForm'].validate(valid => {
-        if (valid) {
-          const tempData = Object.assign({}, this.temp)
-          tempData.timestamp = +new Date(tempData.timestamp) // change Thu Nov 30 2017 16:41:05 GMT+0800 (CST) to 1512031311464
-          updateArticle(tempData).then(() => {
-            for (const v of this.list) {
-              if (v.id === this.temp.id) {
-                const index = this.list.indexOf(v)
-                this.list.splice(index, 1, this.temp)
-                break
-              }
-            }
-            this.dialogFormVisible = false
-            this.$notify({
-              title: 'Success',
-              message: 'Update Successfully',
-              type: 'success',
-              duration: 2000
-            })
-          })
-        }
-      })
-    },
-    handleDelete(row) {
-      this.$notify({
-        title: 'Success',
-        message: 'Delete Successfully',
-        type: 'success',
-        duration: 2000
-      })
-      const index = this.list.indexOf(row)
-      this.list.splice(index, 1)
-    },
-    handleFetchPv(pv) {
-      fetchPv(pv).then(response => {
-        this.pvData = response.data.pvData
-        this.dialogPvVisible = true
-      })
     },
     handleDownload() {
       this.downloadLoading = true
@@ -466,23 +234,19 @@ export default {
           }
         })
       )
-    },
-    getSortClass: function(key) {
-      const sort = this.listQuery.sort
-      return sort === `+${key}`
-        ? 'ascending'
-        : sort === `-${key}`
-          ? 'descending'
-          : ''
     }
   }
 }
 </script>
 <style lang="scss">
 .audit-personnel-filter {
+  padding-bottom: 0;
   .el-form-item {
     padding-bottom: 0;
     margin-bottom: 0;
   }
+}
+.audit-personnel-actions {
+  margin-bottom: 15px;
 }
 </style>

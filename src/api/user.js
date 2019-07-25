@@ -23,9 +23,25 @@ export function logout() {
   })
 }
 
-export function fetchList() {
+export function fetchList(data) {
   return request({
     url: '/user/list',
-    method: 'post'
+    method: 'post',
+    data
+  })
+}
+
+export function getUserConfig() {
+  return request({
+    url: '/user/selectconfig',
+    method: 'get'
+  })
+}
+
+export function deleteUser(data) {
+  return request({
+    url: '/user/delete',
+    method: 'post',
+    data
   })
 }

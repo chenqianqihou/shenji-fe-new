@@ -6,6 +6,8 @@ import getPageTitle from '@/utils/get-page-title'
 
 NProgress.configure({ showSpinner: false }) // NProgress Configuration
 
+store.dispatch('user/getUserConfig')
+
 const whiteList = ['/login', '/auth-redirect'] // no redirect whitelist
 
 router.beforeEach(async(to, from, next) => {
@@ -21,7 +23,6 @@ router.beforeEach(async(to, from, next) => {
     } else {
       const accessRoutes = await store.dispatch('permission/generateRoutes', ['admin'])
       router.addRoutes(accessRoutes)
-      console.log(1)
       next()
     }
   } else {

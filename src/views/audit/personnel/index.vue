@@ -1,7 +1,5 @@
 <template>
   <div class="tab-container">
-    <el-tag>mounted times ：{{ createdTimes }}</el-tag>
-    <el-alert :closable="false" style="width:200px;display:inline-block;vertical-align: middle;margin-left:30px;" title="Tab with keep-alive" type="success" />
     <el-tabs v-model="activeName" style="margin-top:15px;" type="border-card">
       <el-tab-pane v-for="item in tabMapOptions" :key="item.key" :label="item.label" :name="item.key">
         <keep-alive>
@@ -21,10 +19,10 @@ export default {
   data() {
     return {
       tabMapOptions: [
-        { label: '审计机关', key: 1 },
-        { label: '第三方机构', key: 2 }
+        { label: '审计机关', key: '2' },
+        { label: '第三方机构', key: '3' }
       ],
-      activeName: 1,
+      activeName: '2',
       createdTimes: 0
     }
   },
@@ -35,7 +33,7 @@ export default {
   },
   created() {
     // init the default  selected tab
-    const tab = this.$route.query.tab
+    const tab = this.$route.query.tab || '2'
     if (tab) {
       this.activeName = tab
     }
