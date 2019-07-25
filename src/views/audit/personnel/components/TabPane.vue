@@ -64,62 +64,46 @@
       style="width: 100%"
       @sort-change="sortChange"
     >
+      <el-table-column label="姓名">
+        <template slot-scope="{row}">
+          <span class="link-type" @click="handleUpdate(row)">{{ row.title }}</span>
+          <el-tag>{{ row.type | typeFilter }}</el-tag>
+        </template>
+      </el-table-column>
       <el-table-column
-        label="ID"
+        label="人员ID"
         prop="id"
         sortable="custom"
         align="center"
-        width="80"
         :class-name="getSortClass('id')"
       >
         <template slot-scope="scope">
           <span>{{ scope.row.id }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="Date" width="150px" align="center">
-        <template slot-scope="scope">
-          <span>{{ scope.row.timestamp | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="Title" min-width="150px">
-        <template slot-scope="{row}">
-          <span class="link-type" @click="handleUpdate(row)">{{ row.title }}</span>
-          <el-tag>{{ row.type | typeFilter }}</el-tag>
-        </template>
-      </el-table-column>
-      <el-table-column label="Author" width="110px" align="center">
+      <el-table-column label="性别" align="center">
         <template slot-scope="scope">
           <span>{{ scope.row.author }}</span>
         </template>
       </el-table-column>
-      <el-table-column v-if="showReviewer" label="Reviewer" width="110px" align="center">
+      <el-table-column label="所在机构" align="center">
         <template slot-scope="scope">
-          <span style="color:red">{{ scope.row.reviewer }}</span>
+          <span>{{ scope.row.author }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="Imp" width="80px">
+      <el-table-column label="所在部门" align="center">
         <template slot-scope="scope">
-          <svg-icon
-            v-for="n in +scope.row.importance"
-            :key="n"
-            icon-class="star"
-            class="meta-item__icon"
-          />
+          <span>{{ scope.row.author }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="Readings" align="center" width="95">
-        <template slot-scope="{row}">
-          <span
-            v-if="row.pageviews"
-            class="link-type"
-            @click="handleFetchPv(row.pageviews)"
-          >{{ row.pageviews }}</span>
-          <span v-else>0</span>
+      <el-table-column label="工作状态" align="center">
+        <template slot-scope="scope">
+          <span>{{ scope.row.author }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="Status" class-name="status-col" width="100">
-        <template slot-scope="{row}">
-          <el-tag :type="row.status | statusFilter">{{ row.status }}</el-tag>
+      <el-table-column label="在途项目" align="center">
+        <template slot-scope="scope">
+          <span>{{ scope.row.author }}</span>
         </template>
       </el-table-column>
       <el-table-column
@@ -229,8 +213,8 @@
 </template>
 
 <script>
+import { fetchList } from '@/api/user'
 import {
-  fetchList,
   fetchPv,
   createArticle,
   updateArticle
@@ -240,10 +224,8 @@ import { parseTime } from '@/utils'
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
 
 const calendarTypeOptions = [
-  { key: 'CN', display_name: 'China' },
-  { key: 'US', display_name: 'USA' },
-  { key: 'JP', display_name: 'Japan' },
-  { key: 'EU', display_name: 'Eurozone' }
+  { display_name: '审计机关', key: 1 },
+  { display_name: '第三方机构', key: 2 }
 ]
 
 // arr to obj, such as { CN : "China", US : "USA" }

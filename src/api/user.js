@@ -22,3 +22,10 @@ export function logout() {
     method: 'post'
   })
 }
+
+export function fetchList() {
+  return request({
+    url: '/user/list',
+    method: 'post'
+  })
+}

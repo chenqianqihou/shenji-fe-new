@@ -67,7 +67,7 @@ export default {
         password: ''
       },
       loginRules: {
-        account: [{ required: true, trigger: 'blur', message: '请输入账号'}],
+        account: [{ required: true, trigger: 'blur', message: '请输入账号' }],
         password: [{ required: true, trigger: 'blur', validator: validatePassword }]
       },
       passwordType: 'password',

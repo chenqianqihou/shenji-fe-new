@@ -21,10 +21,10 @@ export default {
   data() {
     return {
       tabMapOptions: [
-        { label: '审计机关', key: 'audit' },
-        { label: '第三方机构', key: 'third' }
+        { label: '审计机关', key: 1 },
+        { label: '第三方机构', key: 2 }
       ],
-      activeName: 'audit',
+      activeName: 1,
       createdTimes: 0
     }
   },
