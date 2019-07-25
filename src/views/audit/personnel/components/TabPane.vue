@@ -35,7 +35,7 @@
         class="filter-item"
         type="primary"
         icon="el-icon-plus"
-        @click="$router.replace('/audit/personnel/create')"
+        @click="$router.push('/audit/personnel/create')"
       >新增人员</el-button>
       <el-button
         v-waves

@@ -97,6 +97,15 @@ export const constantRoutes = [
           title: '人员管理',
           noCache: true
         }
+      },
+      {
+        path: 'personnel/create',
+        component: () => import('@/views/audit/personnel/create'),
+        name: 'auditPersonnelCreate',
+        meta: {
+          title: '新建人员'
+        },
+        hidden: true
       }
     ]
   },
