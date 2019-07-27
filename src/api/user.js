@@ -54,6 +54,14 @@ export function createUser(data) {
   })
 }
 
+export function updateUser(data) {
+  return request({
+    url: '/user/update',
+    method: 'post',
+    data
+  })
+}
+
 export function updateUserRole(data) {
   return request({
     url: '/user/updaterole',

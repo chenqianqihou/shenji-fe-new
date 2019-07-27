@@ -7,3 +7,9 @@ export function getOrgListByType(data) {
     data
   })
 }
+
+export function getOrgTree() {
+  return request({
+    url: '/organization/list'
+  })
+}

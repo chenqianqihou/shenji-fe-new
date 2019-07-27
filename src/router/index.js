@@ -117,6 +117,16 @@ export const constantRoutes = [
           noCache: true
         },
         hidden: true
+      },
+      {
+        path: 'personnel/edit/:id',
+        component: () => import('@/views/audit/personnel/edit'),
+        name: 'auditPersonnelEdit',
+        meta: {
+          title: '编辑人员',
+          noCache: true
+        },
+        hidden: true
       }
     ]
   },
