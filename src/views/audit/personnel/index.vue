@@ -2,9 +2,7 @@
   <div class="tab-container">
     <el-tabs v-model="activeName" style="margin-top:15px;" type="border-card">
       <el-tab-pane v-for="item in tabMapOptions" :key="item.key" :label="item.label" :name="item.key">
-        <keep-alive>
-          <tab-pane v-if="activeName==item.key" :type="item.key" @create="showCreatedTimes" />
-        </keep-alive>
+        <tab-pane v-if="activeName==item.key" :type="item.key" />
       </el-tab-pane>
     </el-tabs>
   </div>
@@ -19,28 +17,18 @@ export default {
   data() {
     return {
       tabMapOptions: [
-        { label: '审计机关', key: '2' },
-        { label: '第三方机构', key: '3' }
+        { label: '审计机关', key: '3' },
+        { label: '第三方机构', key: '1' }
       ],
-      activeName: '2',
+      activeName: '3',
       createdTimes: 0
-    }
-  },
-  watch: {
-    activeName(val) {
-      this.$router.push(`${this.$route.path}?tab=${val}`)
     }
   },
   created() {
     // init the default  selected tab
-    const tab = this.$route.query.tab || '2'
+    const tab = this.$route.query.tab || '3'
     if (tab) {
       this.activeName = tab
-    }
-  },
-  methods: {
-    showCreatedTimes() {
-      this.createdTimes = this.createdTimes + 1
     }
   }
 }

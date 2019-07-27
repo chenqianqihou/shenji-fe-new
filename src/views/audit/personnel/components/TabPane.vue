@@ -101,9 +101,9 @@
             size="mini"
             type="text"
           >编辑</el-button>
-          <el-button type="text" size="mini">详情</el-button>
+          <el-button type="text" size="mini" @click="$router.push(`/audit/personnel/detail/${row.pid}`)">详情</el-button>
           <el-button type="text" size="mini">重置密码</el-button>
-          <el-button type="text" size="mini">分配角色</el-button>
+          <el-button type="text" size="mini" @click="handleChangeRole(row)">分配角色</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -115,11 +115,28 @@
       :limit.sync="listQuery.length"
       @pagination="getList"
     />
+
+    <el-dialog title="分配角色" :visible.sync="roleDialog" width="500px">
+      <el-form :model="roleForm" ref="roleForm">
+        <el-form-item label="角色" label-width="100px" prop="role" :rules="[{
+          required: true,
+          message: '请选择角色'
+        }]">
+          <el-select v-model="roleForm.role" placeholder="请选择角色" collapse-tags multiple class="full-width">
+            <el-option :label="v" :key="idx" :value="k" v-for="(v, k, idx) in selectConfig.role"></el-option>
+          </el-select>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="roleDialog = false">取 消</el-button>
+        <el-button type="primary" @click="handleSubmitRole">确 定</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
 <script>
-import { fetchList, deleteUser } from '@/api/user'
+import { fetchList, deleteUser, updateUserRole } from '@/api/user'
 import waves from '@/directive/waves' // waves directive
 import { parseTime } from '@/utils'
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
@@ -133,6 +150,9 @@ const queryString = {
 }
 
 export default {
+  props: {
+    type: String
+  },
   components: { Pagination },
   directives: { waves },
   data() {
@@ -151,15 +171,28 @@ export default {
       dialogPvVisible: false,
       downloadLoading: false,
       checkedOptions: [],
-      selectConfig: this.$store.getters.userSelectConfig
+      selectConfig: this.$store.getters.userSelectConfig,
+      roleDialog: false,
+      roleForm: {
+        pid: '',
+        role: []
+      }
     }
   },
   created() {
     this.getList()
   },
+  watch: {
+    type(newVal) {
+      console.log(newVal)
+      this.getList()
+    }
+  },
   methods: {
     getList() {
-      const _params = Object.assign({}, this.listQuery)
+      const _params = Object.assign({
+        type: +this.$route.query.tab
+      }, this.listQuery)
       this.listLoading = true
       fetchList(_params).then(response => {
         this.list = response.data.list
@@ -181,6 +214,22 @@ export default {
     },
     handleSelectionChange(rows) {
       this.checkedOptions = rows
+    },
+    handleChangeRole(row) {
+      this.roleForm.pid = row.pid
+      this.roleDialog = true
+    },
+    handleSubmitRole() {
+      this.$refs['roleForm'].validate((valid) => {
+        if (valid) {
+          const formData = Object.assign({}, this.roleForm)
+          formData.role = formData.role.join()
+          updateUserRole(formData).then(res => {
+            this.$message.success('分配成功')
+            this.roleDialog = false
+          })
+        }
+      })
     },
     handleDelete(row = '') {
       const rows = row ? [row.pid] : this.checkedOptions.map(row => row.pid)
@@ -248,5 +297,8 @@ export default {
 }
 .audit-personnel-actions {
   margin-bottom: 15px;
+}
+.full-width {
+  width: 100%;
 }
 </style>
