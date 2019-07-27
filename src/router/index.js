@@ -143,7 +143,8 @@ export const constantRoutes = [
         meta: { title: 'Profile', icon: 'user', noCache: true }
       }
     ]
-  }
+  },
+  { path: '*', redirect: '/404', hidden: true }
 ]
 
 /**
@@ -152,7 +153,6 @@ export const constantRoutes = [
  */
 export const asyncRoutes = [
   // 404 page must be placed at the end !!!
-  { path: '*', redirect: '/404', hidden: true }
 ]
 
 const createRouter = () => new Router({
