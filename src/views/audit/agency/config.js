@@ -103,20 +103,12 @@ const props = {
     value: 'contactphone',
     label: '联系人电话',
     required: true,
-    type: 'number',
-    validator: [{
-      type: 'integer',
-      message: '联系人电话格式不正确'
-    }]
+    type: 'number'
   }, {
     value: 'contactnumber',
     label: '联系电话',
     required: true,
-    type: 'number',
-    validator: [{
-      type: 'integer',
-      message: '联系电话格式不正确'
-    }]
+    type: 'number'
   }, {
     value: ['officenum', 'officeaddress'],
     label: '办公地址',

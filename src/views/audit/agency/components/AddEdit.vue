@@ -179,9 +179,7 @@ export default {
       const { selectConfig: { type } } = this
       props.forEach(row => {
         if (row.isAddress) {
-          row.value.forEach(r => {
-            this.form[r] = ''
-          })
+          this.form[row.value[0]] = ''
         }
         if (row.sum) {
           this.form[row.value] = ''
