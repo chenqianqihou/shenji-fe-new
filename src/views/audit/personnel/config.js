@@ -171,7 +171,8 @@ const props = {
     value: 'role',
     label: '角色',
     type: 'combobox',
-    multi: true
+    multi: true,
+    required: true
   }]
 }
 

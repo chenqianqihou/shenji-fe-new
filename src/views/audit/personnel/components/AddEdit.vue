@@ -98,7 +98,7 @@
       </div>
       <el-form-item>
         <el-button type="primary" @click="handleSubmit">提交</el-button>
-        <el-button>重置</el-button>
+        <el-button @click="$router.push('/audit/personnel')">取消</el-button>
       </el-form-item>
     </el-form>
   </el-card>
@@ -124,11 +124,7 @@ export default {
     return {
       tagObj: tagList,
       formProps: props,
-      form: {
-        train: [''],
-        qualification: qualiArray,
-        sex: ''
-      },
+      form: {},
       readonly: {
         birthday: '',
         age: ''
@@ -139,6 +135,12 @@ export default {
         organizationList: [],
         departmentList: []
       }
+    }
+  },
+  mounted() {
+    this.initData()
+    if (this.$route.params.id) {
+      this.queryDetail()
     }
   },
   methods: {
@@ -164,11 +166,15 @@ export default {
             this.form.train = ['']
           }
         } else {
-          this.form.qualification.forEach(row => {
-            if (row.time) {
-              row.time *= 1000
-            }
-          })
+          if (this.form.qualification.length > 0) {
+            this.form.qualification.forEach(row => {
+              if (row.time) {
+                row.time *= 1000
+              }
+            })
+          } else {
+            this.form.qualification.push(qualiArray)
+          }
         }
         this.queryOrgListByType()
         const certificateNo = this.form.cardid
@@ -299,7 +305,8 @@ export default {
               form[row.value] = form[row.value].join()
             }
             if (row.value === 'qualification' && form.qualification) {
-              if (form[row.value][0].time) {
+              form.qualification = form.qualification.filter(row => row.info && row.time)
+              if (form.qualification.length > 0) {
                 form['qualification'].forEach(r => {
                   r.time = r.time / 1000
                 })
@@ -342,12 +349,6 @@ export default {
           this.form[row.value] = []
         }
       })
-    }
-  },
-  mounted() {
-    this.initData()
-    if (this.$route.params.id) {
-      this.queryDetail()
     }
   }
 }

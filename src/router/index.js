@@ -127,6 +127,45 @@ export const constantRoutes = [
           noCache: true
         },
         hidden: true
+      },
+      {
+        path: 'agency',
+        component: () => import('@/views/audit/agency/index'),
+        name: 'auditAgency',
+        meta: {
+          title: '机构管理',
+          noCache: true
+        }
+      },
+      {
+        path: 'agency/create',
+        component: () => import('@/views/audit/agency/create'),
+        name: 'auditAgencyCreate',
+        meta: {
+          title: '新建机构',
+          noCache: true
+        },
+        hidden: true
+      },
+      {
+        path: 'agency/detail/:id',
+        component: () => import('@/views/audit/agency/detail'),
+        name: 'auditAgencyDetail',
+        meta: {
+          title: '机构信息',
+          noCache: true
+        },
+        hidden: true
+      },
+      {
+        path: 'agency/edit/:id',
+        component: () => import('@/views/audit/agency/edit'),
+        name: 'auditAgencyEdit',
+        meta: {
+          title: '编辑机构',
+          noCache: true
+        },
+        hidden: true
       }
     ]
   },

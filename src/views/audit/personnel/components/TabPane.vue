@@ -6,13 +6,30 @@
         :data="treeData"
         :props="defaultProps"
         class="tree-class"
-        :render-content="renderTreeContent">
+        :expand-on-click-node="false"
+        @node-click="handleClickNode">
+        <span class="custom-tree-node" slot-scope="{ node, data }">
+          <span>{{ node.label }}</span>
+          <span>
+            <el-tooltip class="item" effect="dark" content="新增" placement="top" v-if="data.data && +data.data.parentid === 0">
+              <el-button size='mini' type='text' icon='el-icon-circle-plus-outline' class='tree-button' @click="ev => appendNode(ev, data)"></el-button>
+            </el-tooltip>
+            <el-tooltip class="item" effect="dark" content="编辑" placement="top" v-if="data.data && +data.data.parentid > 0">
+              <el-button size='mini' type='text' icon='el-icon-edit-outline' class='tree-button' @click="ev => editNode(ev, data)"></el-button>
+            </el-tooltip>
+            <el-tooltip class="item" effect="dark" content="删除" placement="top" v-if="data.data && +data.data.parentid > 0">
+              <el-button size='mini' type='text' icon='el-icon-delete' class='tree-button' @click="ev => deleteNode(ev, data)"></el-button>
+            </el-tooltip>
+          </span>
+        </span>
       </el-tree>
       <el-tree
         v-else
         :data="treeData"
         :props="defaultProps"
-        class="tree-class">
+        class="tree-class"
+        :expand-on-click-node="false"
+        @node-click="handleClickNode">
       </el-tree>
     </div>
     <div style="flex: 1;margin-left: 20px;">
@@ -131,7 +148,7 @@
         @pagination="getList"
       />
     </div>
-    <el-dialog title="分配角色" :visible.sync="roleDialog" width="500px">
+    <el-dialog title="分配角色" :visible.sync="roleDialog" width="500px" @close="closeRoleDialog" center>
       <el-form :model="roleForm" ref="roleForm">
         <el-form-item
           label="角色"
@@ -149,6 +166,24 @@
       <div slot="footer" class="dialog-footer">
         <el-button @click="roleDialog = false">取 消</el-button>
         <el-button type="primary" @click="handleSubmitRole">确 定</el-button>
+      </div>
+    </el-dialog>
+    <el-dialog :title="treeNode.opt === 'append' ? '新增节点' : '修改节点'" :visible.sync="treeOptDialog" width="500px" @close="closeTreeDialog" center>
+      <el-form :model="treeNode" ref="treeNodeForm">
+        <el-form-item
+          label="名称"
+          label-width="100px"
+          prop="newName"
+          :rules="[{
+            required: true,
+            message: '请输入名称'
+          }]">
+          <el-input v-model="treeNode.newName" placeholder="请输入名称"></el-input>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="treeOptDialog = false">取 消</el-button>
+        <el-button type="primary">确 定</el-button>
       </div>
     </el-dialog>
   </div>
@@ -204,7 +239,9 @@ export default {
       defaultProps: {
         children: 'list',
         label: 'name'
-      }
+      },
+      treeNode: {},
+      treeOptDialog: false
     }
   },
   created() {
@@ -217,31 +254,31 @@ export default {
     }
   },
   methods: {
-    renderTreeContent(h, { node, data, store }) {
-      console.log(node)
-      if (node.level > 4) {
-        return (
-          <span class='custom-tree-node'>
-            <span>{node.label}</span>
-            <span>
-              <el-button size='mini' type='text' icon='el-icon-edit-outline' class='tree-button' on-click={ () => this.append(data) }></el-button>
-              <el-button size='mini' type='text' icon='el-icon-delete' class='tree-button' on-click={ () => this.remove(node, data) }></el-button>
-            </span>
-          </span>)
-      } else if (node.level > 1 && node.level <= 4) {
-        return (
-          <span class='custom-tree-node'>
-            <span>{node.label}</span>
-            <span>
-              <el-button size='mini' type='text' icon='el-icon-circle-plus-outline' class='tree-button' on-click={ () => this.append(data) }></el-button>
-            </span>
-          </span>)
-      } else {
-        return (
-          <span class='custom-tree-node'>
-            <span>{node.label}</span>
-          </span>)
+    handleClickNode(node) {
+      if (node.id) {
+        this.listQuery.organid = +node.id
+        this.getList()
       }
+    },
+    appendNode (ev, data) {
+      ev.stopPropagation()
+      this.treeNode = Object.assign({}, data, {
+        opt: 'append',
+        newName: ''
+      })
+      this.treeOptDialog = true
+    },
+    editNode (ev, data) {
+      ev.stopPropagation()
+      this.treeNode = Object.assign({}, data, {
+        opt: 'edit',
+        newName: data.name
+      })
+      this.treeOptDialog = true
+    },
+    deleteNode (ev, data) {
+      ev.stopPropagation()
+      this.treeNode = data
     },
     queryOrgTree() {
       getOrgTree().then(res => {
@@ -292,19 +329,25 @@ export default {
           const formData = Object.assign({}, this.roleForm)
           formData.role = formData.role.join()
           updateUserRole(formData).then(res => {
-            this.roleForm.role = []
             this.$message.success('分配成功')
             this.roleDialog = false
           })
         }
       })
     },
+    closeRoleDialog() {
+      this.$refs['roleForm'].resetFields()
+    },
+    closeTreeDialog() {
+      this.$refs['treeNodeForm'].resetFields()
+    },
     handleDelete(row = '') {
       const rows = row ? [row.pid] : this.checkedOptions.map(row => row.pid)
       this.$confirm('此操作将永久删除, 是否继续?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
-        type: 'warning'
+        type: 'warning',
+        center: true
       }).then(() => {
         deleteUser({
           pid: rows
@@ -313,13 +356,6 @@ export default {
           this.getList()
         })
       })
-    },
-    handleModifyStatus(row, status) {
-      this.$message({
-        message: '操作Success',
-        type: 'success'
-      })
-      row.status = status
     },
     handleDownload() {
       this.downloadLoading = true
@@ -367,7 +403,7 @@ export default {
       .custom-tree-node {
         font-size: 14px;
         .tree-button {
-          margin-left: 10px;
+          margin-left: 5px;
           font-size: 15px;
         }
       }

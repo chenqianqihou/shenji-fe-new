@@ -22,8 +22,7 @@ router.beforeEach(async(to, from, next) => {
       next({ path: '/' })
       NProgress.done()
     } else {
-      // const accessRoutes = await store.dispatch('permission/generateRoutes', ['admin'])
-      // router.addRoutes(accessRoutes)
+      store.dispatch('permission/generateRoutes')
       next()
     }
   } else {
