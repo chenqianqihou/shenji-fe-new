@@ -122,6 +122,7 @@ export default {
     margin-bottom: 20px;
   }
   .row-class {
+    font-size: 14px;
     margin-bottom: 15px;
     text-indent: 2em;
   }

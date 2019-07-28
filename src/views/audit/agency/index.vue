@@ -139,7 +139,7 @@ export default {
     return {
       listLoading: false,
       list: [],
-      listQuery: queryString,
+      listQuery: Object.assign({}, queryString),
       total: 0,
       checkedOptions: [],
       selectConfig: this.$store.getters.userSelectConfig
@@ -186,7 +186,8 @@ export default {
       this.getList()
     },
     handleResetFilter() {
-      this.listQuery = queryString
+      this.listQuery = Object.assign({}, queryString)
+      this.getList()
     },
     handleSelectionChange(rows) {
       this.checkedOptions = rows

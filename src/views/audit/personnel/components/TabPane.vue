@@ -6,19 +6,22 @@
         :data="treeData"
         :props="defaultProps"
         class="tree-class"
+        node-key="id"
+        highlight-current
+        current-node-key="type-3"
         :expand-on-click-node="false"
         @node-click="handleClickNode">
         <span class="custom-tree-node" slot-scope="{ node, data }">
           <span>{{ node.label }}</span>
           <span>
             <el-tooltip class="item" effect="dark" content="新增" placement="top" v-if="data.data && +data.data.parentid === 0">
-              <el-button size='mini' type='text' icon='el-icon-circle-plus-outline' class='tree-button' @click="ev => appendNode(ev, data)"></el-button>
+              <el-button size='mini' type='text' icon='el-icon-circle-plus-outline' class='tree-button' @click="ev => appendNode(ev, node, data)"></el-button>
             </el-tooltip>
             <el-tooltip class="item" effect="dark" content="编辑" placement="top" v-if="data.data && +data.data.parentid > 0">
-              <el-button size='mini' type='text' icon='el-icon-edit-outline' class='tree-button' @click="ev => editNode(ev, data)"></el-button>
+              <el-button size='mini' type='text' icon='el-icon-edit-outline' class='tree-button' @click="ev => editNode(ev, node, data)"></el-button>
             </el-tooltip>
             <el-tooltip class="item" effect="dark" content="删除" placement="top" v-if="data.data && +data.data.parentid > 0">
-              <el-button size='mini' type='text' icon='el-icon-delete' class='tree-button' @click="ev => deleteNode(ev, data)"></el-button>
+              <el-button size='mini' type='text' icon='el-icon-delete' class='tree-button' @click="ev => deleteNode(ev, node, data)"></el-button>
             </el-tooltip>
           </span>
         </span>
@@ -28,6 +31,9 @@
         :data="treeData"
         :props="defaultProps"
         class="tree-class"
+        node-key="id"
+        highlight-current
+        current-node-key="type-1"
         :expand-on-click-node="false"
         @node-click="handleClickNode">
       </el-tree>
@@ -82,10 +88,12 @@
           :loading="downloadLoading"
           class="filter-item"
           type="primary"
+          disabled
           @click="handleDownload"
         >导入人员</el-button>
         <el-button
           v-waves
+          disabled=""
           :loading="downloadLoading"
           class="filter-item"
           icon="el-icon-download"
@@ -109,8 +117,18 @@
             {{ selectConfig.sex[row.sex] }}
           </template>
         </el-table-column>
-        <el-table-column label="所在机构" align="center" prop="organization" />
-        <el-table-column label="所在部门" align="center" prop="department" />
+        <template v-if="+type === 3">
+          <el-table-column label="所在机构" align="center" prop="organization" />
+          <el-table-column label="所在部门" align="center" prop="department" />
+        </template>
+        <template v-else>
+          <el-table-column label="人员类型" align="center">
+            <template slot-scope="{row}">
+              {{ selectConfig.type[row.type] }}
+            </template>
+          </el-table-column>
+          <el-table-column label="所属机构" align="center" prop="organization" />
+        </template>
         <el-table-column label="工作状态" align="center" prop="status">
           <template slot-scope="{row}">
             {{ selectConfig.status[row.status] || row.status }}
@@ -168,22 +186,22 @@
         <el-button type="primary" @click="handleSubmitRole">确 定</el-button>
       </div>
     </el-dialog>
-    <el-dialog :title="treeNode.opt === 'append' ? '新增节点' : '修改节点'" :visible.sync="treeOptDialog" width="500px" @close="closeTreeDialog" center>
+    <el-dialog :title="treeNodeOpt === 'append' ? '新增节点' : '修改节点'" :visible.sync="treeOptDialog" width="500px" @close="closeTreeDialog" center>
       <el-form :model="treeNode" ref="treeNodeForm">
         <el-form-item
           label="名称"
           label-width="100px"
-          prop="newName"
+          prop="name"
           :rules="[{
             required: true,
             message: '请输入名称'
           }]">
-          <el-input v-model="treeNode.newName" placeholder="请输入名称"></el-input>
+          <el-input v-model="treeNode.name" placeholder="请输入名称"></el-input>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="treeOptDialog = false">取 消</el-button>
-        <el-button type="primary">确 定</el-button>
+        <el-button type="primary" @click="handleEditNode">确 定</el-button>
       </div>
     </el-dialog>
   </div>
@@ -191,7 +209,7 @@
 
 <script>
 import { fetchList, deleteUser, updateUserRole } from '@/api/user'
-import { getOrgTree } from '@/api/org'
+import { getOrgTree, createByName, updateOrg, deleteOrg } from '@/api/org'
 import waves from '@/directive/waves' // waves directive
 import { parseTime } from '@/utils'
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
@@ -219,7 +237,7 @@ export default {
       list: null,
       total: 0,
       listLoading: true,
-      listQuery: queryString,
+      listQuery: Object.assign({}, queryString),
       dialogFormVisible: false,
       dialogStatus: '',
       textMap: {
@@ -240,7 +258,10 @@ export default {
         children: 'list',
         label: 'name'
       },
+      currentNode: {},
+      currentNodeData: {},
       treeNode: {},
+      treeNodeOpt: '',
       treeOptDialog: false
     }
   },
@@ -254,37 +275,90 @@ export default {
     }
   },
   methods: {
-    handleClickNode(node) {
-      if (node.id) {
-        this.listQuery.organid = +node.id
-        this.getList()
+    handleEditNode() {
+      let optFunc
+      if (this.treeNodeOpt === 'append') {
+        optFunc = createByName
+      } else {
+        optFunc = updateOrg
       }
-    },
-    appendNode (ev, data) {
-      ev.stopPropagation()
-      this.treeNode = Object.assign({}, data, {
-        opt: 'append',
-        newName: ''
+      optFunc(Object.assign({}, this.treeNode)).then(res => {
+        this.$message.success('操作成功')
+        const node = res.data.message
+        if (this.treeNodeOpt === 'append') {
+          if (!this.currentNodeData.list) {
+            this.$set(currentNodeData, 'list', [])
+          }
+          this.currentNodeData.list.push({
+            id: node.id,
+            name: node.name,
+            list: [],
+            type: 'child',
+            data: node
+          })
+        } else {
+          console.log(node)
+          this.currentNodeData.name = node.name
+          this.currentNodeData.data = node
+        }
+        this.treeOptDialog = false
       })
+    },
+    handleClickNode(node) {
+      if (node.type) {
+        this.listQuery.type = +node.type  
+      } else {
+        this.listQuery.organid = +node.id
+      }
+      this.getList()
+    },
+    appendNode (ev, node, data) {
+      ev.stopPropagation()
+      this.treeNode = {
+        pid: data.id,
+        name: ''
+      }
+      this.currentNode = node
+      this.currentNodeData = data
+      this.treeNodeOpt = 'append'
       this.treeOptDialog = true
     },
-    editNode (ev, data) {
+    editNode (ev, node, data) {
       ev.stopPropagation()
-      this.treeNode = Object.assign({}, data, {
-        opt: 'edit',
-        newName: data.name
+      this.treeNode = Object.assign({}, data.data, {
+        oid: data.id
       })
+      this.currentNode = node
+      this.currentNodeData = data
+      this.treeNodeOpt = 'edit'
       this.treeOptDialog = true
     },
-    deleteNode (ev, data) {
+    deleteNode (ev, node, data) {
       ev.stopPropagation()
-      this.treeNode = data
+      this.currentNode = node
+      this.$confirm('此操作将永久删除, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning',
+        center: true
+      }).then(() => {
+        deleteOrg({
+          oid: [data.id]
+        }).then(res => {
+          this.$message.success('删除成功!')
+          const parent = this.currentNode.parent
+          const children = parent.data.list || parent.data
+          const index = children.findIndex(d => d.id === data.id);
+          children.splice(index, 1)
+        })
+      })
     },
     queryOrgTree() {
       getOrgTree().then(res => {
         const typeList = this.selectConfig.type
         res.data.forEach(row => {
           row.name = typeList[row.type]
+          row.id = 'type-' + row.type
         })
         if (+this.type === 3) {
           this.treeData = res.data.filter(row => +row.type === +this.type)
@@ -321,7 +395,9 @@ export default {
     },
     handleChangeRole(row) {
       this.roleForm.pid = row.pid
+      this.roleForm.role = row.role ? row.role : []
       this.roleDialog = true
+      this.closeTreeDialog()
     },
     handleSubmitRole() {
       this.$refs['roleForm'].validate((valid) => {
@@ -330,6 +406,7 @@ export default {
           formData.role = formData.role.join()
           updateUserRole(formData).then(res => {
             this.$message.success('分配成功')
+            this.getList()
             this.roleDialog = false
           })
         }

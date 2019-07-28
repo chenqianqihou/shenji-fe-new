@@ -53,3 +53,11 @@ export function getOrgDetail(data) {
     data
   })
 }
+
+export function createByName(data) {
+  return request({
+    url: '/organization/addbyname',
+    method: 'post',
+    data
+  })
+}

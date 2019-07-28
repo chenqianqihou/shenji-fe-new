@@ -84,7 +84,7 @@ export const constantRoutes = [
     alwaysShow: true, // will always show the root menu
     name: 'Audit',
     meta: {
-      title: '审计管理',
+      title: '配置管理',
       icon: 'lock',
       noCache: true
     },
