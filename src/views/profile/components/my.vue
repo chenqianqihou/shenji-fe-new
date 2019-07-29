@@ -1,5 +1,5 @@
 <template>
-  <el-card class="box-card">
+  <div class="box-card">
     <div v-for="(items, key) in detailProps" :key="key">
       <div class="form-set-title">{{ tagList[key] }}</div>
       <template v-for="(item, idx) in items">
@@ -13,21 +13,25 @@
           <el-col
             :span="18"
           >
-            <template v-if="item.value === 'location'">{{ formatArea(detail.location) }}</template>
-            <template v-else-if="item.value === 'qualification'">{{ formatQualification(detail.qualification) }}</template>
-            <template v-else>{{ formatVal(item.value, detail[item.value]) }}</template>
+            <span v-if="item.value === 'location'">{{ formatArea(detail.location) }}</span>
+            <span v-else-if="item.value === 'qualification'">{{ formatQualification(detail.qualification) }}</span>
+            <span v-else-if="item.type === 'datepicker'">{{ formatDate(detail[item.value]) }}</span>
+            <span v-else-if="item.value === 'organizationLabel'">{{ detail.organizationLabel }}</span>
+            <span v-else>{{ formatVal(item.value, detail[item.value]) }}</span>
           </el-col>
         </el-row>
       </template>
     </div>
-  </el-card>
+  </div>
 </template>
 
 <script>
 import { getInfo } from '@/api/user'
+import { getOrgListByType } from '@/api/org'
 import { tagList, props } from '../config'
 import { isArray, parseTime } from '@/utils/index'
 import { CodeToText } from 'element-china-area-data'
+import { parse } from 'path';
 
 export default {
   data() {
@@ -35,7 +39,9 @@ export default {
       detail: {},
       detailProps: props,
       tagList: tagList,
-      selectConfig: this.$store.getters.userSelectConfig
+      selectConfig: this.$store.getters.userSelectConfig,
+      organizationList: [],
+      departmentList: []
     }
   },
   created() {
@@ -45,6 +51,7 @@ export default {
     queryDetail() {
       getInfo().then(res => {
         this.detail = res.data
+        this.queryOrgListByType()
         const certificateNo = this.detail.cardid
         this.certificateNoParse(
           certificateNo,
@@ -52,6 +59,41 @@ export default {
           certificateNo.length === 15 ? 2 : 4
         )
       })
+    },
+    queryOrgListByType() {
+      const {
+        detail: { type }
+      } = this
+      getOrgListByType({
+        type
+      }).then(res => {
+        this.organizationList = res.data || []
+        if (this.detail.organization) {
+          this.detail.organization = +this.detail.organization
+          this.changeOrgLabel()
+        }
+      })
+    },
+    changeOrgLabel() {
+      const {
+        detail: { organization }
+      } = this
+      const item = this.organizationList.find(
+        row => row.id === +organization
+      )
+      this.$set(this.detail, 'organizationLabel', item['name'])
+      this.departmentList =
+        item.partment.map(row => {
+          return {
+            id: Object.keys(row)[0],
+            name: Object.values(row)[0]
+          }
+        }) || []
+
+      if (this.detail.department) {
+        const row = this.departmentList.find(row => row.id === this.detail.department)
+        this.$set(this.detail, 'departmentLabel', row['name'])
+      }
     },
     certificateNoParse(certificateNo, idxSexStart, birthYearSpan) {
       const year =
@@ -93,6 +135,9 @@ export default {
         return fv
       }
       return '-'
+    },
+    formatDate(val) {
+      return val ? parseTime(val * 1000, '{y}-{m}-{d}') : val
     },
     formatArea(val) {
       if (!val) return

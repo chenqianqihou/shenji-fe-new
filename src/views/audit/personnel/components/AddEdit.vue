@@ -1,7 +1,7 @@
 <template>
   <el-card class="box-card">
     <div slot="header" class="clearfix">
-      <span>{{ $route.params.id ? '编辑' : '新建' }}人员</span>
+      <span>{{ isEdit ? '编辑' : '新建' }}人员</span>
     </div>
     <el-form ref="personnelForm" :model="form" label-width="120px">
       <div v-for="(items, key) in formProps" :key="key">
@@ -12,26 +12,25 @@
               v-if="!!item.canplus && (+form[item.depend] === item.force || (item.not && form[item.depend] && +form[item.depend] !== item.not))"
             >
               <el-form-item
-                v-for="(dd, index) in form[item.value]"
-                :key="index"
-                :label="index === 0 ? item.label : ''"
-                :prop="item.value"
+                v-for="(dd, idex) in form[item.value]"
+                :key="idex"
+                :label="idex === 0 ? item.label : ''"
               >
                 <div class="form-plus">
                   <template v-if="item.value === 'qualification'">
-                    <el-input v-model="form[item.value][index].info" placeholder="专业技术资质" />
+                    <el-input v-model="form[item.value][idex].info" placeholder="专业技术资质" />
                     <el-date-picker
-                      v-model="form[item.value][index].time"
+                      v-model="form[item.value][idex].time"
                       type="month"
                       value-format="timestamp"
                       placeholder="获取专业技术资质日期"
                     />
                   </template>
                   <template v-else>
-                    <el-input v-model="form[item.value][index]" />
+                    <el-input v-model="form[item.value][idex]" />
                   </template>
-                  <el-button v-if="index === 0" @click="handleAddTrain(item.value)">添加</el-button>
-                  <el-button v-else @click="handleDeleteTrain(item.value, index)">删除</el-button>
+                  <el-button v-if="idex === 0" @click="handleAddTrain(item.value)">添加</el-button>
+                  <el-button v-else @click="handleDeleteTrain(item.value, idex)">删除</el-button>
                 </div>
               </el-form-item>
             </template>
@@ -55,6 +54,7 @@
                 v-else-if="item.type === 'combobox'"
                 v-model="form[item.value]"
                 class="full-width"
+                :disabled="item.value === 'type' && !!isEdit"
                 :multiple="item.multi || false"
                 :collapse-tags="true"
                 @change="handleChange(item.value)"
@@ -145,6 +145,11 @@ export default {
       this.queryDetail()
     }
   },
+  computed: {
+    isEdit() {
+      return this.$route.params.id
+    }
+  },
   methods: {
     queryDetail() {
       getUserDetail({
@@ -157,10 +162,10 @@ export default {
         })
         const props = this.mixProps()
         this.form = Object.assign({}, this.form, res.data, { location })
+        if (this.form.workbegin) {
+          this.form.workbegin *= 1000
+        }
         if (+this.form.type === 3) {
-          if (this.form.workbegin) {
-            this.form.workbegin *= 1000
-          }
           if (this.form.auditbegin) {
             this.form.auditbegin *= 1000
           }
@@ -175,7 +180,7 @@ export default {
               }
             })
           } else {
-            this.form.qualification.push(qualiArray)
+            this.form.qualification.push(Array.from(qualiArray))
           }
         }
         this.queryOrgListByType()
@@ -205,7 +210,7 @@ export default {
         this.formProps.job.forEach(row => {
           if (row.canplus) {
             if (row.value === 'qualification') {
-              this.form[row.value] = qualiArray
+              this.$set(this.form, row.value, Array.from(qualiArray))
             } else {
               this.form[row.value] = ['']
             }
@@ -299,6 +304,11 @@ export default {
             //   form[row.value] = form[row.value].join()
             // }
             if (form.type !== 3) {
+              form.role = [8] // 非审计机关默认审计组员
+              if (row.value === 'position2') {
+                form.position = form.position2
+                delete form.position2
+              }
               delete form.train
             } else {
               delete form.qualification

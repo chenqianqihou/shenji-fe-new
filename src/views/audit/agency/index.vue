@@ -76,7 +76,6 @@
             {{ selectConfig.type[row.otype] }}
           </template>
         </el-table-column>
-        <el-table-column label="注册地址" align="center" prop="regaddress" />
         <el-table-column label="注册时间" align="center" prop="regtime">
           <template slot-scope="{row}">
             {{ parseDate(row.regtime) }}

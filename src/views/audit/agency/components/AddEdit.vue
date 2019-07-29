@@ -1,7 +1,7 @@
 <template>
   <el-card class="box-card">
     <div slot="header" class="clearfix">
-      <span>{{ $route.params.id ? '编辑' : '新建' }}机构</span>
+      <span>{{ isEdit ? '编辑' : '新建' }}机构</span>
     </div>
     <el-form ref="agencyForm" :model="form" status-icon>
       <div v-for="(items, key) in formProps" :key="key">
@@ -37,6 +37,7 @@
                 v-if="item.type === 'combobox'"
                 v-model="form[item.value]"
                 class="full-width"
+                :disabled="isEdit && item.value === 'otype'"
                 :multiple="item.multi || false"
                 :collapse-tags="true"
               >
@@ -100,6 +101,11 @@ export default {
     this.initData()
     if (this.$route.params.id) {
       this.queryDetail()
+    }
+  },
+  computed: {
+    isEdit () {
+      return this.$route.params.id
     }
   },
   methods: {

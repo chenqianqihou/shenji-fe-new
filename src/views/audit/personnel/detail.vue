@@ -5,9 +5,20 @@
     </div>
     <div v-for="(items, key) in detailProps" :key="key">
       <div class="form-set-title">{{ tagList[key] }}</div>
+      <el-row
+        :gutter="20"
+        class="row-class"
+      >
+        <el-col style="width: 200px;">人员ID</el-col>
+        <el-col
+          :span="18"
+        >
+          <span>{{ detail.pid }}</span>
+        </el-col>
+      </el-row>
       <template v-for="(item, idx) in items">
         <el-row
-          v-if="!item.depend || (detail.type === 3 && item.force === 3) || (detail.type !== 3 && item.not === 3)"
+          v-if="!item.depend || (+detail.type === 3 && item.force === 3) || (+detail.type !== 3 && item.not === 3)"
           :key="idx"
           :gutter="20"
           class="row-class"
@@ -16,9 +27,10 @@
           <el-col
             :span="18"
           >
-            <template v-if="item.value === 'location'">{{ formatArea(detail.location) }}</template>
-            <template v-else-if="item.value === 'qualification'">{{ formatQualification(detail.qualification) }}</template>
-            <template v-else>{{ formatVal(item.value, detail[item.value]) }}</template>
+            <span v-if="item.value === 'location'">{{ formatArea(detail.location) }}</span>
+            <span v-else-if="item.value === 'qualification'">{{ formatQualification(detail.qualification) }}</span>
+            <span v-else-if="item.type === 'datepicker'">{{ formatDate(detail[item.value]) }}</span>
+            <span v-else>{{ formatVal(item.value, detail[item.value]) }}</span>
           </el-col>
         </el-row>
       </template>
@@ -28,6 +40,7 @@
 
 <script>
 import { getUserDetail } from '@/api/user'
+import { getOrgListByType } from '@/api/org'
 import { tagList, props } from './config'
 import { isArray, parseTime } from '@/utils/index'
 import { CodeToText } from 'element-china-area-data'
@@ -38,7 +51,9 @@ export default {
       detail: {},
       detailProps: props,
       tagList: tagList,
-      selectConfig: this.$store.getters.userSelectConfig
+      selectConfig: this.$store.getters.userSelectConfig,
+      organizationList: [],
+      departmentList: []
     }
   },
   created() {
@@ -50,6 +65,7 @@ export default {
         account: this.$route.params.id
       }).then(res => {
         this.detail = res.data
+        this.queryOrgListByType()
         const certificateNo = this.detail.cardid
         this.certificateNoParse(
           certificateNo,
@@ -57,6 +73,41 @@ export default {
           certificateNo.length === 15 ? 2 : 4
         )
       })
+    },
+    queryOrgListByType() {
+      const {
+        detail: { type }
+      } = this
+      getOrgListByType({
+        type
+      }).then(res => {
+        this.organizationList = res.data || []
+        if (this.detail.organization) {
+          this.detail.organization = +this.detail.organization
+          this.changeOrgLabel()
+        }
+      })
+    },
+    changeOrgLabel() {
+      const {
+        detail: { organization }
+      } = this
+      const item = this.organizationList.find(
+        row => row.id === +organization
+      )
+      this.$set(this.detail, 'organization', item['name'])
+      this.departmentList =
+        item.partment.map(row => {
+          return {
+            id: Object.keys(row)[0],
+            name: Object.values(row)[0]
+          }
+        }) || []
+
+      if (this.detail.department) {
+        const row = this.departmentList.find(row => row.id === this.detail.department)
+        this.$set(this.detail, 'department', row['name'])
+      }
     },
     certificateNoParse(certificateNo, idxSexStart, birthYearSpan) {
       const year =
@@ -86,6 +137,8 @@ export default {
           return newVal.join()
         }
         return selectConfig[key][val]
+      } else if (isArray(val)) {
+        return val.join()
       }
       return val
     },
@@ -98,6 +151,9 @@ export default {
         return fv
       }
       return '-'
+    },
+    formatDate(val) {
+      return val ? parseTime(val * 1000, '{y}-{m}-{d}') : val
     },
     formatArea(val) {
       if (!val) return

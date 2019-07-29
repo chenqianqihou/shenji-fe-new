@@ -39,7 +39,7 @@
         @node-click="handleClickNode"
       />
     </div>
-    <div style="flex: 1;margin-left: 20px;">
+    <div style="flex: 1;margin-left: 20px;overflow:auto;">
       <el-form :inline="true" class="filter-container audit-personnel-filter">
         <el-form-item label="查询条件">
           <el-input
@@ -189,7 +189,7 @@
         <el-button type="primary" @click="handleSubmitRole">确 定</el-button>
       </div>
     </el-dialog>
-    <el-dialog :title="treeNodeOpt === 'append' ? '新增节点' : '修改节点'" :visible.sync="treeOptDialog" width="500px" center @close="closeTreeDialog">
+    <el-dialog :title="treeNodeOpt === 'append' ? '新增部门' : '修改部门'" :visible.sync="treeOptDialog" width="500px" center @close="closeTreeDialog">
       <el-form ref="treeNodeForm" :model="treeNode">
         <el-form-item
           label="名称"
@@ -495,7 +495,7 @@ export default {
 .audit-personnel-container{
   display: flex;
   .audit-personnel-left {
-    width: 280px;
+    width: 240px;
     border-right: 1px solid #eeeeee;
     .tree-class{
       width: 100%;

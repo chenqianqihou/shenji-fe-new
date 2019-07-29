@@ -77,12 +77,12 @@ const props = {
     required: true,
     type: 'combobox'
   }, {
-    value: 'organization',
+    value: 'organizationLabel',
     label: '所属机构',
     required: true,
     type: 'combobox'
   }, {
-    value: 'department',
+    value: 'departmentLabel',
     label: '所属部门',
     required: true,
     type: 'combobox',

@@ -135,7 +135,7 @@ const props = {
     depend: 'type',
     force: 3
   }, {
-    value: 'position',
+    value: 'position2',
     label: '职务',
     depend: 'type',
     not: 3
@@ -172,7 +172,9 @@ const props = {
     label: '角色',
     type: 'combobox',
     multi: true,
-    required: true
+    required: true,
+    depend: 'type',
+    force: 3
   }]
 }
 
