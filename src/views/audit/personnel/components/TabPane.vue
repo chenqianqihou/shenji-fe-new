@@ -155,7 +155,7 @@
             >编辑</el-button>
             <el-button type="text" size="mini" @click="$router.push(`/audit/personnel/detail/${row.pid}`)">详情</el-button>
             <el-button type="text" size="mini" @click="handleResetPwd(row)">重置密码</el-button>
-            <el-button type="text" size="mini" @click="handleChangeRole(row)" v-if="+type === 3">分配角色</el-button>
+            <el-button v-if="+type === 3" type="text" size="mini" @click="handleChangeRole(row)">分配角色</el-button>
           </template>
         </el-table-column>
       </el-table>

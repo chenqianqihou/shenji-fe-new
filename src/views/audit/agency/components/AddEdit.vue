@@ -9,8 +9,8 @@
         <el-row v-for="(item, idx) in items" :key="idx" :gutter="20">
           <el-col :span="12">
             <el-form-item
-              class="is-required"
               v-if="item.isAddress"
+              class="is-required"
               label-width="220px"
               :label="item.label"
               :prop="item.value[0]"

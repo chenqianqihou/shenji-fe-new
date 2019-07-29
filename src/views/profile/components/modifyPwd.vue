@@ -1,29 +1,29 @@
 <template>
   <div>
-    <el-form :model="form" ref="pwdForm" label-position="top" :rules="pwdFormRules">
+    <el-form ref="pwdForm" :model="form" label-position="top" :rules="pwdFormRules">
       <el-form-item label="当前密码" prop="old">
         <el-input
           v-model="form.old"
           autocomplete="off"
           show-password
-          type="password">
-        </el-input>
+          type="password"
+        />
       </el-form-item>
       <el-form-item label="新密码" prop="new">
         <el-input
           v-model="form.new"
           autocomplete="off"
           show-password
-          type="password">
-        </el-input>
+          type="password"
+        />
       </el-form-item>
       <el-form-item label="重复密码" prop="renew">
         <el-input
           v-model="form.renew"
           autocomplete="off"
           show-password
-          type="password">
-        </el-input>
+          type="password"
+        />
       </el-form-item>
       <el-form-item>
         <el-button type="success" @click="onChangePassword">确认</el-button>
@@ -82,7 +82,7 @@ export default {
     }
   },
   methods: {
-    onChangePassword () {
+    onChangePassword() {
       const params = {
         old: this.form.old,
         new: this.form.new
