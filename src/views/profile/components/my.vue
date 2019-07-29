@@ -90,7 +90,7 @@ export default {
           }
         }) || []
 
-      if (this.detail.department) {
+      if (+this.detail.department) {
         const row = this.departmentList.find(row => row.id === this.detail.department)
         this.$set(this.detail, 'departmentLabel', row['name'])
       }
