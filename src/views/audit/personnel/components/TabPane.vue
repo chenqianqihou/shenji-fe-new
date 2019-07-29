@@ -282,26 +282,29 @@ export default {
       } else {
         optFunc = updateOrg
       }
-      optFunc(Object.assign({}, this.treeNode)).then(res => {
-        this.$message.success('操作成功')
-        const node = res.data.message
-        if (this.treeNodeOpt === 'append') {
-          if (!this.currentNodeData.list) {
-            this.$set(currentNodeData, 'list', [])
-          }
-          this.currentNodeData.list.push({
-            id: node.id,
-            name: node.name,
-            list: [],
-            type: 'child',
-            data: node
+      this.$refs['treeNodeForm'].validate((valid) => {
+        if (valid) {
+          optFunc(Object.assign({}, this.treeNode)).then(res => {
+            this.$message.success('操作成功')
+            const node = res.data.message
+            if (this.treeNodeOpt === 'append') {
+              if (!this.currentNodeData.list) {
+                this.$set(currentNodeData, 'list', [])
+              }
+              this.currentNodeData.list.push({
+                id: node.id,
+                name: node.name,
+                list: [],
+                type: 'child',
+                data: node
+              })
+            } else {
+              this.currentNodeData.name = node.name
+              this.currentNodeData.data = node
+            }
+            this.treeOptDialog = false
           })
-        } else {
-          console.log(node)
-          this.currentNodeData.name = node.name
-          this.currentNodeData.data = node
         }
-        this.treeOptDialog = false
       })
     },
     handleClickNode(node) {
@@ -322,6 +325,7 @@ export default {
       this.currentNodeData = data
       this.treeNodeOpt = 'append'
       this.treeOptDialog = true
+      this.closeTreeDialog()
     },
     editNode (ev, node, data) {
       ev.stopPropagation()
@@ -397,7 +401,7 @@ export default {
       this.roleForm.pid = row.pid
       this.roleForm.role = row.role ? row.role : []
       this.roleDialog = true
-      this.closeTreeDialog()
+      this.closeRoleDialog()
     },
     handleSubmitRole() {
       this.$refs['roleForm'].validate((valid) => {
