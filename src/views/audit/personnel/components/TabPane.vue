@@ -10,18 +10,19 @@
         highlight-current
         current-node-key="type-3"
         :expand-on-click-node="false"
-        @node-click="handleClickNode">
-        <span class="custom-tree-node" slot-scope="{ node, data }">
+        @node-click="handleClickNode"
+      >
+        <span slot-scope="{ node, data }" class="custom-tree-node">
           <span>{{ node.label }}</span>
           <span>
-            <el-tooltip class="item" effect="dark" content="新增" placement="top" v-if="data.data && +data.data.parentid === 0">
-              <el-button size='mini' type='text' icon='el-icon-circle-plus-outline' class='tree-button' @click="ev => appendNode(ev, node, data)"></el-button>
+            <el-tooltip v-if="data.data && +data.data.parentid === 0" class="item" effect="dark" content="新增" placement="top">
+              <el-button size="mini" type="text" icon="el-icon-circle-plus-outline" class="tree-button" @click="ev => appendNode(ev, node, data)" />
             </el-tooltip>
-            <el-tooltip class="item" effect="dark" content="编辑" placement="top" v-if="data.data && +data.data.parentid > 0">
-              <el-button size='mini' type='text' icon='el-icon-edit-outline' class='tree-button' @click="ev => editNode(ev, node, data)"></el-button>
+            <el-tooltip v-if="data.data && +data.data.parentid > 0" class="item" effect="dark" content="编辑" placement="top">
+              <el-button size="mini" type="text" icon="el-icon-edit-outline" class="tree-button" @click="ev => editNode(ev, node, data)" />
             </el-tooltip>
-            <el-tooltip class="item" effect="dark" content="删除" placement="top" v-if="data.data && +data.data.parentid > 0">
-              <el-button size='mini' type='text' icon='el-icon-delete' class='tree-button' @click="ev => deleteNode(ev, node, data)"></el-button>
+            <el-tooltip v-if="data.data && +data.data.parentid > 0" class="item" effect="dark" content="删除" placement="top">
+              <el-button size="mini" type="text" icon="el-icon-delete" class="tree-button" @click="ev => deleteNode(ev, node, data)" />
             </el-tooltip>
           </span>
         </span>
@@ -35,8 +36,8 @@
         highlight-current
         current-node-key="type-1"
         :expand-on-click-node="false"
-        @node-click="handleClickNode">
-      </el-tree>
+        @node-click="handleClickNode"
+      />
     </div>
     <div style="flex: 1;margin-left: 20px;">
       <el-form :inline="true" class="filter-container audit-personnel-filter">
@@ -108,10 +109,11 @@
         border
         highlight-current-row
         style="width: 100%"
-        @selection-change="handleSelectionChange">
-        <el-table-column type="selection" align="center"/>
+        @selection-change="handleSelectionChange"
+      >
+        <el-table-column type="selection" align="center" />
         <el-table-column label="姓名" align="center" prop="name" />
-        <el-table-column label="人员ID" prop="pid" align="center" width="200"/>
+        <el-table-column label="人员ID" prop="pid" align="center" width="200" />
         <el-table-column label="性别" align="center" prop="sex">
           <template slot-scope="{row}">
             {{ selectConfig.sex[row.sex] }}
@@ -152,8 +154,8 @@
               @click="$router.push(`/audit/personnel/edit/${row.pid}`)"
             >编辑</el-button>
             <el-button type="text" size="mini" @click="$router.push(`/audit/personnel/detail/${row.pid}`)">详情</el-button>
-            <el-button type="text" size="mini">重置密码</el-button>
-            <el-button type="text" size="mini" @click="handleChangeRole(row)">分配角色</el-button>
+            <el-button type="text" size="mini" @click="handleResetPwd(row)">重置密码</el-button>
+            <el-button v-if="+type === 3" type="text" size="mini" @click="handleChangeRole(row)">分配角色</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -166,8 +168,8 @@
         @pagination="getList"
       />
     </div>
-    <el-dialog title="分配角色" :visible.sync="roleDialog" width="500px" @close="closeRoleDialog" center>
-      <el-form :model="roleForm" ref="roleForm">
+    <el-dialog title="分配角色" :visible.sync="roleDialog" width="500px" center @close="closeRoleDialog">
+      <el-form ref="roleForm" :model="roleForm">
         <el-form-item
           label="角色"
           label-width="100px"
@@ -175,9 +177,10 @@
           :rules="[{
             required: true,
             message: '请选择角色'
-          }]">
+          }]"
+        >
           <el-select v-model="roleForm.role" placeholder="请选择角色" collapse-tags multiple class="full-width">
-            <el-option :key="idx" :label="v" :value="k" v-for="(v, k, idx) in selectConfig.role"></el-option>
+            <el-option v-for="(v, k, idx) in selectConfig.role" :key="idx" :label="v" :value="k" />
           </el-select>
         </el-form-item>
       </el-form>
@@ -186,8 +189,8 @@
         <el-button type="primary" @click="handleSubmitRole">确 定</el-button>
       </div>
     </el-dialog>
-    <el-dialog :title="treeNodeOpt === 'append' ? '新增节点' : '修改节点'" :visible.sync="treeOptDialog" width="500px" @close="closeTreeDialog" center>
-      <el-form :model="treeNode" ref="treeNodeForm">
+    <el-dialog :title="treeNodeOpt === 'append' ? '新增节点' : '修改节点'" :visible.sync="treeOptDialog" width="500px" center @close="closeTreeDialog">
+      <el-form ref="treeNodeForm" :model="treeNode">
         <el-form-item
           label="名称"
           label-width="100px"
@@ -195,8 +198,9 @@
           :rules="[{
             required: true,
             message: '请输入名称'
-          }]">
-          <el-input v-model="treeNode.name" placeholder="请输入名称"></el-input>
+          }]"
+        >
+          <el-input v-model="treeNode.name" placeholder="请输入名称" />
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -208,7 +212,7 @@
 </template>
 
 <script>
-import { fetchList, deleteUser, updateUserRole } from '@/api/user'
+import { fetchList, deleteUser, updateUserRole, resetPwd } from '@/api/user'
 import { getOrgTree, createByName, updateOrg, deleteOrg } from '@/api/org'
 import waves from '@/directive/waves' // waves directive
 import { parseTime } from '@/utils'
@@ -265,16 +269,30 @@ export default {
       treeOptDialog: false
     }
   },
-  created() {
-    this.queryOrgTree()
-    this.getList()
-  },
   watch: {
     type(newVal) {
       this.getList()
     }
   },
+  created() {
+    this.queryOrgTree()
+    this.getList()
+  },
   methods: {
+    handleResetPwd(row) {
+      this.$confirm('确定要重置此用户密码吗?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning',
+        center: true
+      }).then(() => {
+        resetPwd({
+          pid: row.pid
+        }).then(res => {
+          this.$message.success('重置成功')
+        })
+      })
+    },
     handleEditNode() {
       let optFunc
       if (this.treeNodeOpt === 'append') {
@@ -309,13 +327,13 @@ export default {
     },
     handleClickNode(node) {
       if (node.type) {
-        this.listQuery.type = +node.type  
+        this.listQuery.type = +node.type
       } else {
         this.listQuery.organid = +node.id
       }
       this.getList()
     },
-    appendNode (ev, node, data) {
+    appendNode(ev, node, data) {
       ev.stopPropagation()
       this.treeNode = {
         pid: data.id,
@@ -327,7 +345,7 @@ export default {
       this.treeOptDialog = true
       this.closeTreeDialog()
     },
-    editNode (ev, node, data) {
+    editNode(ev, node, data) {
       ev.stopPropagation()
       this.treeNode = Object.assign({}, data.data, {
         oid: data.id
@@ -337,7 +355,7 @@ export default {
       this.treeNodeOpt = 'edit'
       this.treeOptDialog = true
     },
-    deleteNode (ev, node, data) {
+    deleteNode(ev, node, data) {
       ev.stopPropagation()
       this.currentNode = node
       this.$confirm('此操作将永久删除, 是否继续?', '提示', {
@@ -352,7 +370,7 @@ export default {
           this.$message.success('删除成功!')
           const parent = this.currentNode.parent
           const children = parent.data.list || parent.data
-          const index = children.findIndex(d => d.id === data.id);
+          const index = children.findIndex(d => d.id === data.id)
           children.splice(index, 1)
         })
       })
@@ -365,7 +383,8 @@ export default {
           row.id = 'type-' + row.type
         })
         if (+this.type === 3) {
-          this.treeData = res.data.filter(row => +row.type === +this.type)
+          const data = res.data.filter(row => +row.type === +this.type)
+          this.treeData = data[0].list || data
         } else {
           this.treeData = res.data.filter(row => +row.type !== 3)
         }

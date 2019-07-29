@@ -1,7 +1,7 @@
 /**
  * Created by mamtou 07/27/19
  */
-let _toString = Object.prototype.toString
+const _toString = Object.prototype.toString
 export const isArray = (obj) => {
   return _toString.call(obj) === '[object Array]'
 }

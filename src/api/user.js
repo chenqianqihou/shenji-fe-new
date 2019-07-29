@@ -1,5 +1,6 @@
 import request from '@/utils/request'
 
+// 登陆
 export function login(data) {
   return request({
     url: '/user/login',
@@ -8,14 +9,15 @@ export function login(data) {
   })
 }
 
-export function getInfo(token) {
+// 获取当前登陆用户信息
+export function getInfo() {
   return request({
-    url: '/user/info',
-    method: 'get',
-    params: { token }
+    url: '/user/my',
+    method: 'get'
   })
 }
 
+// 注销
 export function logout() {
   return request({
     url: '/user/logout',
@@ -23,6 +25,7 @@ export function logout() {
   })
 }
 
+// 获取用户列表
 export function fetchList(data) {
   return request({
     url: '/user/list',
@@ -31,6 +34,7 @@ export function fetchList(data) {
   })
 }
 
+// 获取配置信息
 export function getUserConfig() {
   return request({
     url: '/user/selectconfig',
@@ -38,6 +42,7 @@ export function getUserConfig() {
   })
 }
 
+// 删除用户
 export function deleteUser(data) {
   return request({
     url: '/user/delete',
@@ -46,6 +51,7 @@ export function deleteUser(data) {
   })
 }
 
+// 创建用户
 export function createUser(data) {
   return request({
     url: '/user/add',
@@ -54,6 +60,7 @@ export function createUser(data) {
   })
 }
 
+// 更新用户信息
 export function updateUser(data) {
   return request({
     url: '/user/update',
@@ -62,6 +69,7 @@ export function updateUser(data) {
   })
 }
 
+// 更新用户角色
 export function updateUserRole(data) {
   return request({
     url: '/user/updaterole',
@@ -70,9 +78,28 @@ export function updateUserRole(data) {
   })
 }
 
+// 获取用户信息
 export function getUserDetail(data) {
   return request({
     url: '/user/info',
+    method: 'post',
+    data
+  })
+}
+
+// 重置密码
+export function resetPwd(data) {
+  return request({
+    url: '/user/pwdreset',
+    method: 'post',
+    data
+  })
+}
+
+// 修改当前用户密码
+export function changePwd(data) {
+  return request({
+    url: '/user/pwdupdate',
     method: 'post',
     data
   })

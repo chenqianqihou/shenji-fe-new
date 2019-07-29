@@ -1,5 +1,5 @@
 <template>
-  <add-edit></add-edit>
+  <add-edit />
 </template>
 
 <script>
