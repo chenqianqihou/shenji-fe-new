@@ -1,8 +1,5 @@
 <template>
   <el-card class="box-card">
-    <div slot="header" class="clearfix">
-      <span>人员信息</span>
-    </div>
     <div v-for="(items, key) in detailProps" :key="key">
       <div class="form-set-title">{{ tagList[key] }}</div>
       <template v-for="(item, idx) in items">
@@ -27,8 +24,8 @@
 </template>
 
 <script>
-import { getUserDetail } from '@/api/user'
-import { tagList, props } from './config'
+import { getInfo } from '@/api/user'
+import { tagList, props } from '../config'
 import { isArray, parseTime } from '@/utils/index'
 import { CodeToText } from 'element-china-area-data'
 
@@ -46,9 +43,7 @@ export default {
   },
   methods: {
     queryDetail() {
-      getUserDetail({
-        account: this.$route.params.id
-      }).then(res => {
+      getInfo().then(res => {
         this.detail = res.data
         const certificateNo = this.detail.cardid
         this.certificateNoParse(

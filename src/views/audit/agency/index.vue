@@ -67,15 +67,16 @@
         border
         highlight-current-row
         style="width: 100%"
-        @selection-change="handleSelectionChange">
-        <el-table-column type="selection" align="center"/>
+        @selection-change="handleSelectionChange"
+      >
+        <el-table-column type="selection" align="center" />
         <el-table-column label="机构名称" align="center" prop="name" />
         <el-table-column label="机构类型" prop="otype" align="center" width="200">
           <template slot-scope="{row}">
             {{ selectConfig.type[row.otype] }}
           </template>
         </el-table-column>
-        <el-table-column label="注册地址" align="center" prop="regaddress"></el-table-column>
+        <el-table-column label="注册地址" align="center" prop="regaddress" />
         <el-table-column label="注册时间" align="center" prop="regtime">
           <template slot-scope="{row}">
             {{ parseDate(row.regtime) }}

@@ -6,29 +6,29 @@
     <el-form ref="personnelForm" :model="form" label-width="120px">
       <div v-for="(items, key) in formProps" :key="key">
         <div class="form-set-title">{{ tagObj[key] }}</div>
-        <el-row :gutter="20" v-for="(item, idx) in items" :key="idx">
+        <el-row v-for="(item, idx) in items" :key="idx" :gutter="20">
           <el-col :span="12">
             <template
               v-if="!!item.canplus && (+form[item.depend] === item.force || (item.not && form[item.depend] && +form[item.depend] !== item.not))"
             >
               <el-form-item
                 v-for="(dd, index) in form[item.value]"
-                :label="index === 0 ? item.label : ''"
                 :key="index"
+                :label="index === 0 ? item.label : ''"
                 :prop="item.value"
               >
                 <div class="form-plus">
                   <template v-if="item.value === 'qualification'">
-                    <el-input v-model="form[item.value][index].info" placeholder="专业技术资质"></el-input>
+                    <el-input v-model="form[item.value][index].info" placeholder="专业技术资质" />
                     <el-date-picker
                       v-model="form[item.value][index].time"
                       type="month"
                       value-format="timestamp"
                       placeholder="获取专业技术资质日期"
-                    ></el-date-picker>
+                    />
                   </template>
                   <template v-else>
-                    <el-input v-model="form[item.value][index]"></el-input>
+                    <el-input v-model="form[item.value][index]" />
                   </template>
                   <el-button v-if="index === 0" @click="handleAddTrain(item.value)">添加</el-button>
                   <el-button v-else @click="handleDeleteTrain(item.value, index)">删除</el-button>
@@ -36,62 +36,62 @@
               </el-form-item>
             </template>
             <el-form-item
+              v-else-if="!item.depend || +form[item.depend] === item.force || (item.not && form[item.depend] && +form[item.depend] !== item.not)"
               :label="item.label"
               :prop="item.value"
-              v-else-if="!item.depend || +form[item.depend] === item.force || (item.not && form[item.depend] && +form[item.depend] !== item.not)"
               :rules="[{
-              required: !!item.required,
-              message: (!item.type ? '请输入' : '请选择') + item.label
-            }].concat(item.validator ? item.validator : [])"
+                required: !!item.required,
+                message: (!item.type ? '请输入' : '请选择') + item.label
+              }].concat(item.validator ? item.validator : [])"
             >
               <el-cascader
+                v-if="item.value === 'location'"
+                v-model="form.location"
                 :props="{ checkStrictly: true }"
                 class="full-width"
                 :options="districts"
-                v-model="form.location"
-                v-if="item.value === 'location'"
-              ></el-cascader>
+              />
               <el-select
-                class="full-width"
                 v-else-if="item.type === 'combobox'"
-                :multiple="item.multi || false"
                 v-model="form[item.value]"
+                class="full-width"
+                :multiple="item.multi || false"
                 :collapse-tags="true"
                 @change="handleChange(item.value)"
               >
                 <template v-if="selectConfig[item.value]">
                   <el-option
                     v-for="(v, k, idx) in selectConfig[item.value]"
+                    :key="idx"
                     :value="k"
                     :label="v"
-                    :key="idx"
-                  ></el-option>
+                  />
                 </template>
                 <template v-else>
                   <el-option
                     v-for="(v, idx) in options[`${item.value}List`]"
+                    :key="idx"
                     :value="v.id"
                     :label="v.name"
-                    :key="idx"
-                  ></el-option>
+                  />
                 </template>
               </el-select>
               <el-date-picker
-                class="full-width"
                 v-else-if="item.type === 'datepicker'"
                 v-model="form[item.value]"
+                class="full-width"
                 type="month"
                 value-format="timestamp"
                 placeholder="选择月"
-              ></el-date-picker>
+              />
               <el-input
-                v-model="form[item.value]"
                 v-else-if="['achievements', 'comment'].includes(item.value)"
+                v-model="form[item.value]"
                 maxlength="200"
                 show-word-limit
-              ></el-input>
-              <el-input v-model="readonly[item.value]" readonly v-else-if="!!item.readonly"></el-input>
-              <el-input v-model="form[item.value]" v-else @change="handleChangeInput(item.value)"></el-input>
+              />
+              <el-input v-else-if="!!item.readonly" v-model="readonly[item.value]" readonly />
+              <el-input v-else v-model="form[item.value]" @change="handleChangeInput(item.value)" />
             </el-form-item>
           </el-col>
         </el-row>
@@ -201,7 +201,7 @@ export default {
           this.form.organization = ''
         }
         this.formProps.job.forEach(row => {
-          if (!!row.canplus) {
+          if (row.canplus) {
             if (row.value === 'qualification') {
               this.form[row.value] = qualiArray
             } else {
@@ -230,7 +230,7 @@ export default {
               name: Object.values(row)[0]
             }
           }) || []
-        
+
         if (this.form.department) {
           this.form.department = String(this.form.department)
         }
@@ -301,7 +301,7 @@ export default {
             } else {
               delete form.qualification
             }
-            if (!!row.isToString) {
+            if (row.isToString) {
               form[row.value] = form[row.value].join()
             }
             if (row.value === 'qualification' && form.qualification) {

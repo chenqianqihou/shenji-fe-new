@@ -159,20 +159,8 @@ const props = {
     depend: 'type',
     not: 3
   }, {
-    value: 'achievements',
-    label: '近三年工作业绩',
-    depend: 'type',
-    not: 3
-  }],
-  other: [{
     value: 'comment',
     label: '备注'
-  }, {
-    value: 'role',
-    label: '角色',
-    type: 'combobox',
-    multi: true,
-    required: true
   }]
 }
 

@@ -6,55 +6,57 @@
     <el-form ref="agencyForm" :model="form" status-icon>
       <div v-for="(items, key) in formProps" :key="key">
         <div class="form-set-title">{{ tagObj[key] }}</div>
-        <el-row :gutter="20" v-for="(item, idx) in items" :key="idx">
+        <el-row v-for="(item, idx) in items" :key="idx" :gutter="20">
           <el-col :span="12">
             <el-form-item
+              class="is-required"
+              v-if="item.isAddress"
               label-width="220px"
               :label="item.label"
               :prop="item.value[0]"
-              v-if="item.isAddress"
-              :rules="[{ validator: validateAddress, trigger: 'blur' }]">
+              :rules="[{ validator: validateAddress, trigger: 'blur' }]"
+            >
               <el-cascader
+                v-model="form[item.value[0]]"
                 class="full-width cascader"
                 :options="districts"
-                v-model="form[item.value[0]]"
-              ></el-cascader>
-              <el-input v-model="form[item.value[1]]"></el-input>
+              />
+              <el-input v-model="form[item.value[1]]" />
             </el-form-item>
             <el-form-item
+              v-if="!item.isAddress"
               label-width="220px"
               :label="item.label"
               :prop="item.value"
-              v-if="!item.isAddress"
               :rules="[{
                 required: !!item.required,
                 message: (!item.type ? '请输入' : '请选择') + item.label
               }].concat(item.validator ? item.validator : [])"
             >
               <el-select
-                class="full-width"
                 v-if="item.type === 'combobox'"
-                :multiple="item.multi || false"
                 v-model="form[item.value]"
+                class="full-width"
+                :multiple="item.multi || false"
                 :collapse-tags="true"
               >
                 <el-option
                   v-for="(v, idx) in options[`${item.value}List`]"
+                  :key="idx"
                   :value="v.value"
                   :label="v.label"
-                  :key="idx"
-                ></el-option>
+                />
               </el-select>
               <el-date-picker
-                class="full-width"
                 v-else-if="item.type === 'datepicker'"
                 v-model="form[item.value]"
+                class="full-width"
                 value-format="timestamp"
                 placeholder="请选择"
-              ></el-date-picker>
-              <el-input-number v-else-if="item.type === 'inputnumber'" v-model="form[item.value]" controls-position="right" :min="1" @change="handleChangeNum(item.value, item.depend)"></el-input-number>
-              <el-input v-else-if="!!item.sum" readonly v-model="form[item.value]"></el-input>
-              <el-input v-else v-model="form[item.value]" :type="item.type==='number' ? 'number' : 'text'"></el-input>
+              />
+              <el-input-number v-else-if="item.type === 'inputnumber'" v-model="form[item.value]" controls-position="right" :min="0" @change="handleChangeNum(item.value, item.depend)" />
+              <el-input v-else-if="!!item.sum" v-model="form[item.value]" readonly />
+              <el-input v-else v-model="form[item.value]" :type="item.type==='number' ? 'number' : 'text'" />
             </el-form-item>
           </el-col>
         </el-row>
@@ -92,6 +94,12 @@ export default {
           label: '未审核'
         }]
       }
+    }
+  },
+  created() {
+    this.initData()
+    if (this.$route.params.id) {
+      this.queryDetail()
     }
   },
   methods: {
@@ -176,7 +184,7 @@ export default {
     },
     initData() {
       const props = this.mixProps()
-      const { selectConfig: { type } } = this
+      const { selectConfig: { type }} = this
       props.forEach(row => {
         if (row.isAddress) {
           this.form[row.value[0]] = ''
@@ -192,13 +200,7 @@ export default {
             label: type[key]
           })
         }
-      }) 
-    }
-  },
-  created() {
-    this.initData()
-    if (this.$route.params.id) {
-      this.queryDetail()
+      })
     }
   }
 }

@@ -1,7 +1,7 @@
 <template>
   <el-card class="box-card">
     <div slot="header" class="clearfix">
-      <span>人员信息</span>
+      <span>机构信息</span>
     </div>
     <div v-for="(items, key) in detailProps" :key="key">
       <div class="form-set-title">{{ tagList[key] }}</div>
@@ -74,7 +74,7 @@ export default {
     formatVal(key, val) {
       const { options } = this
       if (options[`${key}List`] && val) {
-        let row = options[`${key}List`].find(r => r.value === +val)
+        const row = options[`${key}List`].find(r => r.value === +val)
         return row.label || val
       }
       return val
@@ -104,7 +104,7 @@ export default {
     },
     initData() {
       const props = this.mixProps()
-      const { selectConfig: { type } } = this
+      const { selectConfig: { type }} = this
       Object.keys(type).forEach(key => {
         if (+key !== 3) {
           this.options.otypeList.push({
@@ -112,7 +112,7 @@ export default {
             label: type[key]
           })
         }
-      }) 
+      })
     }
   }
 }
