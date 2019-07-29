@@ -124,7 +124,9 @@ export default {
     return {
       tagObj: tagList,
       formProps: props,
-      form: {},
+      form: {
+        role: []
+      },
       readonly: {
         birthday: '',
         age: ''
@@ -345,7 +347,7 @@ export default {
     initData() {
       const props = this.mixProps()
       props.forEach(row => {
-        if (row.multi && !row.depend) {
+        if (row.multi && !row.depend && row.value !== 'role') {
           this.form[row.value] = []
         }
       })

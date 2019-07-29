@@ -99,7 +99,7 @@ export function resetPwd(data) {
 // 修改当前用户密码
 export function changePwd(data) {
   return request({
-    url: '/user/pwd',
+    url: '/user/pwdupdate',
     method: 'post',
     data
   })
