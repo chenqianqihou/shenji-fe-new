@@ -1,6 +1,10 @@
 /**
- * Created by PanJiaChen on 16/11/18.
+ * Created by mamtou 07/27/19
  */
+let _toString = Object.prototype.toString
+export const isArray = (obj) => {
+  return _toString.call(obj) === '[object Array]'
+}
 
 /**
  * Parse the time to string

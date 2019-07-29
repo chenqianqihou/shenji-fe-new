@@ -45,3 +45,35 @@ export function deleteUser(data) {
     data
   })
 }
+
+export function createUser(data) {
+  return request({
+    url: '/user/add',
+    method: 'post',
+    data
+  })
+}
+
+export function updateUser(data) {
+  return request({
+    url: '/user/update',
+    method: 'post',
+    data
+  })
+}
+
+export function updateUserRole(data) {
+  return request({
+    url: '/user/updaterole',
+    method: 'post',
+    data
+  })
+}
+
+export function getUserDetail(data) {
+  return request({
+    url: '/user/info',
+    method: 'post',
+    data
+  })
+}

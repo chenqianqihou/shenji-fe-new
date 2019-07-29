@@ -84,7 +84,7 @@ export const constantRoutes = [
     alwaysShow: true, // will always show the root menu
     name: 'Audit',
     meta: {
-      title: '审计管理',
+      title: '配置管理',
       icon: 'lock',
       noCache: true
     },
@@ -103,7 +103,67 @@ export const constantRoutes = [
         component: () => import('@/views/audit/personnel/create'),
         name: 'auditPersonnelCreate',
         meta: {
-          title: '新建人员'
+          title: '新建人员',
+          noCache: true
+        },
+        hidden: true
+      },
+      {
+        path: 'personnel/detail/:id',
+        component: () => import('@/views/audit/personnel/detail'),
+        name: 'auditPersonnelDetail',
+        meta: {
+          title: '人员信息',
+          noCache: true
+        },
+        hidden: true
+      },
+      {
+        path: 'personnel/edit/:id',
+        component: () => import('@/views/audit/personnel/edit'),
+        name: 'auditPersonnelEdit',
+        meta: {
+          title: '编辑人员',
+          noCache: true
+        },
+        hidden: true
+      },
+      {
+        path: 'agency',
+        component: () => import('@/views/audit/agency/index'),
+        name: 'auditAgency',
+        meta: {
+          title: '机构管理',
+          noCache: true
+        }
+      },
+      {
+        path: 'agency/create',
+        component: () => import('@/views/audit/agency/create'),
+        name: 'auditAgencyCreate',
+        meta: {
+          title: '新建机构',
+          noCache: true
+        },
+        hidden: true
+      },
+      {
+        path: 'agency/detail/:id',
+        component: () => import('@/views/audit/agency/detail'),
+        name: 'auditAgencyDetail',
+        meta: {
+          title: '机构信息',
+          noCache: true
+        },
+        hidden: true
+      },
+      {
+        path: 'agency/edit/:id',
+        component: () => import('@/views/audit/agency/edit'),
+        name: 'auditAgencyEdit',
+        meta: {
+          title: '编辑机构',
+          noCache: true
         },
         hidden: true
       }
@@ -122,7 +182,8 @@ export const constantRoutes = [
         meta: { title: 'Profile', icon: 'user', noCache: true }
       }
     ]
-  }
+  },
+  { path: '*', redirect: '/404', hidden: true }
 ]
 
 /**
@@ -131,7 +192,6 @@ export const constantRoutes = [
  */
 export const asyncRoutes = [
   // 404 page must be placed at the end !!!
-  { path: '*', redirect: '/404', hidden: true }
 ]
 
 const createRouter = () => new Router({
