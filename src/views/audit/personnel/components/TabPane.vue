@@ -307,7 +307,7 @@ export default {
             const node = res.data.message
             if (this.treeNodeOpt === 'append') {
               if (!this.currentNodeData.list) {
-                this.$set(currentNodeData, 'list', [])
+                this.$set(this.currentNodeData, 'list', [])
               }
               this.currentNodeData.list.push({
                 id: node.id,
@@ -414,7 +414,8 @@ export default {
       this.getList()
     },
     handleResetFilter() {
-      this.listQuery = Object.assign({}, queryString)
+      this.listQuery.query = ''
+      this.listQuery.status = ''
       this.getList()
     },
     handleSelectionChange(rows) {

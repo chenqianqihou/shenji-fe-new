@@ -42,8 +42,8 @@
                 :collapse-tags="true"
               >
                 <el-option
-                  v-for="(v, idx) in options[`${item.value}List`]"
-                  :key="idx"
+                  v-for="(v, index) in options[`${item.value}List`]"
+                  :key="index"
                   :value="v.value"
                   :label="v.label"
                 />
@@ -73,7 +73,7 @@
 <script>
 import { createOrg, updateOrg, getOrgDetail } from '@/api/org'
 import { tagList, props } from '../config'
-import { isArray } from '@/utils/index'
+// import { isArray } from '@/utils/index'
 import { regionData } from 'element-china-area-data'
 
 export default {
@@ -97,15 +97,15 @@ export default {
       }
     }
   },
+  computed: {
+    isEdit() {
+      return this.$route.params.id
+    }
+  },
   created() {
     this.initData()
     if (this.$route.params.id) {
       this.queryDetail()
-    }
-  },
-  computed: {
-    isEdit () {
-      return this.$route.params.id
     }
   },
   methods: {

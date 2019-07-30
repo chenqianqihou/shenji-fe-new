@@ -6,8 +6,8 @@
     <div v-for="(items, key) in detailProps" :key="key">
       <div class="form-set-title">{{ tagList[key] }}</div>
       <el-row
-        :gutter="20"
         v-if="key === 'base'"
+        :gutter="20"
         class="row-class"
       >
         <el-col style="width: 200px;">人员ID</el-col>

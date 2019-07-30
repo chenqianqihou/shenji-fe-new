@@ -61,16 +61,16 @@
               >
                 <template v-if="selectConfig[item.value]">
                   <el-option
-                    v-for="(v, k, idx) in selectConfig[item.value]"
-                    :key="idx"
+                    v-for="(v, k, indx) in selectConfig[item.value]"
+                    :key="indx"
                     :value="k"
                     :label="v"
                   />
                 </template>
                 <template v-else>
                   <el-option
-                    v-for="(v, idx) in options[`${item.value}List`]"
-                    :key="idx"
+                    v-for="(v, index) in options[`${item.value}List`]"
+                    :key="index"
                     :value="v.id"
                     :label="v.name"
                   />
@@ -108,7 +108,7 @@
 import { getOrgListByType } from '@/api/org'
 import { createUser, getUserDetail, updateUser } from '@/api/user'
 import { tagList, props } from '../config'
-import { isArray } from '@/utils/index'
+// import { isArray } from '@/utils/index'
 import { regionData } from 'element-china-area-data'
 
 const qualiArray = [
@@ -139,15 +139,15 @@ export default {
       }
     }
   },
+  computed: {
+    isEdit() {
+      return this.$route.params.id
+    }
+  },
   mounted() {
     this.initData()
     if (this.$route.params.id) {
       this.queryDetail()
-    }
-  },
-  computed: {
-    isEdit() {
-      return this.$route.params.id
     }
   },
   methods: {
@@ -160,7 +160,6 @@ export default {
         sourceLocation.forEach(row => {
           location.push(row)
         })
-        const props = this.mixProps()
         this.form = Object.assign({}, this.form, res.data, { location })
         if (this.form.workbegin) {
           this.form.workbegin *= 1000
@@ -274,7 +273,7 @@ export default {
       const d = new Date() // 当然，在正式项目中，这里应该获取服务器的当前时间
       const monthFloor =
         d.getMonth() + 1 < parseInt(month, 10) ||
-        (d.getMonth() + 1 == parseInt(month, 10) &&
+        (d.getMonth() + 1 === parseInt(month, 10) &&
           d.getDate() < parseInt(day, 10))
           ? 1
           : 0
