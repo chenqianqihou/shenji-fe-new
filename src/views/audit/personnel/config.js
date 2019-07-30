@@ -25,6 +25,7 @@ const props = {
     value: 'sex',
     label: '性别',
     required: true,
+    disabled: true,
     type: 'combobox'
   }, {
     value: 'phone',

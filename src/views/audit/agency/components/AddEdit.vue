@@ -84,7 +84,6 @@ export default {
       formProps: props,
       form: {},
       selectConfig: this.$store.getters.userSelectConfig,
-      districts: regionData,
       options: {
         otypeList: [],
         qualiauditList: [{
@@ -100,6 +99,10 @@ export default {
   computed: {
     isEdit() {
       return this.$route.params.id
+    },
+    districts() {
+      const { form: { otype }} = this
+      return +otype === 2 ? regionData.filter(row => +row.value === 520000) : regionData
     }
   },
   created() {

@@ -54,7 +54,7 @@
                 v-else-if="item.type === 'combobox'"
                 v-model="form[item.value]"
                 class="full-width"
-                :disabled="item.value === 'type' && !!isEdit"
+                :disabled="(item.value === 'type' && !!isEdit) || item.disabled"
                 :multiple="item.multi || false"
                 :collapse-tags="true"
                 @change="handleChange(item.value)"

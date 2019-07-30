@@ -330,6 +330,7 @@ export default {
         this.listQuery.organization = 2
         this.listQuery.type = +node.type
       } else {
+        this.listQuery.type = +node.otype
         this.listQuery.organization = 3
         this.listQuery.organid = +node.id
       }
@@ -391,6 +392,17 @@ export default {
           this.treeData = data[0].list || data
         } else {
           this.treeData = res.data.filter(row => +row.type !== 3)
+          this.treeData.forEach(row => {
+            this.casdTreeProp(row.list, row.type)
+          })
+        }
+      })
+    },
+    casdTreeProp(data, type) {
+      data.forEach(row => {
+        row.otype = type
+        if (row.list && row.list.length > 0) {
+          this.casdTreeProp(row.list, type)
         }
       })
     },
