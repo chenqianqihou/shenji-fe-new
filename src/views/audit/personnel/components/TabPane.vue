@@ -326,7 +326,7 @@ export default {
       })
     },
     handleClickNode(node) {
-      if (node.type) {
+      if (node.type !== 'parent') {
         this.listQuery.type = +node.type
       } else {
         this.listQuery.organid = +node.id
