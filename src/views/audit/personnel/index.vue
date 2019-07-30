@@ -18,7 +18,7 @@ export default {
     return {
       tabMapOptions: [
         { label: '审计机关', key: '3' },
-        { label: '第三方机构', key: '1' }
+        { label: '第三方机构', key: '2' }
       ],
       activeName: '3',
       createdTimes: 0

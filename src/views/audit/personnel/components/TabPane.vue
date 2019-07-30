@@ -34,7 +34,7 @@
         class="tree-class"
         node-key="id"
         highlight-current
-        current-node-key="type-1"
+        current-node-key="type-2"
         :expand-on-click-node="false"
         @node-click="handleClickNode"
       />
@@ -223,7 +223,7 @@ const queryString = {
   status: '',
   page: 1,
   length: 20,
-  organization: 1 // +this.$route.query.tab || ''
+  organization: 2 // +this.$route.query.tab || ''
 }
 
 export default {
@@ -327,8 +327,10 @@ export default {
     },
     handleClickNode(node) {
       if (node.type !== 'parent') {
+        this.listQuery.organization = 2
         this.listQuery.type = +node.type
       } else {
+        this.listQuery.organization = 3
         this.listQuery.organid = +node.id
       }
       this.getList()
