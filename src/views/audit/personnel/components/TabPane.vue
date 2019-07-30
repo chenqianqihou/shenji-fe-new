@@ -343,7 +343,9 @@ export default {
       this.currentNodeData = data
       this.treeNodeOpt = 'append'
       this.treeOptDialog = true
-      this.closeTreeDialog()
+      setTimeout(() => {
+        this.closeTreeDialog()
+      })
     },
     editNode(ev, node, data) {
       ev.stopPropagation()
@@ -420,7 +422,9 @@ export default {
       this.roleForm.pid = row.pid
       this.roleForm.role = row.role ? row.role : []
       this.roleDialog = true
-      this.closeRoleDialog()
+      setTimeout(() => {
+        this.closeRoleDialog()
+      }, 500)
     },
     handleSubmitRole() {
       this.$refs['roleForm'].validate((valid) => {

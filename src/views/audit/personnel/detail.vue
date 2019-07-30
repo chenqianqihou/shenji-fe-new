@@ -7,6 +7,7 @@
       <div class="form-set-title">{{ tagList[key] }}</div>
       <el-row
         :gutter="20"
+        v-if="key === 'base'"
         class="row-class"
       >
         <el-col style="width: 200px;">人员ID</el-col>
