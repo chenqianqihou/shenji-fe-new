@@ -223,7 +223,7 @@ const queryString = {
   status: '',
   page: 1,
   length: 20,
-  organization: 3 // +this.$route.query.tab || ''
+  organization: 2 // +this.$route.query.tab || ''
 }
 
 export default {
@@ -327,7 +327,7 @@ export default {
     },
     handleClickNode(node) {
       if (node.type !== 'parent' && node.type !== 'child') {
-        this.listQuery.organization = 3
+        this.listQuery.organization = 2
         this.listQuery.type = +node.type
       } else {
         this.listQuery.type = +node.otype
