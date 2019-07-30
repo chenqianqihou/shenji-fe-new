@@ -223,7 +223,7 @@ const queryString = {
   status: '',
   page: 1,
   length: 20,
-  organization: 2 // +this.$route.query.tab || ''
+  organization: 3 // +this.$route.query.tab || ''
 }
 
 export default {
@@ -326,8 +326,8 @@ export default {
       })
     },
     handleClickNode(node) {
-      if (node.type !== 'parent') {
-        this.listQuery.organization = 2
+      if (node.type !== 'parent' && node.type !== 'child') {
+        this.listQuery.organization = 3
         this.listQuery.type = +node.type
       } else {
         this.listQuery.type = +node.otype
@@ -390,6 +390,9 @@ export default {
         if (+this.type === 3) {
           const data = res.data.filter(row => +row.type === +this.type)
           this.treeData = data[0].list || data
+          this.treeData.forEach(row => {
+            this.casdTreeProp(row.list, 3)
+          })
         } else {
           this.treeData = res.data.filter(row => +row.type !== 3)
           this.treeData.forEach(row => {
