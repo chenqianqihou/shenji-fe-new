@@ -57,11 +57,11 @@ service.interceptors.response.use(
         })
       } else {
         Message({
-          message: res.error.returnUserMessage || 'Error',
+          message: res.error.returnMessage || 'Error',
           type: 'error'
         })
       }
-      return Promise.reject(new Error(res.error.returnUserMessage || 'Error'))
+      return Promise.reject(new Error(res.error.returnMessage || 'Error'))
     } else {
       return res
     }
