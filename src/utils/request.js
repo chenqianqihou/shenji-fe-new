@@ -43,7 +43,7 @@ service.interceptors.response.use(
    */
   response => {
     const res = response.data
-    if (res.error.returnCode !== 0) {
+    if (res.error.returnCode !== 0 && res.error !== 0) {
       if (res.error.returnCode === 40100) {
         // to re-login
         MessageBox.confirm('You have been logged out, you can cancel to stay on this page, or log in again', 'Confirm logout', {

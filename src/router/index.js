@@ -78,6 +78,51 @@ export const constantRoutes = [
     ]
   },
   {
+    path: '/project',
+    component: Layout,
+    redirect: '/project/index',
+    children: [{
+      path: 'index',
+      component: () => import('@/views/project/index'),
+      name: 'project',
+      meta: {
+        title: '项目管理',
+        icon: 'component',
+        noCache: true
+      }
+    },
+    {
+      path: 'create',
+      component: () => import('@/views/project/create'),
+      name: 'projectCreate',
+      meta: {
+        title: '新建项目',
+        noCache: true
+      },
+      hidden: true
+    },
+    {
+      path: 'detail/:id',
+      component: () => import('@/views/project/detail'),
+      name: 'projectDetail',
+      meta: {
+        title: '项目详情',
+        noCache: true
+      },
+      hidden: true
+    },
+    {
+      path: 'edit/:id',
+      component: () => import('@/views/project/edit'),
+      name: 'projectEdit',
+      meta: {
+        title: '编辑项目',
+        noCache: true
+      },
+      hidden: true
+    }]
+  },
+  {
     path: '/audit',
     component: Layout,
     redirect: '/audit/personnel',
@@ -94,7 +139,7 @@ export const constantRoutes = [
         component: () => import('@/views/audit/personnel/index'),
         name: 'auditPersonnel',
         meta: {
-          title: '人员管理',
+          title: '人员配置',
           noCache: true
         }
       },
@@ -133,7 +178,7 @@ export const constantRoutes = [
         component: () => import('@/views/audit/agency/index'),
         name: 'auditAgency',
         meta: {
-          title: '机构管理',
+          title: '机构配置',
           noCache: true
         }
       },
