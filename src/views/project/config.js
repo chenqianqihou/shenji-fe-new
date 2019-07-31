@@ -6,10 +6,12 @@ const props = {
   }, {
     value: 'plantime',
     label: '项目时长',
+    append: '天',
     required: true
   }, {
     value: 'projyear',
     label: '项目年度',
+    type: 'combobox',
     required: true
   }, {
     value: 'projdesc',
@@ -34,6 +36,7 @@ const props = {
   }, {
     value: 'projlevel',
     label: '项目层级',
+    type: 'combobox',
     required: true
   }, {
     label: '角色人数',

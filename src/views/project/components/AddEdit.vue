@@ -3,47 +3,97 @@
     <div slot="header" class="clearfix">
       <span>{{ isEdit ? '编辑' : '新建' }}项目</span>
     </div>
-    <el-form ref="projectForm" :model="form" status-icon>
-      <div v-for="(items, key) in formProps" :key="key">
-        <el-row v-for="(item, idx) in items" :key="idx" :gutter="20">
-          <el-col :span="12">
-            <el-form-item
-              label-width="120px"
-              :label="item.label"
-              :prop="item.value"
-              :rules="[{
-                required: !!item.required,
-                message: (!item.type ? '请输入' : '请选择') + item.label
-              }].concat(item.validator ? item.validator : [])"
-            >
-              <el-select
-                v-if="item.type === 'combobox'"
-                v-model="form[item.value]"
-                class="full-width"
-                :disabled="isEdit && item.value === 'otype'"
-                :multiple="item.multi || false"
-                :collapse-tags="true"
-              >
-                <el-option
-                  v-for="(v, index) in options[`${item.value}List`]"
-                  :key="index"
-                  :value="v.value"
-                  :label="v.label"
-                />
-              </el-select>
-              <el-date-picker
-                v-else-if="item.type === 'datepicker'"
-                v-model="form[item.value]"
-                class="full-width"
-                value-format="timestamp"
-                placeholder="请选择"
-              />
-              <el-input-number v-else-if="item.type === 'inputnumber'" v-model="form[item.value]" controls-position="right" :min="0" @change="handleChangeNum(item.value, item.depend)" />
-              <el-input v-else-if="!!item.sum" v-model="form[item.value]" readonly />
-              <el-input v-else v-model="form[item.value]" :type="item.type==='number' ? 'number' : 'text'" />
-            </el-form-item>
-          </el-col>
-        </el-row>
+    <el-form ref="projectForm" :model="form" status-icon label-position="right" label-width="120px">
+      <el-form-item label="项目名称" prop="name" :rules="[{
+        required: true,
+        message: '请输入项目名称'
+      }]">
+        <el-input v-model="form.name" class="sub-width"></el-input>
+      </el-form-item>
+      <el-form-item label="项目时长" prop="plantime" :rules="[{
+        required: true,
+        message: '请输入项目时长'
+      }]">
+        <el-input v-model="form.plantime" type="number" class="sub-width">
+          <span slot="append">天</span>
+        </el-input>
+      </el-form-item>
+      <el-form-item label="项目年度" prop="plantime" :rules="[{
+        required: true,
+        message: '请选择项目年度'
+      }]">
+        <el-select v-model="form.projyear" placeholder="请选择" class="sub-width">
+          <el-option v-for="(item, idx) in selectConfig.projyear" :key="idx" :value="item" :label="item" />
+        </el-select>
+      </el-form-item>
+      <el-form-item label="项目描述" prop="projdesc" :rules="[{
+        required: true,
+        message: '请输入项目描述'
+      }]">
+        <el-input type="textarea" v-model="form.projdesc" :rows="4"  class="sub-width"></el-input>
+      </el-form-item>
+      <el-form-item label="项目单位" prop="projorgan" :rules="[{
+        required: true,
+        message: '请选择项目单位'
+      }]">
+        <el-select v-model="form.projorgan" placeholder="请选择" class="sub-width" @change="handleChangeOrg">
+          <el-option v-for="(item, idx) in selectList.organlist" :key="idx" :value="item.id" :label="item.name"></el-option>
+        </el-select>
+      </el-form-item>
+      <el-form-item label="牵头业务部门" prop="leadorgan" :rules="[{
+        required: true,
+        message: '请选择牵头业务部门'
+      }]">
+        <el-select v-model="form.leadorgan" placeholder="请选择" class="sub-width">
+          <el-option v-for="(item, idx) in selectList.subOrgList" :key="idx" :value="item.id" :label="item.name"></el-option>
+        </el-select>
+      </el-form-item>
+      <el-form-item label="项目类型" prop="type" :rules="[{
+        required: true,
+        message: '请选择项目类型'
+      }]">
+        <el-select v-model="form.type" placeholder="请选择" class="sub-width"  @change="handleChangeType">
+          <el-option v-for="(item, idx) in selectList.type" :key="idx" :value="item.name" :label="item.name"></el-option>
+        </el-select>
+      </el-form-item>
+      <el-form-item prop="subtype" :rules="[{
+        required: true,
+        message: '请选择项目子类'
+      }]">
+        <el-select v-model="form.subtype" placeholder="请选择" class="sub-width">
+          <el-option v-for="(item, idx) in selectList.subTypeList" :key="idx" :value="item" :label="item"></el-option>
+        </el-select>
+      </el-form-item>
+      <el-form-item prop="projlevel" label="项目层级" :rules="[{
+        required: true,
+        message: '请选择项目层级'
+      }]">
+        <el-select v-model="form.projlevel" placeholder="请选择" class="sub-width">
+          <el-option v-for="(item, idx) in selectConfig.projlevel" :key="idx" :value="item.value" :label="item.label" />
+        </el-select>
+      </el-form-item>
+      <div style="display: flex">
+        <div class="sub-label">角色</div>
+        <div>
+          <el-form-item label="审计组长" prop="leadernum" :rules="[{
+            required: true,
+            message: '请输入审计组长人数'
+          }]" label-width="80px">
+            <el-input-number v-model="form.leadernum" :min="0"></el-input-number>
+          </el-form-item>
+          <el-form-item label="主审" prop="masternum" :rules="[{
+            required: true,
+            message: '请输入主审人数'
+          }]" label-width="80px">
+            <el-input-number v-model="form.masternum" :min="0"></el-input-number>
+          </el-form-item>
+          <el-form-item label="审计成员" prop="auditornum" :rules="[{
+            required: true,
+            message: '请输入审计成员人数'
+          }]" label-width="80px">
+            <el-input-number v-model="form.auditornum" :min="0"></el-input-number>
+          </el-form-item>
+        </div>
       </div>
       <el-form-item>
         <el-button type="primary" @click="handleSubmit">提交</el-button>
@@ -54,140 +104,88 @@
 </template>
 
 <script>
-import { createOrg, updateOrg, getOrgDetail } from '@/api/org'
-import { props } from '../config'
-// import { isArray } from '@/utils/index'
-import { regionData } from 'element-china-area-data'
+import { selectConfig, selectList, createProject } from '@/api/project'
 
 export default {
   name: 'AddEdit',
   data() {
     return {
-      formProps: props,
-      form: {},
-      selectConfig: this.$store.getters.userSelectConfig,
-      options: {
-        otypeList: [],
-        qualiauditList: [{
-          value: 1,
-          label: '已审核'
-        }, {
-          value: 2,
-          label: '未审核'
-        }]
-      }
+      form: {
+        leadorgan: ''
+      },
+      selectConfig: {},
+      selectList: {}
     }
   },
   computed: {
     isEdit() {
       return this.$route.params.id
-    },
-    districts() {
-      const { form: { otype }} = this
-      return +otype === 2 ? regionData.filter(row => +row.value === 520000) : regionData
     }
   },
   created() {
-    this.initData()
-    if (this.$route.params.id) {
-      this.queryDetail()
-    }
+    this.getSelectConfig()
+    this.getSelectList()
+    // if (this.$route.params.id) {
+    //   this.queryDetail()
+    // }
   },
   methods: {
-    validateAddress(rule, value, callback) {
-      if (value === '') {
-        callback(new Error('请输入地址'))
-      } else {
-        callback()
-      }
-    },
-    handleChangeNum(value, depend) {
-      if (depend) {
-        this.form[depend] = String(+this.form[depend] + this.form[value])
-      }
-    },
-    queryDetail() {
-      getOrgDetail({
-        oid: this.$route.params.id
-      }).then(res => {
-        const props = this.mixProps()
-        this.form = Object.assign({}, this.form, res.data, {
-          oid: this.$route.params.id
-        })
-        props.forEach(row => {
-          if (row.isAddress) {
-            row.value.forEach((r, i) => {
-              if (i === 0) {
-                this.form[r] = this.form[r].split(',')
+    getSelectConfig() {
+      selectConfig().then(res => {
+        const keys = Object.keys(res.data)
+        const values = Object.values(res.data)
+        values.forEach((row, idx) => {
+          this.selectConfig[keys[idx]] = []
+          row.forEach(r => {
+            let item
+            if (typeof r === 'object') {
+              item = {
+                value: Object.keys(r)[0],
+                label: Object.values(r)[0]
               }
-            })
-          }
-          if (row.type === 'number') {
-            this.form[row.value] = +this.form[row.value]
-          }
-          if (row.type === 'datepicker') {
-            this.form[row.value] *= 1000
-          }
-          if (row.type === 'combobox') {
-            this.form[row.value] = +this.form[row.value]
-          }
-          if (row.type === 'inputnumber' && row.depend) {
-            this.form[row.depend] = String(+this.form[row.depend] + +this.form[row.value])
-          }
+            } else {
+              item = r
+            }
+            this.selectConfig[keys[idx]].push(item)
+          })
         })
       })
+    },
+    getSelectList() {
+      selectList().then(res => {
+        this.selectList = res.data
+        this.selectList.subOrgList = []
+        this.selectList.subTypeList = []
+      })
+    },
+    handleChangeOrg() {
+      this.form.leadorgan = ''
+      const { form: { projorgan}} = this
+      const item = this.selectList.organlist.find(row => row.id === projorgan)
+      this.selectList.subOrgList = []
+      item.partment.forEach(row => {
+        this.selectList.subOrgList.push({
+          id: Object.keys(row)[0],
+          name: Object.values(row)[0]
+        })
+      })
+    },
+    handleChangeType() {
+      const { form: { type}} = this
+      const item = this.selectList.type.find(row => row.name === type)
+      this.selectList.subTypeList = item.list || []
+      this.form.subType = ''
     },
     handleSubmit() {
       this.$refs['projectForm'].validate(valid => {
         if (valid) {
-          const form = Object.assign({}, this.form)
-          const props = this.mixProps()
-          props.forEach(row => {
-            if (
-              row.type === 'datepicker' &&
-              String(form[row.value]).length === 13
-            ) {
-              form[row.value] = form[row.value] / 1000
-            }
-            if (row.notSubmit) {
-              delete form[row.value]
-            }
-            if (row.isAddress) {
-              form[row.value[0]] = form[row.value[0]].join()
-            }
-          })
-          let optMethod = createOrg
-          if (this.$route.params.id) {
-            optMethod = updateOrg
-          }
-          optMethod(form).then(res => {
-            this.$message.success('操作成功')
+          let params = Object.assign({}, this.form)
+          params.projtype = [params.type, params.subType]
+          delete params.type
+          delete params.subType
+          createProject(params).then(res => {
+            this.$message.success('新建成功')
             this.$router.push('/project')
-          })
-        }
-      })
-    },
-    mixProps() {
-      const { formProps } = this
-      let props = []
-      Object.values(formProps).forEach(items => (props = props.concat(items)))
-      return props
-    },
-    initData() {
-      const { selectConfig: { type }} = this
-      props.forEach(row => {
-        if (row.isAddress) {
-          this.form[row.value[0]] = ''
-        }
-        if (row.sum) {
-          this.form[row.value] = ''
-        }
-      })
-      Object.keys(type).forEach(key => {
-        if (+key !== 3) {
-          this.options.otypeList.push({
-            value: +key,
-            label: type[key]
           })
         }
       })
@@ -207,8 +205,22 @@ export default {
   .cascader{
     margin-bottom: 20px;
   }
-  .full-width {
-    width: 100%;
+  .sub-width {
+    width: 70%;
+  }
+  .sub-label{
+    width: 120px;
+    text-align: right;
+    vertical-align: middle;
+    float: left;
+    font-size: 14px;
+    color: #606266;
+    line-height: 40px;
+    padding: 0 12px 0 0;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+    line-height: 36px;
+    font-weight: 700;
   }
 }
 </style>

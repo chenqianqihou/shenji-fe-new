@@ -13,7 +13,7 @@
             style="width: 150px"
             class="filter-item"
           >
-            <el-option value="1" label="请选择" />
+            <el-option v-for="(item, idx) in selectConfig.projyear" :key="idx" :value="item" :label="item" />
           </el-select>
         </el-form-item>
         <el-form-item label="项目层级">
@@ -24,7 +24,7 @@
             style="width: 150px"
             class="filter-item"
           >
-            <el-option value="1" label="请选择" />
+            <el-option v-for="(item, idx) in selectConfig.projlevel" :key="idx" :value="item.value" :label="item.label" />
           </el-select>
         </el-form-item>
         <el-form-item label="中介审核">
@@ -35,7 +35,7 @@
             style="width: 150px"
             class="filter-item"
           >
-            <el-option value="1" label="请选择" />
+            <el-option v-for="(item, idx) in selectConfig.medium" :key="idx" :value="item.value" :label="item.label" />
           </el-select>
         </el-form-item>
         <el-form-item label="内审审核">
@@ -46,7 +46,7 @@
             style="width: 150px"
             class="filter-item"
           >
-            <el-option value="1" label="请选择" />
+            <el-option v-for="(item, idx) in selectConfig.internal" :key="idx" :value="item.value" :label="item.label" />
           </el-select>
         </el-form-item>
         <div>
@@ -58,7 +58,7 @@
               style="width: 150px"
               class="filter-item"
             >
-              <el-option value="1" label="请选择" />
+              <el-option v-for="(item, idx) in selectConfig.projstage" :key="idx" :value="item.value" :label="item.label" />
             </el-select>
           </el-form-item>
           <el-form-item>
@@ -114,15 +114,30 @@
         @selection-change="handleSelectionChange"
       >
         <el-table-column type="selection" align="center" />
-        <el-table-column label="项目编号" align="center" prop="projectnum" />        
+        <el-table-column label="项目编号" align="center" prop="projectnum" />
         <el-table-column label="项目名称" align="center" prop="name" />
         <el-table-column label="项目年度" align="center" prop="projyear" />
         <el-table-column label="项目单位" prop="projorgan" align="center" />
-        <el-table-column label="项目层级" align="center" prop="projlevel" />
+        <el-table-column label="项目层级" align="center" prop="projlevel">
+          <template slot-scope="{row}">
+            {{ originConfig.projlevel[row.projlevel] }}
+          </template>
+        </el-table-column>
         <el-table-column label="计划时长（天）" align="center" prop="plantime" />
-        <el-table-column label="中介审核" align="center" prop="medium" />
-        <el-table-column label="内审审核" align="center" prop="internal" />
-        <el-table-column label="项目阶段" align="center" prop="status">
+        <el-table-column label="中介审核" align="center" prop="medium">
+          <template slot-scope="{row}">
+            {{ originConfig.medium[row.medium] }}
+          </template>
+        </el-table-column>
+        <el-table-column label="内审审核" align="center" prop="internal">
+          <template slot-scope="{row}">
+            {{ originConfig.internal[row.internal] }}
+          </template>
+        </el-table-column>
+        <el-table-column label="项目阶段" align="center" prop="projstage">
+          <template slot-scope="{row}">
+            {{ originConfig.projstage[row.projstage] }}
+          </template>
         </el-table-column>
         <el-table-column
           label="操作"
@@ -157,7 +172,7 @@
 
 <script>
 import Pagination from '@/components/Pagination'
-import { fetchList, deleteProject } from '@/api/project'
+import { fetchList, deleteProject, selectConfig } from '@/api/project'
 const queryString = {
   projyear: '',
   projlevel: '',
@@ -177,15 +192,37 @@ export default {
       listQuery: Object.assign({}, queryString),
       total: 0,
       checkedOptions: [],
-      selectConfig: this.$store.getters.userSelectConfig
+      selectConfig: {},
+      originConfig: {}
     }
   },
   created() {
+    this.getSelectConfig()
     this.getList()
   },
   methods: {
-    parseDate(time) {
-      return parseTime(time * 1000, '{y}-{m}-{d}')
+    getSelectConfig() {
+      selectConfig().then(res => {
+        const keys = Object.keys(res.data)
+        const values = Object.values(res.data)
+        values.forEach((row, idx) => {
+          this.selectConfig[keys[idx]] = []
+          this.originConfig[keys[idx]] = {}
+          row.forEach(r => {
+            let item
+            if (typeof r === 'object') {
+              this.originConfig[keys[idx]][Object.keys(r)[0]] = Object.values(r)[0]
+              item = {
+                value: Object.keys(r)[0],
+                label: Object.values(r)[0]
+              }
+            } else {
+              item = r
+            }
+            this.selectConfig[keys[idx]].push(item)
+          })
+        })
+      })
     },
     getList() {
       const _params = Object.assign({}, this.listQuery)

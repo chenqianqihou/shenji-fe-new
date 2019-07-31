@@ -98,7 +98,7 @@
       </div>
       <el-form-item>
         <el-button type="primary" @click="handleSubmit">提交</el-button>
-        <el-button @click="$router.push('/audit/personnel')">取消</el-button>
+        <el-button @click="returnBack">取消</el-button>
       </el-form-item>
     </el-form>
   </el-card>
@@ -360,6 +360,9 @@ export default {
           this.form[row.value] = []
         }
       })
+    },
+    returnBack() {
+      history.back(-1)
     }
   }
 }

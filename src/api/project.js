@@ -14,3 +14,23 @@ export function deleteProject(data) {
     data
   })
 }
+
+export function selectConfig() {
+  return request({
+    url: '/project/listselect'
+  })
+}
+
+export function selectList() {
+  return request({
+    url: '/project/selectconfig'
+  })
+}
+
+export function createProject(data) {
+  return request({
+    url: '/project/create',
+    method: 'post',
+    data
+  })
+}

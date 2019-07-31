@@ -8,12 +8,13 @@
         class="tree-class"
         node-key="id"
         highlight-current
-        current-node-key="type-3"
+        :default-expanded-keys="$route.query.organid ? [$route.query.organid] : []"
+        :current-node-key="$route.query.organid ? $route.query.organid : 'type-3'"
         :expand-on-click-node="false"
         @node-click="handleClickNode"
       >
         <span slot-scope="{ node, data }" class="custom-tree-node">
-          <span>{{ node.label + $route.query.tab }}</span>
+          <span>{{ node.label }}</span>
           <span>
             <el-tooltip v-if="data.data && +data.data.parentid === 0" class="item" effect="dark" content="新增" placement="top">
               <el-button size="mini" type="text" icon="el-icon-circle-plus-outline" class="tree-button" @click="ev => appendNode(ev, node, data)" />
@@ -34,7 +35,8 @@
         class="tree-class"
         node-key="id"
         highlight-current
-        :current-node-key="`type-${$route.query.tab || 2}`"
+        :current-node-key="$route.query.organid ? $route.query.organid : `type-${$route.query.tab || 2}`"
+        :default-expanded-keys="$route.query.organid ? [$route.query.organid] : []"
         :expand-on-click-node="false"
         @node-click="handleClickNode"
       />
@@ -275,6 +277,10 @@ export default {
     }
   },
   created() {
+    if (this.$route.query.organid) {
+      this.listQuery.organization = 3
+      this.listQuery.organid = +this.$route.query.organid
+    }
     this.queryOrgTree()
     this.getList()
   },
@@ -338,15 +344,15 @@ export default {
       } else {
         this.listQuery.type = +node.otype
         this.listQuery.organization = 3
-        this.listQuery.organid = +node.id
         this.$router.replace({
           path: '/audit/personnel',
           query: Object.assign({}, this.$route.query, {
             organid: +node.id
           })
         })
+        this.listQuery.organid = +node.id
       }
-      // this.getList()
+      this.getList()
     },
     appendNode(ev, node, data) {
       ev.stopPropagation()
@@ -354,12 +360,12 @@ export default {
         pid: data.id,
         name: ''
       }
-      this.currentNode = node
-      this.currentNodeData = data
-      this.treeNodeOpt = 'append'
       this.treeOptDialog = true
-      setTimeout(() => {
+      this.$nextTick(() => {
         this.closeTreeDialog()
+        this.currentNode = node
+        this.currentNodeData = data
+        this.treeNodeOpt = 'append'
       })
     },
     editNode(ev, node, data) {
@@ -449,12 +455,12 @@ export default {
       this.checkedOptions = rows
     },
     handleChangeRole(row) {
-      this.roleForm.pid = row.pid
-      this.roleForm.role = row.role ? row.role : []
       this.roleDialog = true
-      setTimeout(() => {
+      this.$nextTick(() => {
         this.closeRoleDialog()
-      }, 500)
+        this.roleForm.pid = row.pid
+        this.roleForm.role = row.role ? row.role : []
+      })
     },
     handleSubmitRole() {
       this.$refs['roleForm'].validate((valid) => {
