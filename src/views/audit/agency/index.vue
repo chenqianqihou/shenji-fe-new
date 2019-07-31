@@ -130,7 +130,7 @@ import { parseTime } from '@/utils'
 const queryString = {
   key: '',
   type: '',
-  start: 1,
+  start: 0,
   length: 20
 }
 export default {
