@@ -13,7 +13,7 @@
         @node-click="handleClickNode"
       >
         <span slot-scope="{ node, data }" class="custom-tree-node">
-          <span>{{ node.label }}</span>
+          <span>{{ node.label + $route.query.tab }}</span>
           <span>
             <el-tooltip v-if="data.data && +data.data.parentid === 0" class="item" effect="dark" content="新增" placement="top">
               <el-button size="mini" type="text" icon="el-icon-circle-plus-outline" class="tree-button" @click="ev => appendNode(ev, node, data)" />
@@ -34,7 +34,7 @@
         class="tree-class"
         node-key="id"
         highlight-current
-        current-node-key="type-2"
+        :current-node-key="`type-${$route.query.tab || 2}`"
         :expand-on-click-node="false"
         @node-click="handleClickNode"
       />
@@ -161,7 +161,7 @@
       </el-table>
 
       <pagination
-        v-show="total>0"
+        v-show="total > 0"
         :total="total"
         :page.sync="listQuery.page"
         :limit.sync="listQuery.length"
@@ -329,12 +329,24 @@ export default {
       if (node.type !== 'parent' && node.type !== 'child') {
         this.listQuery.organization = 2
         this.listQuery.type = +node.type
+        this.$router.replace({
+          path: '/audit/personnel',
+          query: {
+            tab: node.type
+          }
+        })
       } else {
         this.listQuery.type = +node.otype
         this.listQuery.organization = 3
         this.listQuery.organid = +node.id
+        this.$router.replace({
+          path: '/audit/personnel',
+          query: Object.assign({}, this.$route.query, {
+            organid: +node.id
+          })
+        })
       }
-      this.getList()
+      // this.getList()
     },
     appendNode(ev, node, data) {
       ev.stopPropagation()
@@ -411,7 +423,7 @@ export default {
     },
     getList() {
       const _params = Object.assign({
-        type: +this.type
+        type: [1, 2, 3].includes(+this.$route.query.tab) ? +this.$route.query.tab : +this.type
       }, this.listQuery)
       this.listLoading = true
       fetchList(_params).then(response => {

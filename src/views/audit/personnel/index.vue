@@ -15,20 +15,24 @@ export default {
   name: 'Tab',
   components: { tabPane },
   data() {
+    const { $route: { query: { tab }}} = this
+    const type = tab ? ([1, 2].includes(+tab) ? '2' : '3') : '3'
     return {
       tabMapOptions: [
         { label: '审计机关', key: '3' },
         { label: '第三方机构', key: '2' }
       ],
-      activeName: '3',
-      createdTimes: 0
+      activeName: type
     }
   },
-  created() {
-    // init the default  selected tab
-    const tab = this.$route.query.tab || '3'
-    if (tab) {
-      this.activeName = tab
+  watch: {
+    activeName(newVal) {
+      this.$router.push({
+        path: '/audit/personnel',
+        query: {
+          tab: newVal
+        }
+      })
     }
   }
 }

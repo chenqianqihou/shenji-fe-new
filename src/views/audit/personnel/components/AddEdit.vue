@@ -302,7 +302,7 @@ export default {
             // if (row.value !== 'qualification' && form[row.value] && isArray(form[row.value])) {
             //   form[row.value] = form[row.value].join()
             // }
-            if (form.type !== 3) {
+            if (+form.type !== 3) {
               form.role = [8] // 非审计机关默认审计组员
               if (row.value === 'position2') {
                 form.position = form.position2
