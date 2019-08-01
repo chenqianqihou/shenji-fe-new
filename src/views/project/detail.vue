@@ -1,136 +1,122 @@
 <template>
-  <el-card class="box-card">
+  <el-card class="project-detail-box">
     <div slot="header" class="clearfix">
-      <span>机构信息</span>
+      <h4>项目详情</h4>
     </div>
-    <div v-for="(items, key) in detailProps" :key="key">
-      <div class="form-set-title">{{ tagList[key] }}</div>
-      <template v-for="(item, idx) in items">
-        <el-row
-          :key="idx"
-          :gutter="20"
-          class="row-class"
-        >
-          <el-col style="width: 240px;">{{ item.label }}</el-col>
-          <el-col
-            :span="18"
-          >
-            <template v-if="item.isAddress">{{ formatArea(item) }}</template>
-            <template v-if="item.type === 'datepicker'">{{ formatDate(item) }}</template>
-            <template v-else>{{ formatVal(item.value, detail[item.value]) }}</template>
-          </el-col>
-        </el-row>
-      </template>
+    <div class="head-box">
+      <el-row class="basic-box">
+        <el-col :span="6" v-for="(item, key) in props" :key="key" class="basic-box-col">
+          <span class="basic-box-label">{{ item.label }}:</span>
+          <span class="basic-box-value">{{ (detail.head[item.value] || '') + (item.append || '') }}</span>
+        </el-col>
+      </el-row>
+      <div class="tag-box">
+        <div class="tag-box-label">项目阶段</div>
+        <div class="tag-box-value">实施阶段</div>
+      </div>
     </div>
+    <el-divider></el-divider>
+    <el-tabs v-model="activeName">
+      <el-tab-pane label="基本信息" name="first">
+        <el-form ref="form" label-width="80px">
+          <el-row>
+            <el-col :span="16">
+              <el-form-item label="活动名称">
+                <el-input type="textarea" :rows="6"></el-input>
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-divider></el-divider>
+          <el-row>
+            <el-col :span="16">
+              <el-form-item label="活动名称">
+                <el-input></el-input>
+              </el-form-item>
+            </el-col>
+            <el-col :span="8">
+              <el-button type="primary" style="float: right">保存</el-button>
+            </el-col>
+          </el-row>
+          <el-row>
+            <el-col :span="16">
+              <el-form-item label="活动名称">
+                <el-input type="textarea" :rows="6"></el-input>
+              </el-form-item>
+            </el-col>
+          </el-row>
+        </el-form>
+      </el-tab-pane>
+      <el-tab-pane label="审计组" name="second">审计组</el-tab-pane>
+      <el-tab-pane label="审理成员" name="third">审理成员</el-tab-pane>
+      <el-tab-pane label="审计评价" name="fourth">审计评价</el-tab-pane>
+    </el-tabs>
   </el-card>
 </template>
 
 <script>
-import { getOrgDetail } from '@/api/org'
-import { tagList, props } from './config'
-import { isArray, parseTime } from '@/utils/index'
-import { CodeToText } from 'element-china-area-data'
+import { props } from './config'
+import { getDetail } from '@/api/project'
 export default {
   data() {
     return {
-      detail: {},
-      detailProps: props,
-      tagList: tagList,
-      selectConfig: this.$store.getters.userSelectConfig,
-      options: {
-        otypeList: [],
-        qualiauditList: [{
-          value: 1,
-          label: '已审核'
-        }, {
-          value: 2,
-          label: '未审核'
-        }]
-      }
+      detail: {
+        head: {
+          projectnum: ''
+        }
+      },
+      props: props,
+      activeName: 'first'
+    }
+  },
+  computed: {
+    projectId() {
+      return this.$route.params.id
     }
   },
   created() {
-    this.initData()
     this.queryDetail()
   },
   methods: {
     queryDetail() {
-      getOrgDetail({
-        account: this.$route.params.id
+      getDetail({
+        id: this.projectId
       }).then(res => {
-        this.detail = Object.assign({}, res.data)
-        const props = this.mixProps()
-        props.forEach(row => {
-          if (row.type === 'inputnumber' && row.depend) {
-            if (typeof this.detail[row.depend] === 'undefined') {
-              this.detail[row.depend] = 0
-            }
-            this.detail[row.depend] = this.detail[row.depend] + (+this.detail[row.value])
-          }
-        })
-      })
-    },
-
-    formatVal(key, val) {
-      const { options } = this
-      if (options[`${key}List`] && val) {
-        const row = options[`${key}List`].find(r => r.value === +val)
-        return row.label || val
-      }
-      return val
-    },
-    formatArea(val) {
-      const { detail } = this
-      if (!val) return
-      if (detail[val.value[0]]) {
-        const areaCode = detail[val.value[0]].split(',')
-        const areas = []
-        areaCode.forEach(row => {
-          areas.push(CodeToText[row])
-        })
-        return areas.join('') + detail[val.value[1]]
-      }
-      return detail[val]
-    },
-    formatDate(item) {
-      const { detail } = this
-      return parseTime(detail[item.value] * 1000, '{y}-{m}-{d}')
-    },
-    mixProps() {
-      const { detailProps } = this
-      let props = []
-      Object.values(detailProps).forEach(items => (props = props.concat(items)))
-      return props
-    },
-    initData() {
-      const props = this.mixProps()
-      const { selectConfig: { type }} = this
-      Object.keys(type).forEach(key => {
-        if (+key !== 3) {
-          this.options.otypeList.push({
-            value: +key,
-            label: type[key]
-          })
-        }
+        this.detail = res.data
+        const item = JSON.parse(res.data.head['projtype'])
+        this.detail.head.projtype = item[0]
       })
     }
   }
 }
 </script>
-
-<style lang="scss" scoped>
-.box-card {
+<style lang="scss">
+.project-detail-box{
   height: 100%;
   margin: 20px;
-  font-size: 14px;
-  .form-set-title {
-    font-size: 20px;
-    margin-top: 20px;
-    margin-bottom: 20px;
+  .el-card__header{
+    padding: 0 20px !important;
   }
-  .row-class {
-    margin-bottom: 15px;
-    text-indent: 2em;
+  .head-box{
+    display: flex;
+    .basic-box{
+      font-size: 14px;
+      width: calc(100% - 250px);
+      &-col{
+        padding: 10px 0;
+      }
+      &-label{
+        font-weight: bold
+      }
+    }
+    .tag-box{
+      width: 240px;
+      &-label{
+        margin-bottom: 10px;
+      }
+      &-value{
+        font-size: 20px;
+      }
+    }
   }
 }
 </style>
