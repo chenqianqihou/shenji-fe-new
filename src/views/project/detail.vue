@@ -18,29 +18,43 @@
     <el-divider></el-divider>
     <el-tabs v-model="activeName">
       <el-tab-pane label="基本信息" name="first">
-        <el-form ref="form" label-width="80px">
+        <el-form :model="basicForm" label-width="80px" ref="auditInfoForm">
           <el-row>
             <el-col :span="16">
-              <el-form-item label="活动名称">
-                <el-input type="textarea" :rows="6"></el-input>
+              <el-form-item label="项目描述">
+                <span>{{ detail.basic.projdesc || '' }}</span>
               </el-form-item>
             </el-col>
           </el-row>
           <el-divider></el-divider>
           <el-row>
             <el-col :span="16">
-              <el-form-item label="活动名称">
-                <el-input></el-input>
+              <el-form-item label="开始时间" prop="projstart" :rules="[{
+                required: true,
+                message: '请选择开始时间'
+              }]">
+                <span v-if="!basicEditing">{{ detail.basic.projstart || '待编辑' }}</span>
+                <el-date-picker
+                  v-else
+                  type="date"
+                  v-model="basicForm.projstart"
+                  placeholder="请选择"
+                />
               </el-form-item>
             </el-col>
             <el-col :span="8">
-              <el-button type="primary" style="float: right">保存</el-button>
+              <el-button type="danger" class="basic-right-btn" v-if="!basicEditing" @click="basicEditing = true">编辑</el-button>
+              <el-button type="primary" class="basic-right-btn" v-else @click="handleSaveBasic">保存</el-button>
             </el-col>
           </el-row>
           <el-row>
             <el-col :span="16">
-              <el-form-item label="活动名称">
-                <el-input type="textarea" :rows="6"></el-input>
+              <el-form-item label="审计内容" prop="projauditcontent" :rules="[{
+                required: true,
+                message: '请输入审计内容'
+              }]">
+                <div v-if="!basicEditing">{{ detail.basic.projauditcontent || '待编辑' }}</div>
+                <el-input type="textarea" :rows="6" v-model="basicForm.projauditcontent" v-else></el-input>
               </el-form-item>
             </el-col>
           </el-row>
@@ -55,15 +69,23 @@
 
 <script>
 import { props } from './config'
-import { getDetail } from '@/api/project'
+import { getDetail, updateAuditInfo } from '@/api/project'
 export default {
   data() {
     return {
       detail: {
         head: {
           projectnum: ''
+        },
+        basic: {
+          projdesc: ''
         }
       },
+      basicForm: {
+        projstart: '',
+        projauditcontent: ''
+      },
+      basicEditing: false,
       props: props,
       activeName: 'first'
     }
@@ -84,6 +106,23 @@ export default {
         this.detail = res.data
         const item = JSON.parse(res.data.head['projtype'])
         this.detail.head.projtype = item[0]
+        this.basicForm.projstart = this.detail.basic.projstart
+        this.basicForm.projauditcontent = this.detail.basic.projauditcontent
+      })
+    },
+    handleSaveBasic() {
+      this.$refs['auditInfoForm'].validate(valid => {
+        if (valid) {
+          const { basicForm, projectId } = this
+          const params = {
+            id: projectId,
+            projstart: basicForm.projstart,
+            projauditcontent: basicForm.projauditcontent
+          }
+          updateAuditInfo(params).then(res => {
+            this.$message.success('修改成功')
+          })
+        }
       })
     }
   }
@@ -117,6 +156,9 @@ export default {
         font-size: 20px;
       }
     }
+  }
+  .basic-right-btn {
+    float: right;
   }
 }
 </style>

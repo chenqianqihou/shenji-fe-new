@@ -8,7 +8,7 @@
       </template>
       <el-dropdown class="avatar-container right-menu-item hover-effect" trigger="click">
         <div class="avatar-wrapper">
-          <el-avatar icon="el-icon-user-solid" size="small"></el-avatar>
+          <el-avatar icon="el-icon-user-solid" size="small" />
           <i class="el-icon-arrow-down el-icon--right"></i>
         </div>
         <el-dropdown-menu slot="dropdown">

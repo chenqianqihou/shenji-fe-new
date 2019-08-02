@@ -58,3 +58,11 @@ export function getDetail(params) {
     params
   })
 }
+
+export function updateAuditInfo(data) {
+  return request({
+    url: '/project/auditinfo',
+    method: 'post',
+    data
+  })
+}
