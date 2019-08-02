@@ -56,11 +56,11 @@
           <el-option v-for="(item, idx) in selectList.type" :key="idx" :value="item.name" :label="item.name"></el-option>
         </el-select>
       </el-form-item>
-      <el-form-item prop="subtype" :rules="[{
+      <el-form-item prop="subType" :rules="[{
         required: true,
         message: '请选择项目子类'
       }]">
-        <el-select v-model="form.subtype" placeholder="请选择" class="sub-width">
+        <el-select v-model="form.subType" placeholder="请选择" class="sub-width">
           <el-option v-for="(item, idx) in selectList.subTypeList" :key="idx" :value="item" :label="item"></el-option>
         </el-select>
       </el-form-item>
@@ -104,7 +104,8 @@
 </template>
 
 <script>
-import { selectConfig, selectList, createProject } from '@/api/project'
+import { selectConfig, selectList, createProject, getProjectDetail, updateProject } from '@/api/project'
+import { createVerify } from 'crypto';
 
 export default {
   name: 'AddEdit',
@@ -125,11 +126,26 @@ export default {
   created() {
     this.getSelectConfig()
     this.getSelectList()
-    // if (this.$route.params.id) {
-    //   this.queryDetail()
-    // }
   },
   methods: {
+    queryDetail() {
+      getProjectDetail({
+        id: this.$route.params.id
+      }).then(res => {
+        Object.keys(res.data).forEach(key => {
+          if (key === 'projtype') {
+            let item = JSON.parse(res.data['projtype'])
+            res.data.type = item[0]
+            res.data.subType = item[1] || ''
+          } else if (!isNaN(+res.data[key])) {
+            res.data[key] = +res.data[key]
+          }
+        })
+        this.form = res.data
+        this.handleChangeOrg()
+        this.handleChangeType()
+      })
+    },
     getSelectConfig() {
       selectConfig().then(res => {
         const keys = Object.keys(res.data)
@@ -140,7 +156,7 @@ export default {
             let item
             if (typeof r === 'object') {
               item = {
-                value: Object.keys(r)[0],
+                value: +Object.keys(r)[0],
                 label: Object.values(r)[0]
               }
             } else {
@@ -156,35 +172,56 @@ export default {
         this.selectList = res.data
         this.selectList.subOrgList = []
         this.selectList.subTypeList = []
+        if (this.isEdit) {
+          this.queryDetail()
+        }
       })
     },
     handleChangeOrg() {
-      this.form.leadorgan = ''
+      if (!this.isEdit) {
+        this.form.leadorgan = ''
+      }
       const { form: { projorgan}} = this
-      const item = this.selectList.organlist.find(row => row.id === projorgan)
-      this.selectList.subOrgList = []
-      item.partment.forEach(row => {
-        this.selectList.subOrgList.push({
-          id: Object.keys(row)[0],
-          name: Object.values(row)[0]
+      if (this.selectList.organlist) {
+        const item = this.selectList.organlist.find(row => row.id === projorgan)
+        this.selectList.subOrgList = []
+        item.partment.forEach(item => {
+          this.selectList.subOrgList.push({
+            id: +Object.keys(item)[0],
+            name: Object.values(item)[0]
+          })
         })
-      })
+      }
     },
     handleChangeType() {
-      const { form: { type}} = this
-      const item = this.selectList.type.find(row => row.name === type)
-      this.selectList.subTypeList = item.list || []
-      this.form.subType = ''
+      const { form: { type, id}} = this
+      if (this.selectList.type) {
+        const item = this.selectList.type.find(row => row.name === type)
+        this.selectList.subTypeList = item.list || []
+        if (!id) {
+          this.form.subType = ''
+        }
+      }
     },
     handleSubmit() {
       this.$refs['projectForm'].validate(valid => {
         if (valid) {
           let params = Object.assign({}, this.form)
-          params.projtype = [params.type, params.subType]
+          let optMethod = createProject
+          if (this.isEdit) {
+            optMethod = updateProject
+            delete params.ctime
+            delete params.utime
+            delete params.status
+            delete params.projauditcontent
+            delete params.projectnum
+            delete params.projstart
+          }
+          params.projtype = [this.form.type, this.form.subType]
           delete params.type
           delete params.subType
-          createProject(params).then(res => {
-            this.$message.success('新建成功')
+          optMethod(params).then(res => {
+            this.$message.success(`${this.isEdit ? '编辑' : '新建'}成功`)
             this.$router.push('/project')
           })
         }

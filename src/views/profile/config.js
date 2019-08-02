@@ -1,5 +1,8 @@
 const props = {
   base: [{
+    value: 'pid',
+    label: '人员ID'
+  }, {
     value: 'name',
     label: '姓名',
     required: true

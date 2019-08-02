@@ -34,3 +34,27 @@ export function createProject(data) {
     data
   })
 }
+
+export function getProjectDetail(params) {
+  return request({
+    url: '/project/editinfo',
+    method: 'get',
+    params
+  })
+}
+
+export function updateProject(data) {
+  return request({
+    url: '/project/update',
+    method: 'post',
+    data
+  })
+}
+
+export function getDetail(params) {
+  return request({
+    url: '/project/info',
+    method: 'get',
+    params
+  })
+}

@@ -117,10 +117,14 @@
         <el-table-column label="项目编号" align="center" prop="projectnum" />
         <el-table-column label="项目名称" align="center" prop="name" />
         <el-table-column label="项目年度" align="center" prop="projyear" />
-        <el-table-column label="项目单位" prop="projorgan" align="center" />
+        <el-table-column label="项目单位" prop="projorgan" align="center">
+          <template slot-scope="{row}">
+            {{ toOrgName(row.projorgan) }}
+          </template>
+        </el-table-column>
         <el-table-column label="项目层级" align="center" prop="projlevel">
           <template slot-scope="{row}">
-            {{ originConfig.projlevel[row.projlevel] }}
+            {{ originConfig.projlevel[+row.projlevel] }}
           </template>
         </el-table-column>
         <el-table-column label="计划时长（天）" align="center" prop="plantime" />
@@ -172,7 +176,7 @@
 
 <script>
 import Pagination from '@/components/Pagination'
-import { fetchList, deleteProject, selectConfig } from '@/api/project'
+import { fetchList, deleteProject, selectConfig, selectList } from '@/api/project'
 const queryString = {
   projyear: '',
   projlevel: '',
@@ -193,14 +197,28 @@ export default {
       total: 0,
       checkedOptions: [],
       selectConfig: {},
-      originConfig: {}
+      originConfig: {},
+      selectList: {}
     }
   },
   created() {
     this.getSelectConfig()
+    this.getSelectList()
     this.getList()
   },
   methods: {
+    toOrgName(id) {
+      if (this.selectList.organlist) {
+        const item = this.selectList.organlist.find(row => row.id === id)
+        return item.name || id
+      }
+      return id
+    },
+    getSelectList() {
+      selectList().then(res => {
+        this.selectList = res.data
+      })
+    },
     getSelectConfig() {
       selectConfig().then(res => {
         const keys = Object.keys(res.data)
