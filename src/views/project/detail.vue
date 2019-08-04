@@ -18,10 +18,10 @@
     <el-divider></el-divider>
     <el-tabs v-model="activeName">
       <el-tab-pane label="基本信息" name="first">
-        <el-form :model="basicForm" label-width="80px" ref="auditInfoForm">
+        <el-form :model="basicForm" label-width="90px" ref="auditInfoForm">
           <el-row>
             <el-col :span="16">
-              <el-form-item label="项目描述">
+              <el-form-item label="项目描述:">
                 <span>{{ detail.basic.projdesc || '' }}</span>
               </el-form-item>
             </el-col>
@@ -29,7 +29,7 @@
           <el-divider></el-divider>
           <el-row>
             <el-col :span="16">
-              <el-form-item label="开始时间" prop="projstart" :rules="[{
+              <el-form-item label="开始时间:" prop="projstart" :rules="[{
                 required: true,
                 message: '请选择开始时间'
               }]">
@@ -44,12 +44,15 @@
             </el-col>
             <el-col :span="8">
               <el-button type="danger" class="basic-right-btn" v-if="!basicEditing" @click="basicEditing = true">编辑</el-button>
-              <el-button type="primary" class="basic-right-btn" v-else @click="handleSaveBasic">保存</el-button>
+              <div class="basic-right-btn" v-else>
+                <el-button type="info" @click="basicEditing = false">取消</el-button>
+                <el-button type="primary" class="basic-right-btn" @click="handleSaveBasic">保存</el-button>
+              </div>
             </el-col>
           </el-row>
           <el-row>
             <el-col :span="16">
-              <el-form-item label="审计内容" prop="projauditcontent" :rules="[{
+              <el-form-item label="审计内容:" prop="projauditcontent" :rules="[{
                 required: true,
                 message: '请输入审计内容'
               }]">
