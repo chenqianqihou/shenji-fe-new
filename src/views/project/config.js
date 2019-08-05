@@ -34,6 +34,15 @@ const props = [{
   append: '天'
 }]
 
+const statusMap = {
+  1: '计划阶段',
+  2: '实施阶段',
+  3: '审理阶段',
+  4: '报告阶段',
+  5: '项目结束'
+}
+
 export {
-  props
+  props,
+  statusMap
 }

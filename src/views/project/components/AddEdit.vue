@@ -18,13 +18,17 @@
           <span slot="append">天</span>
         </el-input>
       </el-form-item>
-      <el-form-item label="项目年度" prop="plantime" :rules="[{
+      <el-form-item label="项目年度" prop="projyear" :rules="[{
         required: true,
         message: '请选择项目年度'
       }]">
-        <el-select v-model="form.projyear" placeholder="请选择" class="sub-width">
-          <el-option v-for="(item, idx) in selectConfig.projyear" :key="idx" :value="item" :label="item" />
-        </el-select>
+        <el-date-picker
+          v-model="form.projyear"
+          type="year"
+          placeholder="选择年"
+          value-format="yyyy"
+          class="sub-width">
+        </el-date-picker>
       </el-form-item>
       <el-form-item label="项目描述" prop="projdesc" :rules="[{
         required: true,

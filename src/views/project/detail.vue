@@ -1,7 +1,7 @@
 <template>
   <el-card class="project-detail-box">
     <div slot="header" class="clearfix">
-      <h4>项目详情</h4>
+      <h4>项目{{ detail.basic.projectname || '详情' }}</h4>
     </div>
     <div class="head-box">
       <el-row class="basic-box">
@@ -12,7 +12,7 @@
       </el-row>
       <div class="tag-box">
         <div class="tag-box-label">项目阶段</div>
-        <div class="tag-box-value">实施阶段</div>
+        <div class="tag-box-value">{{ statusMap[detail.basic.projectstatus] }}</div>
       </div>
     </div>
     <el-divider></el-divider>
@@ -63,7 +63,23 @@
           </el-row>
         </el-form>
       </el-tab-pane>
-      <el-tab-pane label="审计组" name="second">审计组</el-tab-pane>
+      <el-tab-pane label="审计组" name="second">
+        <div style="display:flex">
+          <div style="width: 140px;vertical-align: middle;line-height: 112px;">需要第三方人员：</div>
+          <div style="flex: 1">
+            <div style="margin: 10px">
+              <el-checkbox>中介机构</el-checkbox>
+              <span style="font-weight: bold">中介审核：待提审</span>
+              <el-button type="danger">提交审核</el-button>
+            </div>
+            <el-divider style="margn: 0"></el-divider>
+            <div style="margin: 10px">
+              <el-checkbox>内审机构</el-checkbox>
+              <span style="font-weight: bold;font-size:14px;">内审审核：无需审核</span>
+            </div>
+          </div>
+        </div>
+      </el-tab-pane>
       <el-tab-pane label="审理成员" name="third">审理成员</el-tab-pane>
       <el-tab-pane label="审计评价" name="fourth">审计评价</el-tab-pane>
     </el-tabs>
@@ -71,7 +87,7 @@
 </template>
 
 <script>
-import { props } from './config'
+import { props, statusMap } from './config'
 import { parseTime } from '@/utils'
 import { getDetail, updateAuditInfo } from '@/api/project'
 export default {
@@ -91,6 +107,7 @@ export default {
       },
       basicEditing: false,
       props: props,
+      statusMap: statusMap,
       activeName: 'first'
     }
   },
