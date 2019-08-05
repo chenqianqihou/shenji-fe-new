@@ -72,6 +72,7 @@
 
 <script>
 import { props } from './config'
+import { parseTime } from '@/utils'
 import { getDetail, updateAuditInfo } from '@/api/project'
 export default {
   data() {
@@ -119,11 +120,14 @@ export default {
           const { basicForm, projectId } = this
           const params = {
             id: projectId,
-            projstart: basicForm.projstart,
+            projstart: Math.floor(new Date(basicForm.projstart).getTime() / 1000),
             projauditcontent: basicForm.projauditcontent
           }
           updateAuditInfo(params).then(res => {
+            this.detail.basic.projstart = parseTime(basicForm.projstart, '{y}-{m}-{d}')
+            this.detail.basic.projauditcontent = basicForm.projauditcontent
             this.$message.success('修改成功')
+            this.basicEditing = false
           })
         }
       })

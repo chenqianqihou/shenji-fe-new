@@ -105,7 +105,6 @@
 
 <script>
 import { selectConfig, selectList, createProject, getProjectDetail, updateProject } from '@/api/project'
-import { createVerify } from 'crypto';
 
 export default {
   name: 'AddEdit',
