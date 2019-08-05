@@ -111,7 +111,8 @@ export default {
   data() {
     return {
       form: {
-        leadorgan: ''
+        leadorgan: '',
+        subType: ''
       },
       selectConfig: {},
       selectList: {}
