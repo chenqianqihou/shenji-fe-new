@@ -5,7 +5,7 @@
     </div>
     <div class="head-box">
       <el-row class="basic-box">
-        <el-col :span="6" v-for="(item, key) in props" :key="key" class="basic-box-col">
+        <el-col v-for="(item, key) in props" :key="key" :span="6" class="basic-box-col">
           <span class="basic-box-label">{{ item.label }}:</span>
           <span class="basic-box-value">{{ (detail.head[item.value] || '') + (item.append || '') }}</span>
         </el-col>
@@ -15,10 +15,10 @@
         <div class="tag-box-value">实施阶段</div>
       </div>
     </div>
-    <el-divider></el-divider>
+    <el-divider />
     <el-tabs v-model="activeName">
       <el-tab-pane label="基本信息" name="first">
-        <el-form :model="basicForm" label-width="90px" ref="auditInfoForm">
+        <el-form ref="auditInfoForm" :model="basicForm" label-width="90px">
           <el-row>
             <el-col :span="16">
               <el-form-item label="项目描述:">
@@ -26,25 +26,29 @@
               </el-form-item>
             </el-col>
           </el-row>
-          <el-divider></el-divider>
+          <el-divider />
           <el-row>
             <el-col :span="16">
-              <el-form-item label="开始时间:" prop="projstart" :rules="[{
-                required: true,
-                message: '请选择开始时间'
-              }]">
+              <el-form-item
+                label="开始时间:"
+                prop="projstart"
+                :rules="[{
+                  required: true,
+                  message: '请选择开始时间'
+                }]"
+              >
                 <span v-if="!basicEditing">{{ detail.basic.projstart || '待编辑' }}</span>
                 <el-date-picker
                   v-else
-                  type="date"
                   v-model="basicForm.projstart"
+                  type="date"
                   placeholder="请选择"
                 />
               </el-form-item>
             </el-col>
             <el-col :span="8">
-              <el-button type="danger" class="basic-right-btn" v-if="!basicEditing" @click="basicEditing = true">编辑</el-button>
-              <div class="basic-right-btn" v-else>
+              <el-button v-if="!basicEditing" type="danger" class="basic-right-btn" @click="basicEditing = true">编辑</el-button>
+              <div v-else class="basic-right-btn">
                 <el-button type="info" @click="basicEditing = false">取消</el-button>
                 <el-button type="primary" class="basic-right-btn" @click="handleSaveBasic">保存</el-button>
               </div>
@@ -52,18 +56,22 @@
           </el-row>
           <el-row>
             <el-col :span="16">
-              <el-form-item label="审计内容:" prop="projauditcontent" :rules="[{
-                required: true,
-                message: '请输入审计内容'
-              }]">
+              <el-form-item
+                label="审计内容:"
+                prop="projauditcontent"
+                :rules="[{
+                  required: true,
+                  message: '请输入审计内容'
+                }]"
+              >
                 <div v-if="!basicEditing">{{ detail.basic.projauditcontent || '待编辑' }}</div>
-                <el-input type="textarea" :rows="6" v-model="basicForm.projauditcontent" v-else></el-input>
+                <el-input v-else v-model="basicForm.projauditcontent" type="textarea" :rows="6" />
               </el-form-item>
             </el-col>
           </el-row>
         </el-form>
       </el-tab-pane>
-      <el-tab-pane label="审计组" name="second">审计组</el-tab-pane>
+      <el-tab-pane label="审计组" name="second" />
       <el-tab-pane label="审理成员" name="third">审理成员</el-tab-pane>
       <el-tab-pane label="审计评价" name="fourth">审计评价</el-tab-pane>
     </el-tabs>

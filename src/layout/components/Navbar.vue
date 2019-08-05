@@ -9,7 +9,7 @@
       <el-dropdown class="avatar-container right-menu-item hover-effect" trigger="click">
         <div class="avatar-wrapper">
           <el-avatar icon="el-icon-user-solid" size="small" />
-          <i class="el-icon-arrow-down el-icon--right"></i>
+          <i class="el-icon-arrow-down el-icon--right" />
         </div>
         <el-dropdown-menu slot="dropdown">
           <router-link to="/profile/index">
