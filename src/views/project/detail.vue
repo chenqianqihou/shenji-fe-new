@@ -1,7 +1,10 @@
 <template>
   <el-card class="project-detail-box">
-    <div slot="header" class="clearfix">
+    <div slot="header" class="clearfix title">
       <h4>项目{{ detail.basic.projectname || '详情' }}</h4>
+      <div>
+        <el-button size="mini" type="primary" @click="$router.push(`/project/edit/${projectId}`)">项目计划编辑</el-button>
+      </div>
     </div>
     <div class="head-box">
       <el-row class="basic-box">
@@ -69,13 +72,13 @@
           <div style="flex: 1">
             <div style="margin: 10px">
               <el-checkbox>中介机构</el-checkbox>
-              <span style="font-weight: bold">中介审核：待提审</span>
-              <el-button type="danger">提交审核</el-button>
+              <span style="font-weight: bold; font-size:14px;">中介审核：{{ stsMap[detail.auditgroup.medium] || '-' }}</span>
+              <el-button type="danger" style="margin-left: 20px" size="mini">提交审核</el-button>
             </div>
             <el-divider style="margn: 0"></el-divider>
             <div style="margin: 10px">
               <el-checkbox>内审机构</el-checkbox>
-              <span style="font-weight: bold;font-size:14px;">内审审核：无需审核</span>
+              <span style="font-weight: bold;font-size:14px;">内审审核：{{ stsMap[detail.auditgroup.internal] || '-' }}</span>
             </div>
           </div>
         </div>
@@ -87,7 +90,7 @@
 </template>
 
 <script>
-import { props, statusMap } from './config'
+import { props, statusMap, operateMap, stsMap } from './config'
 import { parseTime } from '@/utils'
 import { getDetail, updateAuditInfo } from '@/api/project'
 export default {
@@ -108,6 +111,8 @@ export default {
       basicEditing: false,
       props: props,
       statusMap: statusMap,
+      operateMap: operateMap,
+      stsMap: stsMap,
       activeName: 'first'
     }
   },
@@ -126,7 +131,7 @@ export default {
       }).then(res => {
         this.detail = res.data
         const item = JSON.parse(res.data.head['projtype'])
-        this.detail.head.projtype = item[0]
+        this.detail.head.projtype = item.length > 0 ? item.join('/') : ''
         this.basicForm.projstart = this.detail.basic.projstart
         this.basicForm.projauditcontent = this.detail.basic.projauditcontent
       })
@@ -156,6 +161,13 @@ export default {
 .project-detail-box{
   height: 100%;
   margin: 20px;
+  .title{
+    display: flex;
+    div {
+      line-height: 61px;
+      margin-left: 20px;
+    }
+  }
   .el-card__header{
     padding: 0 20px !important;
   }

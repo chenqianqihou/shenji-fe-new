@@ -42,7 +42,24 @@ const statusMap = {
   5: '项目结束'
 }
 
+const operateMap = {
+  1: '确认计划',
+  2: '启动项目',
+  3: '开始审理',
+  4: '结束审理'
+}
+
+const stsMap = {
+  1: '无需审核',
+  2: '待提审',
+  3: '待审核',
+  4: '审核通过',
+  5: '审核未通过'
+}
+
 export {
   props,
-  statusMap
+  stsMap,
+  statusMap,
+  operateMap
 }
