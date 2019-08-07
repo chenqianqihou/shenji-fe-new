@@ -101,7 +101,7 @@
       </div>
       <el-form-item>
         <el-button type="primary" @click="handleSubmit">提交</el-button>
-        <el-button @click="$router.push(`/project/detail/${isEdit}`)">取消</el-button>
+        <el-button @click="isEdit ? $router.push(`/project/detail/${isEdit}`) : $router.push(`/project/index`)">取消</el-button>
       </el-form-item>
     </el-form>
   </el-card>

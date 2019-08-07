@@ -72,13 +72,13 @@
           <div style="flex: 1">
             <div style="margin: 10px">
               <el-checkbox>中介机构</el-checkbox>
-              <span style="font-weight: bold; font-size:14px;">中介审核：{{ stsMap[detail.auditgroup.medium] || '-' }}</span>
+              <span style="font-weight: bold; font-size:14px;">中介审核：{{ detail.auditgroup.medium ? stsMap[detail.auditgroup.medium] : '-' }}</span>
               <el-button type="danger" style="margin-left: 20px" size="mini">提交审核</el-button>
             </div>
             <el-divider style="margn: 0"></el-divider>
             <div style="margin: 10px">
               <el-checkbox>内审机构</el-checkbox>
-              <span style="font-weight: bold;font-size:14px;">内审审核：{{ stsMap[detail.auditgroup.internal] || '-' }}</span>
+              <span style="font-weight: bold;font-size:14px;">内审审核：{{ detail.auditgroup.internal ? stsMap[detail.auditgroup.internal] : '-' }}</span>
             </div>
           </div>
         </div>
@@ -102,7 +102,8 @@ export default {
         },
         basic: {
           projdesc: ''
-        }
+        },
+        auditgroup: {}
       },
       basicForm: {
         projstart: '',
