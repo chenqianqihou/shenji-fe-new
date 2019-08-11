@@ -4,6 +4,7 @@
       <h4>项目{{ detail.basic.projectname || '详情' }}</h4>
       <div>
         <el-button size="mini" type="primary" @click="$router.push(`/project/edit/${projectId}`)">项目计划编辑</el-button>
+        <el-button size="mini" :class="`status-btn-${+detail.basic.projectstatus}`" @click="changeStatus" v-if="+detail.basic.projectstatus < 4">{{ operateMap[+detail.basic.projectstatus] }}</el-button>
       </div>
     </div>
     <div class="head-box">
@@ -71,28 +72,235 @@
           <div style="width: 140px;vertical-align: middle;line-height: 112px;">需要第三方人员：</div>
           <div style="flex: 1">
             <div style="margin: 10px">
-              <el-checkbox>中介机构</el-checkbox>
+              <el-checkbox v-model="listQuery.isinternal" :true-label="1" :false-label="2">中介机构</el-checkbox>
               <span style="font-weight: bold; font-size:14px;">中介审核：{{ detail.auditgroup.medium ? stsMap[detail.auditgroup.medium] : '-' }}</span>
-              <el-button type="danger" style="margin-left: 20px" size="mini">提交审核</el-button>
+              <!-- <el-button type="danger" style="margin-left: 20px" size="mini">提交审核</el-button> -->
             </div>
-            <el-divider style="margn: 0"></el-divider>
+            <el-divider style="margin: 0"></el-divider>
             <div style="margin: 10px">
-              <el-checkbox>内审机构</el-checkbox>
+              <el-checkbox v-model="listQuery.ismedium" :true-label="1" :false-label="2">内审机构</el-checkbox>
               <span style="font-weight: bold;font-size:14px;">内审审核：{{ detail.auditgroup.internal ? stsMap[detail.auditgroup.internal] : '-' }}</span>
             </div>
           </div>
         </div>
+        <el-divider></el-divider>
+        <div v-for="(item, idx) in detail.auditgroup.list" :key="idx">
+          <div style="display: flex;justify-content: space-between;">
+            <h3>审计组{{ idx + 1 }}</h3>
+            <div>
+              <h4>审计状态</h4>
+              <span>{{ auditStatusMap[+item.status] }}</span>
+            </div>
+          </div>
+          <div>
+            <el-button type="primary" @click="handleAdd">新增人员</el-button>
+            <el-button :type="[1, 3].includes(item.operate) ? `success` : 'error'" @click="changeAuditStatus(item.operate)">{{ auditOptMap[item.operate] }}</el-button>
+          </div>
+          <div style="margin-top: 20px;">
+            <el-table
+              border
+              :data="item.group || []"
+              highlight-current-row
+              style="width: 100%"
+            >
+              <el-table-column label="成员ID" align="center" prop="pid" />
+              <el-table-column label="成员姓名" align="center" prop="name" />
+              <el-table-column label="性别" align="center" prop="roletype">
+                <template slot-scope="{row}">
+                  {{ selectConfig.sex[row.sex] }}
+                </template>
+              </el-table-column>
+              <el-table-column label="机构类型" prop="projorgan" align="roletype">
+                <template slot-scope="{row}">
+                  {{ selectConfig.type[row.roletype] }}
+                </template>
+              </el-table-column>
+              <el-table-column label="所属市县" align="center" prop="location">
+              </el-table-column>
+              <el-table-column label="项目角色" align="center" prop="role">
+                <template slot-scope="{row}">
+                  {{ roleMap[row.role] }}
+                </template>
+              </el-table-column>
+              <el-table-column
+                label="操作"
+                align="center"
+                width="300"
+              >
+                <template slot-scope="{row}">
+                  <el-button
+                    size="mini"
+                    type="text"
+                    @click="handleAuditDelete(row, item.id)"
+                  >删除</el-button>
+                  <el-button
+                    type="text"
+                    size="mini"
+                    @click="handleShowRole(row, item.id)"
+                  >更改角色</el-button>
+                  <el-button
+                    v-if="+row.islock === 2"
+                    type="text"
+                    size="mini"
+                    @click="handleUnlock(row, item.id)"
+                  >解锁</el-button>
+                </template>
+              </el-table-column>
+            </el-table>
+          </div>
+          <el-divider v-if="(idx + 1) < detail.auditgroup.list.length"></el-divider>
+        </div>
+         <el-dialog title="修改角色" :visible.sync="roleDialogVisible" width="500px" center @close="closeRoleDialog">
+          <el-form ref="roleForm" :model="roleForm">
+            <el-form-item
+              label="角色"
+              label-width="100px"
+              prop="role"
+              :rules="[{
+                required: true,
+                message: '请选择角色'
+              }]"
+            >
+              <el-select v-model="roleForm.role" placeholder="请选择角色" style="width: 100%">
+                <el-option v-for="(v, k, idx) in roleMap" :key="idx" :label="v" :value="k" />
+              </el-select>
+            </el-form-item>
+          </el-form>
+          <div slot="footer" class="dialog-footer">
+            <el-button @click="roleDialogVisible = false">取 消</el-button>
+            <el-button type="primary" @click="handleUpdateRole">确 定</el-button>
+          </div>
+        </el-dialog>
       </el-tab-pane>
-      <el-tab-pane label="审理成员" name="third">审理成员</el-tab-pane>
+      <el-tab-pane label="审理成员" name="third">
+        <div style="margin-bottom: 20px">
+          <el-button type="primary" @click="handleAdd">新增人员</el-button>
+        </div>
+        <el-table
+          :data="[]"
+          border
+          highlight-current-row
+          style="width: 100%"
+        >
+          <el-table-column label="成员ID" align="center" prop="pid" show-overflow-tooltip />
+          <el-table-column label="成员姓名" align="center" prop="name" show-overflow-tooltip />
+          <el-table-column label="性别" align="center" prop="sex" show-overflow-tooltip />
+          <el-table-column label="所属部门" prop="type" align="center" show-overflow-tooltip />
+          <el-table-column label="所属市县" align="center" prop="department" show-overflow-tooltip />
+          <el-table-column label="审计组" align="center" prop="projectnum" />
+          <el-table-column
+            label="操作"
+            align="center"
+          >
+            <template slot-scope="{row}">
+              <el-button
+                size="mini"
+                type="text"
+              >删除</el-button>
+              <el-button
+                v-if="+row.islock === 2"
+                type="text"
+                size="mini"
+              >更改审计组</el-button>
+            </template>
+          </el-table-column>
+        </el-table>
+      </el-tab-pane>
       <el-tab-pane label="审计评价" name="fourth">审计评价</el-tab-pane>
     </el-tabs>
+    <el-dialog
+      title="添加成员"
+      :visible.sync="memDialigVisible"
+      width="1000px"
+      center>
+       <el-form :inline="true">
+        <el-form-item label="机构类型">
+          <el-select
+            v-model="listQuery.type"
+            placeholder="请选择"
+            style="width: 150px"
+            class="filter-item"
+          >
+            <el-option v-for="(idx, item) in selectConfig.type" :key="item" :value="item" :label="idx" />
+          </el-select>
+        </el-form-item>
+        <el-form-item label="工作状态">
+          <el-select
+            v-model="listQuery.jobstatus"
+            placeholder="请选择"
+            style="width: 150px"
+            class="filter-item"
+          >
+            <el-option v-for="(idx, item) in memStatusMap" :key="item" :value="item" :label="idx" />
+          </el-select>
+        </el-form-item>
+        <el-button
+          class="filter-item"
+          type="primary"
+          @click="queryUserList"
+        >查询</el-button>
+        <el-button
+          class="filter-item"
+          @click="handleResetFilter"
+        >重置</el-button>
+      </el-form>
+      <el-table
+        border
+        :data="userList"
+        highlight-current-row
+        style="width: 100%"
+      >
+        <el-table-column label="人员ID" align="center" prop="pid" show-overflow-tooltip />
+        <el-table-column label="成员姓名" align="center" prop="name" show-overflow-tooltip />
+        <el-table-column label="性别" align="center" prop="sex" show-overflow-tooltip />
+        <el-table-column label="机构类型" prop="type" align="center" show-overflow-tooltip />
+        <el-table-column label="所属市县" align="center" prop="department" show-overflow-tooltip />
+        <el-table-column label="工作状态" align="center" prop="isjob" show-overflow-tooltip />
+        <el-table-column label="在途项目" align="center" prop="projectnum" />
+        <el-table-column
+          label="操作"
+          align="center"
+        >
+          <template slot-scope="{row}">
+            <el-button
+              size="mini"
+              type="text"
+            >人员分析</el-button>
+            <el-button
+              type="text"
+              size="mini"
+            >添加</el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+      <pagination
+        v-show="total>0"
+        :total="total"
+        :page.sync="listQuery.page"
+        :limit.sync="listQuery.length"
+        @pagination="queryUserList"
+      />
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="memDialigVisible = false">取 消</el-button>
+        <el-button type="primary" @click="memDialigVisible = false">确 定</el-button>
+      </span>
+    </el-dialog>
   </el-card>
 </template>
 
 <script>
-import { props, statusMap, operateMap, stsMap } from './config'
+import Pagination from '@/components/Pagination'
+import { props, statusMap, operateMap, stsMap, auditStatusMap, auditOptMap, roleMap, memStatusMap } from './config'
 import { parseTime } from '@/utils'
-import { getDetail, updateAuditInfo } from '@/api/project'
+import { getDetail, updateAuditInfo, updateStatus, updateAuditStatus, unlock, updateRole, auditDelete, getUserList } from '@/api/project'
+const query = {
+  page: 1,
+  length: 10,
+  jobstatus: '1',
+  type: '3',
+  isinternal: 2,
+  ismedium: 2
+}
 export default {
   data() {
     return {
@@ -114,8 +322,27 @@ export default {
       statusMap: statusMap,
       operateMap: operateMap,
       stsMap: stsMap,
-      activeName: 'first'
+      activeName: 'first',
+      selectConfig: this.$store.getters.userSelectConfig,
+      memDialigVisible: false,
+      roleDialogVisible: false,
+      auditStatusMap: auditStatusMap,
+      auditOptMap: auditOptMap,
+      roleMap: roleMap,
+      memStatusMap: memStatusMap,
+      currentGroudId: '',
+      roleForm: {
+        id: '',
+        pid: '',
+        role: ''
+      },
+      total: 0,
+      listQuery: Object.assign({}, query),
+      userList: []
     }
+  },
+  components: {
+    Pagination
   },
   computed: {
     projectId() {
@@ -154,6 +381,64 @@ export default {
           })
         }
       })
+    },
+    changeStatus() {
+      const status = this.detail.basic.projectstatus
+      updateStatus({
+        operate: +status + 1,
+        id: this.projectId
+      }).then(res => {
+        this.$message.success('操作成功')
+        this.detail.basic.projectstatus = String(+this.detail.basic.projectstatus + 1)
+      })
+    },
+    changeAuditStatus() {
+      updateAuditStatus().then(res => {
+      })
+    },
+    handleShowRole(row, id) {
+      this.roleForm.pid = row.pid
+      this.roleForm.id = id
+      this.roleDialogVisible = true
+    },
+    handleUnlock(row, id) {
+      unlock({
+        pid: row.pid,
+        id: id
+      }).then(res => {
+        this.$message.success('解锁成功')
+      })
+    },
+    handleUpdateRole() {
+      const { roleForm } = this
+      updateRole(roleForm).then(res => {
+        this.$message.success('修改成功')
+      })
+    },
+    handleAuditDelete(row, id) {
+      auditDelete({
+        pid: row.pid,
+        id: id
+      }).then(res => {
+        this.$message.success('删除成功')
+      })
+    },
+    closeRoleDialog() {
+      this.$refs['roleForm'].resetFields()
+    },
+    queryUserList() {
+      const params = Object.assign({}, this.listQuery)
+      getUserList(params).then(res => {
+        this.userList = res.data.list || []
+        this.total = +res.data.total || 0
+      })
+    },
+    handleAdd() {
+      this.memDialigVisible = true
+      this.queryUserList()
+    },
+    handleResetFilter() {
+      this.listQuery = Object.assign({}, query)
     }
   }
 }
@@ -167,6 +452,23 @@ export default {
     div {
       line-height: 61px;
       margin-left: 20px;
+      .status-btn {
+        &-1 {
+          color: #fff;
+          background: rgba(153, 0, 204, 1);
+          border-color: rgba(153, 0, 204, 1);
+        }
+        &-2 {
+          color: #fff;
+          background: rgba(0, 153, 0, 0.847058823529412);
+          border-color: rgba(0, 153, 0, 0.847058823529412);
+        }
+        &-3 {
+          color: #fff;
+          background: rgba(255, 204, 0, 0.847058823529412);
+          border-color: rgba(255, 204, 0, 0.847058823529412);
+        }
+      }
     }
   }
   .el-card__header{

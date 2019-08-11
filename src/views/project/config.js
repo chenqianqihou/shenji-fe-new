@@ -57,9 +57,43 @@ const stsMap = {
   5: '审核未通过'
 }
 
+const auditOptMap = {
+  1: '进点',
+  2: '实施结束',
+  3: '开始报告',
+  4: '报告结束'
+}
+
+const auditStatusMap = {
+  1: '应进点',
+  2: '该进点而未进点',
+  3: '已进点',
+  4: '该结束未结束',
+  5: '实施结束',
+  6: '待报告',
+  7: '报告中',
+  8: '报告结束'
+}
+
+const roleMap = {
+  1: '审计组长',
+  2: '主审',
+  3: '审计成员'
+}
+
+const memStatusMap = {
+  1: '在点',
+  2: '不在点',
+  3: '-'
+}
+
 export {
   props,
   stsMap,
   statusMap,
-  operateMap
+  operateMap,
+  auditOptMap,
+  roleMap,
+  auditStatusMap,
+  memStatusMap
 }

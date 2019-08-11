@@ -66,3 +66,50 @@ export function updateAuditInfo(data) {
     data
   })
 }
+
+export function updateStatus(data) {
+  return request({
+    url: '/project/updatestatus',
+    method: 'post',
+    data
+  })
+}
+
+export function updateAuditStatus(data) {
+  return request({
+    url: '/auditgroup/updatestatus',
+    method: 'post',
+    data
+  })
+}
+
+export function unlock(data) {
+  return request({
+    url: '/auditgroup/unlock',
+    method: 'post',
+    data
+  })
+}
+
+export function auditDelete(data) {
+  return request({
+    url: '/auditgroup/delete',
+    method: 'post',
+    data
+  })
+}
+
+export function updateRole(data) {
+  return request({
+    url: '/auditgroup/updaterole',
+    method: 'post',
+    data
+  })
+}
+
+export function getUserList(params) {
+  return request({
+    url: '/auditgroup/userlist',
+    params
+  })
+}

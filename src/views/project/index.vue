@@ -124,23 +124,23 @@
         </el-table-column>
         <el-table-column label="项目层级" align="center" prop="projlevel">
           <template slot-scope="{row}">
-            {{ originConfig.projlevel[+row.projlevel] }}
+            {{ row.projlevel ? originConfig.projlevel[+row.projlevel] : '' }}
           </template>
         </el-table-column>
         <el-table-column label="计划时长（天）" align="center" prop="plantime" />
         <el-table-column label="中介审核" align="center" prop="medium">
           <template slot-scope="{row}">
-            {{ originConfig.medium[row.medium] }}
+            {{ row.medium ? originConfig.medium[+row.medium] : '' }}
           </template>
         </el-table-column>
         <el-table-column label="内审审核" align="center" prop="internal">
           <template slot-scope="{row}">
-            {{ originConfig.internal[row.internal] }}
+            {{ row.internal ? originConfig.internal[+row.internal] : '' }}
           </template>
         </el-table-column>
-        <el-table-column label="项目阶段" align="center" prop="projstage">
+        <el-table-column label="项目阶段" align="center" prop="status">
           <template slot-scope="{row}">
-            {{ originConfig.projstage[row.projstage] }}
+            {{ row.status ? originConfig.projstage[+row.status] : '' }}
           </template>
         </el-table-column>
         <el-table-column
@@ -149,6 +149,11 @@
           width="300"
         >
           <template slot-scope="{row}">
+            <el-button
+              size="mini"
+              type="text"
+              @click="handleChangeStatus(row)"
+            >{{ operateMap[row.status] }}</el-button>
             <el-button
               size="mini"
               type="text"
@@ -176,7 +181,8 @@
 
 <script>
 import Pagination from '@/components/Pagination'
-import { fetchList, deleteProject, selectConfig, selectList } from '@/api/project'
+import { fetchList, deleteProject, selectConfig, selectList, updateStatus } from '@/api/project'
+import { statusMap, operateMap } from './config'
 const queryString = {
   projyear: '',
   projlevel: '',
@@ -198,7 +204,9 @@ export default {
       checkedOptions: [],
       selectConfig: {},
       originConfig: {},
-      selectList: {}
+      selectList: {},
+      statusMap: statusMap,
+      operateMap: operateMap
     }
   },
   created() {
@@ -269,6 +277,15 @@ export default {
           this.$message.success('删除成功!')
           this.getList()
         })
+      })
+    },
+    handleChangeStatus(row) {
+      updateStatus({
+        operate: +row.status + 1,
+        id: row.id
+      }).then(res => {
+        this.$message.success('操作成功')
+        row.status = String(+row.status + 1)
       })
     },
     handleFilter() {
