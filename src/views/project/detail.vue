@@ -403,13 +403,13 @@ export default {
       })
     },
     handleShowRole(row, id) {
-      this.roleForm.pid = row.pid
+      this.roleForm.pid = row.id
       this.roleForm.id = id
       this.roleDialogVisible = true
     },
     handleUnlock(row, id) {
       unlock({
-        pid: row.pid,
+        pid: row.id,
         id: id
       }).then(res => {
         this.$message.success('解锁成功')
@@ -419,11 +419,12 @@ export default {
       const { roleForm } = this
       updateRole(roleForm).then(res => {
         this.$message.success('修改成功')
+        this.closeRoleDialog()
       })
     },
     handleAuditDelete(row, id) {
       auditDelete({
-        pid: row.pid,
+        pid: row.id,
         id: id
       }).then(res => {
         this.$message.success('删除成功')
