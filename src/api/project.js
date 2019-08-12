@@ -113,3 +113,11 @@ export function getUserList(params) {
     params
   })
 }
+
+export function auditAdd(data) {
+  return request({
+    url: '/auditgroup/add',
+    method: 'post',
+    data
+  })
+}

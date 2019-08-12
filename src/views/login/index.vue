@@ -3,7 +3,7 @@
     <el-form ref="loginForm" :model="loginForm" :rules="loginRules" class="login-form" autocomplete="on" label-position="left">
 
       <div class="title-container">
-        <h3 class="title">系统登陆</h3>
+        <h3 class="title">用户登录</h3>
       </div>
 
       <el-form-item prop="account">
@@ -45,8 +45,12 @@
         </el-form-item>
       </el-tooltip>
 
-      <el-button :loading="loading" type="primary" style="width:100%;margin-bottom:30px;" @click.native.prevent="handleLogin">登陆</el-button>
+      <el-button :loading="loading" type="primary" class="login-btn" style="width:100%;margin-bottom:30px;" @click.native.prevent="handleLogin">登陆</el-button>
     </el-form>
+    <div class="login-footer">
+      <div>技术支持电话：张橹 0851-86615878 袁烨 0851-86617397</div>
+      <div>Copyright © 2019 All right reserved 版权所有 贵州省审计厅</div>
+    </div>
   </div>
 </template>
 
@@ -176,25 +180,25 @@ $cursor: #fff;
     width: 85%;
 
     input {
-      background: transparent;
+      background-color:#FFF;
       border: 0px;
       -webkit-appearance: none;
       border-radius: 0px;
       padding: 12px 5px 12px 15px;
-      color: $light_gray;
+      color: #000;
       height: 47px;
       caret-color: $cursor;
 
-      &:-webkit-autofill {
-        box-shadow: 0 0 0px 1000px $bg inset !important;
-        -webkit-text-fill-color: $cursor !important;
+       &:-webkit-autofill {
+        box-shadow: 0 0 0px 1000px #fff inset !important;
+        -webkit-text-fill-color: #000 !important;
       }
     }
   }
 
   .el-form-item {
     border: 1px solid rgba(255, 255, 255, 0.1);
-    background: rgba(0, 0, 0, 0.1);
+    background: #fff;
     border-radius: 5px;
     color: #454545;
   }
@@ -209,16 +213,27 @@ $light_gray:#eee;
 .login-container {
   min-height: 100%;
   width: 100%;
-  background-color: $bg;
+  background: url(../../assets/images/login-bg.png) no-repeat;
+  background-size: auto;
+  background-position: center;
   overflow: hidden;
 
   .login-form {
     position: relative;
     width: 520px;
     max-width: 100%;
-    padding: 160px 35px 0;
-    margin: 0 auto;
+    padding: 200px 35px 0;
     overflow: hidden;
+    float: right;
+    margin-right: 98px;
+    .login-btn {
+      height: 48px;
+      background: #0d6dff;
+      width: 100%;
+      font-size: 16px;
+      color: #fff;
+      border: none;
+    }
   }
 
   .tips {
@@ -246,7 +261,7 @@ $light_gray:#eee;
 
     .title {
       font-size: 26px;
-      color: $light_gray;
+      color: #0d6dff;
       margin: 0px auto 40px auto;
       text-align: center;
       font-weight: bold;
@@ -272,6 +287,19 @@ $light_gray:#eee;
   @media only screen and (max-width: 470px) {
     .thirdparty-button {
       display: none;
+    }
+  }
+
+  .login-footer {
+    position: fixed;
+    text-align: center;
+    bottom: 20px;
+    left: 0;
+    right: 0;
+    font-size: 14px;
+    color: $dark_gray;
+    div:first-child {
+      margin-bottom: 5px;
     }
   }
 }

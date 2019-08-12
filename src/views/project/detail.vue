@@ -93,8 +93,8 @@
             </div>
           </div>
           <div>
-            <el-button type="primary" @click="handleAdd">新增人员</el-button>
-            <el-button :type="[1, 3].includes(item.operate) ? `success` : 'error'" @click="changeAuditStatus(item.operate)">{{ auditOptMap[item.operate] }}</el-button>
+            <el-button type="primary" @click="handleAdd(item.id)">新增人员</el-button>
+            <el-button :type="[1, 3].includes(item.operate) ? `success` : 'error'" @click="changeAuditStatus(item.operate, item.id)">{{ auditOptMap[item.operate] }}</el-button>
           </div>
           <div style="margin-top: 20px;">
             <el-table
@@ -267,8 +267,10 @@
               type="text"
             >人员分析</el-button>
             <el-button
+              v-if="row.islock === '未锁定'"
               type="text"
               size="mini"
+              @click="handleAuditAdd(row)"
             >添加</el-button>
           </template>
         </el-table-column>
@@ -280,10 +282,10 @@
         :limit.sync="listQuery.length"
         @pagination="queryUserList"
       />
-      <span slot="footer" class="dialog-footer">
+      <!-- <span slot="footer" class="dialog-footer">
         <el-button @click="memDialigVisible = false">取 消</el-button>
         <el-button type="primary" @click="memDialigVisible = false">确 定</el-button>
-      </span>
+      </span> -->
     </el-dialog>
   </el-card>
 </template>
@@ -292,7 +294,7 @@
 import Pagination from '@/components/Pagination'
 import { props, statusMap, operateMap, stsMap, auditStatusMap, auditOptMap, roleMap, memStatusMap } from './config'
 import { parseTime } from '@/utils'
-import { getDetail, updateAuditInfo, updateStatus, updateAuditStatus, unlock, updateRole, auditDelete, getUserList } from '@/api/project'
+import { getDetail, updateAuditInfo, updateStatus, updateAuditStatus, unlock, updateRole, auditDelete, getUserList, auditAdd } from '@/api/project'
 const query = {
   page: 1,
   length: 10,
@@ -392,8 +394,12 @@ export default {
         this.detail.basic.projectstatus = String(+this.detail.basic.projectstatus + 1)
       })
     },
-    changeAuditStatus() {
-      updateAuditStatus().then(res => {
+    changeAuditStatus(opt, id) {
+      updateAuditStatus({
+        id: id,
+        operate: opt
+      }).then(res => {
+        this.$message.success('操作成功')
       })
     },
     handleShowRole(row, id) {
@@ -433,9 +439,20 @@ export default {
         this.total = +res.data.total || 0
       })
     },
-    handleAdd() {
+    handleAdd(id = '') {
+      if (id) {
+        this.currentGroudId = id
+      }
       this.memDialigVisible = true
       this.queryUserList()
+    },
+    handleAuditAdd(row) {
+      auditAdd({
+        id: this.currentGroudId,
+        pid: row.pid
+      }).then(res => {
+        this.$message.success('添加成功')
+      })
     },
     handleResetFilter() {
       this.listQuery = Object.assign({}, query)
