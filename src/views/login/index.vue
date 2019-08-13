@@ -1,52 +1,63 @@
 <template>
   <div class="login-container">
-    <el-form ref="loginForm" :model="loginForm" :rules="loginRules" class="login-form" autocomplete="on" label-position="left">
-
-      <div class="title-container">
-        <h3 class="title">用户登录</h3>
+    <div class="login-container-inner">
+      <div class="description">
+        <div>贵州审计资源管理系统</div>
+        <p>坚持科技强审，加强审计信息化建设</p>
+        <p>强化上级审计机关对下级审计机关的领导</p>
+        <p>要加强对内部审计工作的指导和监督</p>
+        <p>调动内部审计和社会审计力量</p>
+        <p>增强审计监督合力</p>
+        <p>构建集中统一、全面覆盖、权威高效的审计监督体系</p>
       </div>
+      <el-form ref="loginForm" :model="loginForm" :rules="loginRules" class="login-form" autocomplete="on" label-position="left">
 
-      <el-form-item prop="account">
-        <span class="svg-container">
-          <svg-icon icon-class="user" />
-        </span>
-        <el-input
-          ref="username"
-          v-model="loginForm.account"
-          placeholder="请输入账号"
-          name="username"
-          type="text"
-          tabindex="1"
-          autocomplete="on"
-        />
-      </el-form-item>
+        <div class="title-container">
+          <h3 class="title">用户登录</h3>
+        </div>
 
-      <el-tooltip v-model="capsTooltip" content="大写已锁定" placement="right" manual>
-        <el-form-item prop="password">
+        <el-form-item prop="account">
           <span class="svg-container">
-            <svg-icon icon-class="password" />
+            <svg-icon icon-class="user" />
           </span>
           <el-input
-            :key="passwordType"
-            ref="password"
-            v-model="loginForm.password"
-            :type="passwordType"
-            placeholder="请输入密码"
-            name="password"
-            tabindex="2"
+            ref="username"
+            v-model="loginForm.account"
+            placeholder="请输入账号"
+            name="username"
+            type="text"
+            tabindex="1"
             autocomplete="on"
-            @keyup.native="checkCapslock"
-            @blur="capsTooltip = false"
-            @keyup.enter.native="handleLogin"
           />
-          <span class="show-pwd" @click="showPwd">
-            <svg-icon :icon-class="passwordType === 'password' ? 'eye' : 'eye-open'" />
-          </span>
         </el-form-item>
-      </el-tooltip>
 
-      <el-button :loading="loading" type="primary" class="login-btn" style="width:100%;margin-bottom:30px;" @click.native.prevent="handleLogin">登陆</el-button>
-    </el-form>
+        <el-tooltip v-model="capsTooltip" content="大写已锁定" placement="right" manual>
+          <el-form-item prop="password">
+            <span class="svg-container">
+              <svg-icon icon-class="password" />
+            </span>
+            <el-input
+              :key="passwordType"
+              ref="password"
+              v-model="loginForm.password"
+              :type="passwordType"
+              placeholder="请输入密码"
+              name="password"
+              tabindex="2"
+              autocomplete="on"
+              @keyup.native="checkCapslock"
+              @blur="capsTooltip = false"
+              @keyup.enter.native="handleLogin"
+            />
+            <span class="show-pwd" @click="showPwd">
+              <svg-icon :icon-class="passwordType === 'password' ? 'eye' : 'eye-open'" />
+            </span>
+          </el-form-item>
+        </el-tooltip>
+
+        <el-button :loading="loading" type="primary" class="login-btn" style="width:100%;margin-bottom:30px;" @click.native.prevent="handleLogin">登录</el-button>
+      </el-form>
+    </div>
     <div class="login-footer">
       <div>技术支持电话：张橹 0851-86615878 袁烨 0851-86617397</div>
       <div>Copyright © 2019 All right reserved 版权所有 贵州省审计厅</div>
@@ -166,12 +177,6 @@ $bg:#283443;
 $light_gray:#fff;
 $cursor: #fff;
 
-@supports (-webkit-mask: none) and (not (cater-color: $cursor)) {
-  .login-container .el-input input {
-    color: $cursor;
-  }
-}
-
 /* reset element-ui css */
 .login-container {
   .el-input {
@@ -187,9 +192,9 @@ $cursor: #fff;
       padding: 12px 5px 12px 15px;
       color: #000;
       height: 47px;
-      caret-color: $cursor;
+      caret-color: #000;
 
-       &:-webkit-autofill {
+      &:-webkit-autofill {
         box-shadow: 0 0 0px 1000px #fff inset !important;
         -webkit-text-fill-color: #000 !important;
       }
@@ -214,37 +219,52 @@ $light_gray:#eee;
   min-height: 100%;
   width: 100%;
   background: url(../../assets/images/login-bg.png) no-repeat;
-  background-size: auto;
+  background-size: 100% 100%;
   background-position: center;
   overflow: hidden;
+  &-inner {
+    background: rgba(255,255,255,0.3);
+    position: absolute;
+    top: 50%;
+    width: 100%;
+    display: flex;
+    padding: 50px 0;
+    min-height: 30vw;
+    margin-top: -18vw;
+    justify-content: space-between;
+
+    .description {
+      margin-left: 35px;
+      div {
+        color: #fbfdfe;
+        font-size: 3vw;
+        text-shadow: black 0.1em 0.1em 0.2em;
+        font-weight: 500;
+      }
+      p {
+        color: #063a87;
+        font-size: 1.8vw;
+        line-height: 0.6em;
+        font-weight: 500;
+      }
+    }
+  }
 
   .login-form {
+    z-index: 1;
+    opacity: 1.5;
     position: relative;
-    width: 520px;
-    max-width: 100%;
-    padding: 200px 35px 0;
+    min-width: 30vw;
+    max-width: 40vw;
+    padding: 0 35px;
     overflow: hidden;
-    float: right;
-    margin-right: 98px;
     .login-btn {
-      height: 48px;
+      height: 2.5vw;
       background: #0d6dff;
       width: 100%;
       font-size: 16px;
       color: #fff;
       border: none;
-    }
-  }
-
-  .tips {
-    font-size: 14px;
-    color: #fff;
-    margin-bottom: 10px;
-
-    span {
-      &:first-of-type {
-        margin-right: 16px;
-      }
     }
   }
 
@@ -260,7 +280,7 @@ $light_gray:#eee;
     position: relative;
 
     .title {
-      font-size: 26px;
+      font-size: 1.8vw;
       color: #0d6dff;
       margin: 0px auto 40px auto;
       text-align: center;

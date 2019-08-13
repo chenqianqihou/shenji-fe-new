@@ -83,8 +83,7 @@ const roleMap = {
 
 const memStatusMap = {
   1: '在点',
-  2: '不在点',
-  3: '-'
+  2: '不在点'
 }
 
 export {

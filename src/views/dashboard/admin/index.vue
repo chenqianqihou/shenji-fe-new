@@ -1,6 +1,6 @@
 <template>
   <div class="dashboard-editor-container">
-    <div style="background:#fff;padding:16px;margin-bottom:32px;height: 800px;">
+    <div style="background:#fff;padding:16px;margin-bottom:32px;height: 40vw;">
       <chart height="100%" width="100%" />
     </div>
 

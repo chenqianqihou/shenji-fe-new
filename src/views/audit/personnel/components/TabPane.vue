@@ -138,7 +138,7 @@
             {{ selectConfig.status[row.status] || row.status }}
           </template>
         </el-table-column>
-        <el-table-column label="在途项目" align="center" prop="projectnum" />
+        <el-table-column label="兼办项目" align="center" prop="projectnum" />
         <el-table-column
           label="操作"
           align="center"

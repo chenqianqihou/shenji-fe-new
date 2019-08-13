@@ -150,7 +150,7 @@
           </div>
           <el-divider v-if="(idx + 1) < detail.auditgroup.list.length"></el-divider>
         </div>
-         <el-dialog title="修改角色" :visible.sync="roleDialogVisible" width="500px" center @close="closeRoleDialog">
+        <el-dialog title="修改角色" :visible.sync="roleDialogVisible" width="500px" center @close="closeRoleDialog">
           <el-form ref="roleForm" :model="roleForm">
             <el-form-item
               label="角色"
@@ -172,7 +172,7 @@
           </div>
         </el-dialog>
       </el-tab-pane>
-      <el-tab-pane label="审理成员" name="third">
+      <el-tab-pane label="审理成员" name="third" v-if="detail.basic.projectstatus > 3">
         <div style="margin-bottom: 20px">
           <el-button type="primary" @click="handleAdd">新增人员</el-button>
         </div>
@@ -206,7 +206,7 @@
           </el-table-column>
         </el-table>
       </el-tab-pane>
-      <el-tab-pane label="审计评价" name="fourth">审计评价</el-tab-pane>
+      <el-tab-pane label="审计评价" name="fourth"  v-if="detail.basic.projectstatus > 3">审计评价</el-tab-pane>
     </el-tabs>
     <el-dialog
       title="添加成员"
@@ -214,16 +214,6 @@
       width="1000px"
       center>
        <el-form :inline="true">
-        <el-form-item label="机构类型">
-          <el-select
-            v-model="listQuery.type"
-            placeholder="请选择"
-            style="width: 150px"
-            class="filter-item"
-          >
-            <el-option v-for="(idx, item) in selectConfig.type" :key="item" :value="item" :label="idx" />
-          </el-select>
-        </el-form-item>
         <el-form-item label="工作状态">
           <el-select
             v-model="listQuery.jobstatus"
@@ -256,16 +246,16 @@
         <el-table-column label="机构类型" prop="type" align="center" show-overflow-tooltip />
         <el-table-column label="所属市县" align="center" prop="department" show-overflow-tooltip />
         <el-table-column label="工作状态" align="center" prop="isjob" show-overflow-tooltip />
-        <el-table-column label="在途项目" align="center" prop="projectnum" />
+        <el-table-column label="兼办项目" align="center" prop="projectnum" />
         <el-table-column
           label="操作"
           align="center"
         >
           <template slot-scope="{row}">
-            <el-button
+            <!-- <el-button
               size="mini"
               type="text"
-            >人员分析</el-button>
+            >人员分析</el-button> -->
             <el-button
               v-if="row.islock === '未锁定'"
               type="text"
@@ -287,6 +277,25 @@
         <el-button type="primary" @click="memDialigVisible = false">确 定</el-button>
       </span> -->
     </el-dialog>
+    <el-dialog title="填写审理人数" :visible.sync="auditDialogVisible" width="500px" center @close="closeAuditDialog">
+      <el-form ref="auditForm" :model="auditForm">
+        <el-form-item
+          label="审理人数"
+          label-width="100px"
+          prop="people"
+          :rules="[{
+            required: true,
+            message: '请填写审理人数'
+          }]"
+        >
+          <el-input v-model="auditForm.people" type="number"></el-input>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="auditDialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="handleAudit">确 定</el-button>
+      </div>
+    </el-dialog>
   </el-card>
 </template>
 
@@ -298,8 +307,7 @@ import { getDetail, updateAuditInfo, updateStatus, updateAuditStatus, unlock, up
 const query = {
   page: 1,
   length: 10,
-  jobstatus: '1',
-  type: '3',
+  jobstatus: '',
   isinternal: 2,
   ismedium: 2
 }
@@ -340,7 +348,11 @@ export default {
       },
       total: 0,
       listQuery: Object.assign({}, query),
-      userList: []
+      userList: [],
+      auditDialogVisible: false,
+      auditForm: {
+        people: ''
+      }
     }
   },
   components: {
@@ -386,13 +398,17 @@ export default {
     },
     changeStatus() {
       const status = this.detail.basic.projectstatus
-      updateStatus({
-        operate: +status + 1,
-        id: this.projectId
-      }).then(res => {
-        this.$message.success('操作成功')
-        this.detail.basic.projectstatus = String(+this.detail.basic.projectstatus + 1)
-      })
+      if (+status === 3) {
+        this.auditDialogVisible = true
+      } else {
+        updateStatus({
+          operate: +status + 1,
+          id: this.projectId
+        }).then(res => {
+          this.$message.success('操作成功')
+          this.detail.basic.projectstatus = String(+this.detail.basic.projectstatus + 1)
+        })
+      }
     },
     changeAuditStatus(opt, id) {
       updateAuditStatus({
@@ -416,10 +432,14 @@ export default {
       })
     },
     handleUpdateRole() {
-      const { roleForm } = this
-      updateRole(roleForm).then(res => {
-        this.$message.success('修改成功')
-        this.closeRoleDialog()
+      this.$refs['roleForm'].validate(valid => {
+        if (valid) {
+          const { roleForm } = this
+          updateRole(roleForm).then(res => {
+            this.$message.success('修改成功')
+            this.closeRoleDialog()
+          })
+        }
       })
     },
     handleAuditDelete(row, id) {
@@ -432,6 +452,9 @@ export default {
     },
     closeRoleDialog() {
       this.$refs['roleForm'].resetFields()
+    },
+    closeAuditDialog() {
+      this.$refs['auditForm'].resetFields()
     },
     queryUserList() {
       const params = Object.assign({}, this.listQuery)
@@ -450,13 +473,20 @@ export default {
     handleAuditAdd(row) {
       auditAdd({
         id: this.currentGroudId,
-        pid: row.pid
+        pid: row.id
       }).then(res => {
         this.$message.success('添加成功')
       })
     },
     handleResetFilter() {
       this.listQuery = Object.assign({}, query)
+      this.queryUserList()
+    },
+    handleAudit() {
+      this.$refs['auditForm'].validate(valid => {
+        if (valid) {
+        }
+      })
     }
   }
 }

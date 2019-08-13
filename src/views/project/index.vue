@@ -176,6 +176,25 @@
         @pagination="getList"
       />
     </div>
+    <el-dialog title="填写审理人数" :visible.sync="auditDialogVisible" width="500px" center @close="closeAuditDialog">
+      <el-form ref="auditForm" :model="auditForm">
+        <el-form-item
+          label="审理人数"
+          label-width="100px"
+          prop="people"
+          :rules="[{
+            required: true,
+            message: '请填写审理人数'
+          }]"
+        >
+          <el-input v-model="auditForm.people" type="number"></el-input>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="auditDialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="handleAudit">确 定</el-button>
+      </div>
+    </el-dialog>
   </el-card>
 </template>
 
@@ -206,7 +225,11 @@ export default {
       originConfig: {},
       selectList: {},
       statusMap: statusMap,
-      operateMap: operateMap
+      operateMap: operateMap,
+      auditForm: {
+        people: ''
+      },
+      auditDialogVisible: false
     }
   },
   created() {
@@ -250,17 +273,22 @@ export default {
         })
       })
     },
+    closeAuditDialog() {
+      this.$refs['auditForm'].resetFields()
+    },
+    handleAudit() {
+      this.$refs['auditForm'].validate(valid => {
+        if (valid) {
+        }
+      })
+    },
     getList() {
       const _params = Object.assign({}, this.listQuery)
       this.listLoading = true
       fetchList(_params).then(response => {
         this.list = response.data.list
         this.total = +response.data.total
-
-        // Just to simulate the time of the request
-        setTimeout(() => {
-          this.listLoading = false
-        }, 1.5 * 1000)
+        this.listLoading = false
       })
     },
     handleDelete(row = '') {
@@ -280,13 +308,17 @@ export default {
       })
     },
     handleChangeStatus(row) {
-      updateStatus({
-        operate: +row.status + 1,
-        id: row.id
-      }).then(res => {
-        this.$message.success('操作成功')
-        row.status = String(+row.status + 1)
-      })
+      if (+row.status === 3) {
+        this.auditDialogVisible = true
+      } else {
+        updateStatus({
+          operate: +row.status,
+          id: row.id
+        }).then(res => {
+          this.$message.success('操作成功')
+          row.status = String(+row.status + 1)
+        })
+      }
     },
     handleFilter() {
       this.listQuery.page = 1
