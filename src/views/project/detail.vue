@@ -238,7 +238,8 @@
         border
         :data="userList"
         highlight-current-row
-        style="width: 100%"
+        height="500px"
+        style="width: 100%;"
       >
         <el-table-column label="人员ID" align="center" prop="pid" show-overflow-tooltip />
         <el-table-column label="成员姓名" align="center" prop="name" show-overflow-tooltip />
@@ -352,7 +353,8 @@ export default {
       auditDialogVisible: false,
       auditForm: {
         people: ''
-      }
+      },
+      addUser: []
     }
   },
   components: {
