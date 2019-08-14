@@ -107,10 +107,11 @@ export function updateRole(data) {
   })
 }
 
-export function getUserList(params) {
+export function getUserList(data) {
   return request({
     url: '/auditgroup/userlist',
-    params
+    method: 'post',
+    data
   })
 }
 

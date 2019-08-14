@@ -286,6 +286,7 @@
               size="mini"
               @click="handleAddJuge(row)"
             >
+            添加
             </el-button>
           </template>
         </el-table-column>
