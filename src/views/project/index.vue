@@ -124,23 +124,23 @@
         </el-table-column>
         <el-table-column label="项目层级" align="center" prop="projlevel">
           <template slot-scope="{row}">
-            {{ row.projlevel ? originConfig.projlevel[+row.projlevel] : '' }}
+            {{ row.projlevel && originConfig.projlevel ? originConfig.projlevel[+row.projlevel] : '' }}
           </template>
         </el-table-column>
         <el-table-column label="计划时长（天）" align="center" prop="plantime" />
         <el-table-column label="中介审核" align="center" prop="medium">
           <template slot-scope="{row}">
-            {{ row.medium ? originConfig.medium[+row.medium] : '' }}
+            {{ row.medium && originConfig.medium ? originConfig.medium[+row.medium] : '' }}
           </template>
         </el-table-column>
         <el-table-column label="内审审核" align="center" prop="internal">
           <template slot-scope="{row}">
-            {{ row.internal ? originConfig.internal[+row.internal] : '' }}
+            {{ row.internal && originConfig.internal ? originConfig.internal[+row.internal] : '' }}
           </template>
         </el-table-column>
         <el-table-column label="项目阶段" align="center" prop="status">
           <template slot-scope="{row}">
-            {{ row.status ? originConfig.projstage[+row.status] : '' }}
+            {{ row.status && originConfig.projstage ? originConfig.projstage[+row.status] : '' }}
           </template>
         </el-table-column>
         <el-table-column
@@ -181,13 +181,13 @@
         <el-form-item
           label="审理人数"
           label-width="100px"
-          prop="people"
+          prop="num"
           :rules="[{
             required: true,
             message: '请填写审理人数'
           }]"
         >
-          <el-input v-model="auditForm.people" type="number"></el-input>
+          <el-input v-model="auditForm.num" type="number"></el-input>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -227,7 +227,8 @@ export default {
       statusMap: statusMap,
       operateMap: operateMap,
       auditForm: {
-        people: ''
+        num: '',
+        status: ''
       },
       auditDialogVisible: false
     }
@@ -276,12 +277,6 @@ export default {
     closeAuditDialog() {
       this.$refs['auditForm'].resetFields()
     },
-    handleAudit() {
-      this.$refs['auditForm'].validate(valid => {
-        if (valid) {
-        }
-      })
-    },
     getList() {
       const _params = Object.assign({}, this.listQuery)
       this.listLoading = true
@@ -309,14 +304,17 @@ export default {
     },
     handleChangeStatus(row) {
       if (+row.status === 3) {
+        this.auditForm.operate = +row.status + 1
+        this.auditForm.id = row.id
         this.auditDialogVisible = true
       } else {
         updateStatus({
-          operate: +row.status,
+          operate: +row.status + 1,
           id: row.id
         }).then(res => {
           this.$message.success('操作成功')
-          row.status = String(+row.status + 1)
+          this.auditDialogVisible = false
+          this.getList()
         })
       }
     },
@@ -330,6 +328,20 @@ export default {
     },
     handleSelectionChange(rows) {
       this.checkedOptions = rows
+    },
+    handleChangeStatusSubmit() {
+      const params = Object.assign({}, this.auditForm)
+      updateStatus(params).then(res => {
+        this.$message.success('操作成功')
+        this.getList()
+      })
+    },
+    handleAudit() {
+      this.$refs['auditForm'].validate(valid => {
+        if (valid) {
+          this.handleChangeStatusSubmit()
+        }
+      })
     }
   }
 }

@@ -121,3 +121,26 @@ export function auditAdd(data) {
     data
   })
 }
+
+export function reviewAdd(data) {
+  return request({
+    url: '/auditgroup/reviewadd',
+    method: 'post',
+    data
+  })
+}
+
+export function reviewList(params) {
+  return request({
+    url: '/auditgroup/jugelist',
+    params
+  })
+}
+
+export function jugeBind(data) {
+  return request({
+    url: '/auditgroup/jugebind',
+    method: 'post',
+    data
+  })
+}

@@ -114,25 +114,25 @@
             required: true,
             message: '请输入审计组长人数'
           }]" label-width="80px">
-            <el-input-number v-model="form.leadernum" :min="0" :disabled="!!isEdit"></el-input-number>
+            <el-input-number v-model="form.leadernum" :min="0" :disabled="!!formId"></el-input-number>
           </el-form-item>
           <el-form-item label="主审" prop="masternum" :rules="[{
             required: true,
             message: '请输入主审人数'
           }]" label-width="80px">
-            <el-input-number v-model="form.masternum" :min="0" :disabled="!!isEdit"></el-input-number>
+            <el-input-number v-model="form.masternum" :min="0" :disabled="!!formId"></el-input-number>
           </el-form-item>
           <el-form-item label="审计成员" prop="auditornum" :rules="[{
             required: true,
             message: '请输入审计成员人数'
           }]" label-width="80px">
-            <el-input-number v-model="form.auditornum" :min="0" :disabled="!!isEdit"></el-input-number>
+            <el-input-number v-model="form.auditornum" :min="0" :disabled="!!formId"></el-input-number>
           </el-form-item>
         </div>
       </div>
       <el-form-item>
         <el-button type="primary" @click="handleSubmit">提交</el-button>
-        <el-button @click="isEdit ? $router.push(`/project/detail/${isEdit}`) : $router.push(`/project/index`)">取消</el-button>
+        <el-button @click="formId ? $router.push(`/project/detail/${formId}`) : $router.push(`/project/index`)">取消</el-button>
       </el-form-item>
     </el-form>
   </el-card>

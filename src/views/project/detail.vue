@@ -20,7 +20,7 @@
       </div>
     </div>
     <el-divider />
-    <el-tabs v-model="activeName">
+    <el-tabs v-model="activeName" @tab-click="changeTab">
       <el-tab-pane label="基本信息" name="first">
         <el-form ref="auditInfoForm" :model="basicForm" label-width="90px">
           <el-row>
@@ -79,14 +79,14 @@
         <div style="display:flex">
           <div style="width: 140px;vertical-align: middle;line-height: 112px;">需要第三方人员：</div>
           <div style="flex: 1">
-            <div style="margin: 10px">
-              <el-checkbox v-model="listQuery.isinternal" :true-label="1" :false-label="2">中介机构</el-checkbox>
+            <div style="margin: 10px;line-height: 28px;">
+              <el-checkbox v-model="listQuery.isinternal" :true-label="1" :false-label="2" @change="changeNeedThird">中介机构</el-checkbox>
               <span style="font-weight: bold; font-size:14px;">中介审核：{{ detail.auditgroup.medium ? stsMap[detail.auditgroup.medium] : '-' }}</span>
-              <!-- <el-button type="danger" style="margin-left: 20px" size="mini">提交审核</el-button> -->
+              <el-button type="danger" style="margin-left: 20px" size="mini" v-if="showVerify" @click="handleVerify">提交审核</el-button>
             </div>
             <el-divider style="margin: 0"></el-divider>
-            <div style="margin: 10px">
-              <el-checkbox v-model="listQuery.ismedium" :true-label="1" :false-label="2">内审机构</el-checkbox>
+            <div style="margin: 10px; line-height: 28px;">
+              <el-checkbox v-model="listQuery.ismedium" :true-label="1" :false-label="2"  @change="changeNeedThird">内审机构</el-checkbox>
               <span style="font-weight: bold;font-size:14px;">内审审核：{{ detail.auditgroup.internal ? stsMap[detail.auditgroup.internal] : '-' }}</span>
             </div>
           </div>
@@ -185,7 +185,7 @@
           <el-button type="primary" @click="handleAdd">新增人员</el-button>
         </div>
         <el-table
-          :data="[]"
+          :data="reviewUserList"
           border
           highlight-current-row
           style="width: 100%"
@@ -193,9 +193,13 @@
           <el-table-column label="成员ID" align="center" prop="pid" show-overflow-tooltip />
           <el-table-column label="成员姓名" align="center" prop="name" show-overflow-tooltip />
           <el-table-column label="性别" align="center" prop="sex" show-overflow-tooltip />
-          <el-table-column label="所属部门" prop="type" align="center" show-overflow-tooltip />
-          <el-table-column label="所属市县" align="center" prop="department" show-overflow-tooltip />
-          <el-table-column label="审计组" align="center" prop="projectnum" />
+          <el-table-column label="所属部门" prop="department" align="center" show-overflow-tooltip />
+          <el-table-column label="所属市县" align="center" prop="location" show-overflow-tooltip />
+          <el-table-column label="审计组" align="center" prop="group">
+            <template slot-scope="{row}">
+              {{ row.group ? row.group.join(',') : '' }}
+            </template>
+          </el-table-column>
           <el-table-column
             label="操作"
             align="center"
@@ -220,6 +224,7 @@
       title="添加成员"
       :visible.sync="memDialigVisible"
       width="1000px"
+      @closed="closeAuditAddDialog"
       center>
        <el-form :inline="true">
         <el-form-item label="工作状态">
@@ -266,20 +271,30 @@
               type="text"
             >人员分析</el-button> -->
             <el-button
-              v-if="row.islock === '未锁定'"
+              v-if="activeName === 'second'"
               type="text"
               size="mini"
-              @click="handleAuditAdd(row)"
-            >添加</el-button>
+              :class="{
+                'delete-row-class': addUser.indexOf(row.id) > -1 
+              }"
+              @click="handleAuditOpt(row)"
+            >{{ addUser.indexOf(row.id) > -1 ? '解除' : '添加' }}</el-button>
+            <el-button
+              v-if="activeName === 'third'"
+              type="text"
+              size="mini"
+              @click="handleAddJuge(row)"
+            >
+            </el-button>
           </template>
         </el-table-column>
       </el-table>
       <pagination
-        v-show="total>0"
-        :total="total"
-        :page.sync="listQuery.page"
-        :limit.sync="listQuery.length"
-        @pagination="queryUserList"
+        v-show="reviewTotal>0"
+        :total="reviewTotal"
+        :page.sync="reviewQuery.page"
+        :limit.sync="reviewQuery.page_size"
+        @pagination="queryReviewUserList"
       />
       <!-- <span slot="footer" class="dialog-footer">
         <el-button @click="memDialigVisible = false">取 消</el-button>
@@ -312,7 +327,7 @@
 import Pagination from '@/components/Pagination'
 import { props, statusMap, operateMap, stsMap, auditStatusMap, auditOptMap, roleMap, memStatusMap } from './config'
 import { parseTime } from '@/utils'
-import { getDetail, updateAuditInfo, updateStatus, updateAuditStatus, unlock, updateRole, auditDelete, getUserList, auditAdd } from '@/api/project'
+import { getDetail, updateAuditInfo, updateStatus, updateAuditStatus, unlock, updateRole, auditDelete, getUserList, auditAdd, reviewAdd, reviewList, jugeBind } from '@/api/project'
 const query = {
   page: 1,
   length: 10,
@@ -362,7 +377,14 @@ export default {
       auditForm: {
         people: ''
       },
-      addUser: []
+      showVerify: false,
+      addUser: [],
+      reviewUserList: [],
+      reviewQuery: {
+        page_size: 10,
+        page: 1
+      },
+      reviewTotal: 0
     }
   },
   components: {
@@ -377,6 +399,11 @@ export default {
     this.queryDetail()
   },
   methods: {
+    changeTab() {
+      if (this.activeName === 'third') {
+        this.queryReviewUserList()
+      }
+    },
     queryDetail() {
       getDetail({
         id: this.projectId
@@ -386,6 +413,15 @@ export default {
         this.detail.head.projtype = item.length > 0 ? item.join('/') : ''
         this.basicForm.projstart = this.detail.basic.projstart
         this.basicForm.projauditcontent = this.detail.basic.projauditcontent
+      })
+    },
+    queryReviewUserList() {
+      const params = Object.assign({
+        id: this.projectId
+      }, this.reviewQuery)
+      reviewList(params).then(res => {
+        this.reviewTotal = res.total || 0
+        this.reviewUserList = res.list
       })
     },
     handleSaveBasic() {
@@ -428,6 +464,7 @@ export default {
         id: this.projectId
       }).then(res => {
         this.$message.success('操作成功')
+        this.auditDialogVisible = false
         this.detail.basic.projectstatus = String(+this.detail.basic.projectstatus + 1)
       })
     },
@@ -486,18 +523,31 @@ export default {
     },
     handleAdd(id = '') {
       if (id) {
+        if (this.currentGroudI !== id) {
+          this.addUser = []
+          this.showVerify = false
+        }
         this.currentGroudId = id
       }
       this.memDialigVisible = true
       this.queryUserList()
     },
-    handleAuditAdd(row) {
-      auditAdd({
-        id: this.currentGroudId,
-        pid: row.id
-      }).then(res => {
-        this.$message.success('添加成功')
-      })
+    handleAuditOpt(row) {
+      if (row.type === '审计机关') {
+        auditAdd({
+          id: this.currentGroudId,
+          pid: row.id
+        }).then(res => {
+          this.$message.success('添加成功')
+        })
+      } else {
+        const idx = this.addUser.indexOf(row.id)
+        if (idx > -1) {
+          this.addUser.splice(idx)
+        } else {
+          this.addUser.push(row.id)
+        }
+      }
     },
     handleResetFilter() {
       this.listQuery = Object.assign({}, query)
@@ -508,6 +558,46 @@ export default {
         if (valid) {
           this.handleChangeStatus()
         }
+      })
+    },
+    closeAuditAddDialog() {
+      if (this.addUser.length > 0) {
+        this.showVerify = true
+      }
+    },
+    changeNeedThird() {
+      this.showVerify = false
+      this.addUser = []
+    },
+    handleVerify() {
+      const { addUser, currentGroudId, listQuery: { isinternal, ismedium } } = this
+       if (addUser.length > 0) {
+         let type = []
+         if (isinternal === 1) {
+           type.push(2)
+         }
+         if (ismedium === 1) {
+           type.push(1)
+         }
+         reviewAdd({
+           id: currentGroudId,
+           pids: addUser,
+           type: type
+         }).then(res => {
+           this.listQuery.ismedium = 2
+           this.listQuery.isinternal = 2
+           this.addUser = []
+           this.showVerify = false
+           this.$message.success('提交成功')
+         })
+       }
+    },
+    handleAddJuge(row) {
+      jugeBind({
+        pid: row.id,
+        projid: this.projectId
+      }).then(res => {
+        this.$message.success('添加成功')
       })
     }
   }
@@ -568,6 +658,9 @@ export default {
   }
   .basic-right-btn {
     float: right;
+  }
+  .delete-row-class {
+    color: #f56c6c;
   }
 }
 </style>
