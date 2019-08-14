@@ -208,7 +208,8 @@
               <el-button
                 size="mini"
                 type="text"
-              >删除</el-button>
+                @click="handleUnbindJude"
+              >解除</el-button>
               <el-button
                 v-if="+row.islock === 2"
                 type="text"
@@ -327,7 +328,7 @@
 import Pagination from '@/components/Pagination'
 import { props, statusMap, operateMap, stsMap, auditStatusMap, auditOptMap, roleMap, memStatusMap } from './config'
 import { parseTime } from '@/utils'
-import { getDetail, updateAuditInfo, updateStatus, updateAuditStatus, unlock, updateRole, auditDelete, getUserList, auditAdd, reviewAdd, reviewList, jugeBind } from '@/api/project'
+import { getDetail, updateAuditInfo, updateStatus, updateAuditStatus, unlock, updateRole, auditDelete, getUserList, auditAdd, reviewAdd, reviewList, jugeBind, judeUnbind } from '@/api/project'
 const query = {
   page: 1,
   length: 10,
@@ -598,6 +599,14 @@ export default {
         projid: this.projectId
       }).then(res => {
         this.$message.success('添加成功')
+      })
+    },
+    handleUnbindJude(row) {
+      judeUnbind({
+        pid: row.id,
+        projid: this.projectId
+      }).then(res => {
+        this.$message.success('解除成功')
       })
     }
   }

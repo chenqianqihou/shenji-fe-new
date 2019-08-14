@@ -144,3 +144,11 @@ export function jugeBind(data) {
     data
   })
 }
+
+export function judeUnbind(data) {
+  return request({
+    url: '/auditgroup/jugeunbind',
+    method: 'post',
+    data
+  })
+}
