@@ -411,14 +411,25 @@ export default {
       if (+status === 3) {
         this.auditDialogVisible = true
       } else {
-        updateStatus({
-          operate: +status + 1,
-          id: this.projectId
-        }).then(res => {
-          this.$message.success('操作成功')
-          this.detail.basic.projectstatus = String(+this.detail.basic.projectstatus + 1)
-        })
+        this.handleChangeStatus()
       }
+    },
+    handleChangeStatus() {
+      const status = this.detail.basic.projectstatus
+      const params = {
+        operate: +status + 1,
+        id: this.projectId
+      }
+      if (+status === 3) {
+        params.num = this.auditForm.people
+      }
+      updateStatus({
+        operate: +status + 1,
+        id: this.projectId
+      }).then(res => {
+        this.$message.success('操作成功')
+        this.detail.basic.projectstatus = String(+this.detail.basic.projectstatus + 1)
+      })
     },
     changeAuditStatus(opt, id) {
       updateAuditStatus({
@@ -495,6 +506,7 @@ export default {
     handleAudit() {
       this.$refs['auditForm'].validate(valid => {
         if (valid) {
+          this.handleChangeStatus()
         }
       })
     }

@@ -110,40 +110,6 @@
       <div style="display: flex">
         <div class="sub-label">角色</div>
         <div>
-<<<<<<< HEAD
-          <el-form-item
-            label="审计组长"
-            prop="leadernum"
-            :rules="[{
-              required: true,
-              message: '请输入审计组长人数'
-            }]"
-            label-width="80px"
-          >
-            <el-input-number v-model="form.leadernum" :min="0" />
-          </el-form-item>
-          <el-form-item
-            label="主审"
-            prop="masternum"
-            :rules="[{
-              required: true,
-              message: '请输入主审人数'
-            }]"
-            label-width="80px"
-          >
-            <el-input-number v-model="form.masternum" :min="0" />
-          </el-form-item>
-          <el-form-item
-            label="审计成员"
-            prop="auditornum"
-            :rules="[{
-              required: true,
-              message: '请输入审计成员人数'
-            }]"
-            label-width="80px"
-          >
-            <el-input-number v-model="form.auditornum" :min="0" />
-=======
           <el-form-item label="审计组长" prop="leadernum" :rules="[{
             required: true,
             message: '请输入审计组长人数'
@@ -161,7 +127,6 @@
             message: '请输入审计成员人数'
           }]" label-width="80px">
             <el-input-number v-model="form.auditornum" :min="0" :disabled="!!isEdit"></el-input-number>
->>>>>>> 5b37c9c926ce1175b8c8c75c145bc1da641196c4
           </el-form-item>
         </div>
       </div>
@@ -175,10 +140,6 @@
 
 <script>
 import { selectConfig, selectList, createProject, getProjectDetail, updateProject } from '@/api/project'
-<<<<<<< HEAD
-import { createVerify } from 'crypto'
-=======
->>>>>>> 5b37c9c926ce1175b8c8c75c145bc1da641196c4
 
 export default {
   name: 'AddEdit',
