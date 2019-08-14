@@ -342,7 +342,7 @@ export default {
           }
           optMethod(form).then(res => {
             this.$message.success('操作成功')
-            this.$router.push('/audit/personnel')
+            this.returnBack()
           })
         }
       })

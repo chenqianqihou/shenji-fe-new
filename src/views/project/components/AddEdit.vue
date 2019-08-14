@@ -26,17 +26,17 @@
           <span slot="append">天</span>
         </el-input>
       </el-form-item>
-      <el-form-item
-        label="项目年度"
-        prop="plantime"
-        :rules="[{
-          required: true,
-          message: '请选择项目年度'
-        }]"
-      >
-        <el-select v-model="form.projyear" placeholder="请选择" class="sub-width">
-          <el-option v-for="(item, idx) in selectConfig.projyear" :key="idx" :value="item" :label="item" />
-        </el-select>
+      <el-form-item label="项目年度" prop="projyear" :rules="[{
+        required: true,
+        message: '请选择项目年度'
+      }]">
+        <el-date-picker
+          v-model="form.projyear"
+          type="year"
+          placeholder="选择年"
+          value-format="yyyy"
+          class="sub-width">
+        </el-date-picker>
       </el-form-item>
       <el-form-item
         label="项目描述"
@@ -110,6 +110,7 @@
       <div style="display: flex">
         <div class="sub-label">角色</div>
         <div>
+<<<<<<< HEAD
           <el-form-item
             label="审计组长"
             prop="leadernum"
@@ -142,12 +143,31 @@
             label-width="80px"
           >
             <el-input-number v-model="form.auditornum" :min="0" />
+=======
+          <el-form-item label="审计组长" prop="leadernum" :rules="[{
+            required: true,
+            message: '请输入审计组长人数'
+          }]" label-width="80px">
+            <el-input-number v-model="form.leadernum" :min="0" :disabled="!!isEdit"></el-input-number>
+          </el-form-item>
+          <el-form-item label="主审" prop="masternum" :rules="[{
+            required: true,
+            message: '请输入主审人数'
+          }]" label-width="80px">
+            <el-input-number v-model="form.masternum" :min="0" :disabled="!!isEdit"></el-input-number>
+          </el-form-item>
+          <el-form-item label="审计成员" prop="auditornum" :rules="[{
+            required: true,
+            message: '请输入审计成员人数'
+          }]" label-width="80px">
+            <el-input-number v-model="form.auditornum" :min="0" :disabled="!!isEdit"></el-input-number>
+>>>>>>> 5b37c9c926ce1175b8c8c75c145bc1da641196c4
           </el-form-item>
         </div>
       </div>
       <el-form-item>
         <el-button type="primary" @click="handleSubmit">提交</el-button>
-        <el-button @click="$router.push('/project')">取消</el-button>
+        <el-button @click="isEdit ? $router.push(`/project/detail/${isEdit}`) : $router.push(`/project/index`)">取消</el-button>
       </el-form-item>
     </el-form>
   </el-card>
@@ -155,14 +175,18 @@
 
 <script>
 import { selectConfig, selectList, createProject, getProjectDetail, updateProject } from '@/api/project'
+<<<<<<< HEAD
 import { createVerify } from 'crypto'
+=======
+>>>>>>> 5b37c9c926ce1175b8c8c75c145bc1da641196c4
 
 export default {
   name: 'AddEdit',
   data() {
     return {
       form: {
-        leadorgan: ''
+        leadorgan: '',
+        subType: ''
       },
       selectConfig: {},
       selectList: {}
@@ -187,6 +211,8 @@ export default {
             const item = JSON.parse(res.data['projtype'])
             res.data.type = item[0]
             res.data.subType = item[1] || ''
+          } else if (key === 'projyear') {
+            res.data.projyear = new Date(res.data.projyear)
           } else if (!isNaN(+res.data[key])) {
             res.data[key] = +res.data[key]
           }

@@ -124,23 +124,23 @@
         </el-table-column>
         <el-table-column label="项目层级" align="center" prop="projlevel">
           <template slot-scope="{row}">
-            {{ originConfig.projlevel[+row.projlevel] }}
+            {{ row.projlevel ? originConfig.projlevel[+row.projlevel] : '' }}
           </template>
         </el-table-column>
         <el-table-column label="计划时长（天）" align="center" prop="plantime" />
         <el-table-column label="中介审核" align="center" prop="medium">
           <template slot-scope="{row}">
-            {{ originConfig.medium[row.medium] }}
+            {{ row.medium ? originConfig.medium[+row.medium] : '' }}
           </template>
         </el-table-column>
         <el-table-column label="内审审核" align="center" prop="internal">
           <template slot-scope="{row}">
-            {{ originConfig.internal[row.internal] }}
+            {{ row.internal ? originConfig.internal[+row.internal] : '' }}
           </template>
         </el-table-column>
-        <el-table-column label="项目阶段" align="center" prop="projstage">
+        <el-table-column label="项目阶段" align="center" prop="status">
           <template slot-scope="{row}">
-            {{ originConfig.projstage[row.projstage] }}
+            {{ row.status ? originConfig.projstage[+row.status] : '' }}
           </template>
         </el-table-column>
         <el-table-column
@@ -149,6 +149,11 @@
           width="300"
         >
           <template slot-scope="{row}">
+            <el-button
+              size="mini"
+              type="text"
+              @click="handleChangeStatus(row)"
+            >{{ operateMap[row.status] }}</el-button>
             <el-button
               size="mini"
               type="text"
@@ -171,12 +176,32 @@
         @pagination="getList"
       />
     </div>
+    <el-dialog title="填写审理人数" :visible.sync="auditDialogVisible" width="500px" center @close="closeAuditDialog">
+      <el-form ref="auditForm" :model="auditForm">
+        <el-form-item
+          label="审理人数"
+          label-width="100px"
+          prop="people"
+          :rules="[{
+            required: true,
+            message: '请填写审理人数'
+          }]"
+        >
+          <el-input v-model="auditForm.people" type="number"></el-input>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="auditDialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="handleAudit">确 定</el-button>
+      </div>
+    </el-dialog>
   </el-card>
 </template>
 
 <script>
 import Pagination from '@/components/Pagination'
-import { fetchList, deleteProject, selectConfig, selectList } from '@/api/project'
+import { fetchList, deleteProject, selectConfig, selectList, updateStatus } from '@/api/project'
+import { statusMap, operateMap } from './config'
 const queryString = {
   projyear: '',
   projlevel: '',
@@ -198,7 +223,13 @@ export default {
       checkedOptions: [],
       selectConfig: {},
       originConfig: {},
-      selectList: {}
+      selectList: {},
+      statusMap: statusMap,
+      operateMap: operateMap,
+      auditForm: {
+        people: ''
+      },
+      auditDialogVisible: false
     }
   },
   created() {
@@ -242,17 +273,22 @@ export default {
         })
       })
     },
+    closeAuditDialog() {
+      this.$refs['auditForm'].resetFields()
+    },
+    handleAudit() {
+      this.$refs['auditForm'].validate(valid => {
+        if (valid) {
+        }
+      })
+    },
     getList() {
       const _params = Object.assign({}, this.listQuery)
       this.listLoading = true
       fetchList(_params).then(response => {
         this.list = response.data.list
         this.total = +response.data.total
-
-        // Just to simulate the time of the request
-        setTimeout(() => {
-          this.listLoading = false
-        }, 1.5 * 1000)
+        this.listLoading = false
       })
     },
     handleDelete(row = '') {
@@ -270,6 +306,19 @@ export default {
           this.getList()
         })
       })
+    },
+    handleChangeStatus(row) {
+      if (+row.status === 3) {
+        this.auditDialogVisible = true
+      } else {
+        updateStatus({
+          operate: +row.status,
+          id: row.id
+        }).then(res => {
+          this.$message.success('操作成功')
+          row.status = String(+row.status + 1)
+        })
+      }
     },
     handleFilter() {
       this.listQuery.page = 1
