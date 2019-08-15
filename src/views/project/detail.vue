@@ -80,14 +80,20 @@
           <div style="width: 140px;vertical-align: middle;line-height: 112px;">需要第三方人员：</div>
           <div style="flex: 1">
             <div style="margin: 10px;line-height: 28px;">
-              <el-checkbox v-model="listQuery.isinternal" :true-label="1" :false-label="2" @change="changeNeedThird">中介机构</el-checkbox>
-              <span style="font-weight: bold; font-size:14px;">中介审核：{{ detail.auditgroup.medium ? stsMap[detail.auditgroup.medium] : '-' }}</span>
+              <el-checkbox v-model="listQuery.ismedium" :true-label="1" :false-label="2" @change="changeNeedThird">中介机构</el-checkbox>
+              <span style="font-weight: bold; font-size:14px;">
+                中介审核：
+                {{ detail.auditgroup.medium ? (listQuery.ismedium === 1 && showVerify ? stsMap[detail.auditgroup.medium + 1] : stsMap[detail.auditgroup.medium]) : '-' }}
+              </span>
               <el-button type="danger" style="margin-left: 20px" size="mini" v-if="showVerify" @click="handleVerify">提交审核</el-button>
             </div>
             <el-divider style="margin: 0"></el-divider>
             <div style="margin: 10px; line-height: 28px;">
-              <el-checkbox v-model="listQuery.ismedium" :true-label="1" :false-label="2"  @change="changeNeedThird">内审机构</el-checkbox>
-              <span style="font-weight: bold;font-size:14px;">内审审核：{{ detail.auditgroup.internal ? stsMap[detail.auditgroup.internal] : '-' }}</span>
+              <el-checkbox v-model="listQuery.isinternal" :true-label="1" :false-label="2"  @change="changeNeedThird">内审机构</el-checkbox>
+              <span style="font-weight: bold;font-size:14px;">
+                内审审核：
+                {{ detail.auditgroup.internal ? (listQuery.isinternal === 1 && showVerify ? stsMap[detail.auditgroup.internal + 1] : stsMap[detail.auditgroup.internal]) : '-' }}
+              </span>
             </div>
           </div>
         </div>
@@ -429,8 +435,9 @@ export default {
         id: this.projectId
       }, this.reviewQuery)
       reviewList(params).then(res => {
+        console.log(res)
         this.reviewTotal = +res.data.total || 0
-        this.reviewUserList = +res.data.list
+        this.reviewUserList = res.data.list
       })
     },
     handleSaveBasic() {
@@ -496,6 +503,7 @@ export default {
         id: id
       }).then(res => {
         this.$message.success('解锁成功')
+        this.getInfoList()
       })
     },
     handleUpdateRole() {
@@ -504,7 +512,8 @@ export default {
           const { roleForm } = this
           updateRole(roleForm).then(res => {
             this.$message.success('修改成功')
-            this.closeRoleDialog()
+            this.roleDialogVisible = false
+            this.getInfoList()
           })
         }
       })
