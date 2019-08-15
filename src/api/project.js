@@ -153,3 +153,10 @@ export function judeUnbind(data) {
     data
   })
 }
+
+export function infoList(params) {
+  return request({
+    url: '/project/infolist',
+    params
+  })
+}

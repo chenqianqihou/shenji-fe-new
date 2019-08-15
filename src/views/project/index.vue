@@ -333,6 +333,7 @@ export default {
       const params = Object.assign({}, this.auditForm)
       updateStatus(params).then(res => {
         this.$message.success('操作成功')
+        this.auditDialogVisible = false
         this.getList()
       })
     },

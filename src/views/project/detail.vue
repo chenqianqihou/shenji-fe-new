@@ -195,11 +195,7 @@
           <el-table-column label="性别" align="center" prop="sex" show-overflow-tooltip />
           <el-table-column label="所属部门" prop="department" align="center" show-overflow-tooltip />
           <el-table-column label="所属市县" align="center" prop="location" show-overflow-tooltip />
-          <el-table-column label="审计组" align="center" prop="group">
-            <template slot-scope="{row}">
-              {{ row.group ? row.group.join(',') : '' }}
-            </template>
-          </el-table-column>
+          <el-table-column label="审计组" align="center" prop="group" />
           <el-table-column
             label="操作"
             align="center"
@@ -208,7 +204,7 @@
               <el-button
                 size="mini"
                 type="text"
-                @click="handleUnbindJude"
+                @click="handleUnbindJude(row)"
               >解除</el-button>
               <el-button
                 v-if="+row.islock === 2"
@@ -329,7 +325,7 @@
 import Pagination from '@/components/Pagination'
 import { props, statusMap, operateMap, stsMap, auditStatusMap, auditOptMap, roleMap, memStatusMap } from './config'
 import { parseTime } from '@/utils'
-import { getDetail, updateAuditInfo, updateStatus, updateAuditStatus, unlock, updateRole, auditDelete, getUserList, auditAdd, reviewAdd, reviewList, jugeBind, judeUnbind } from '@/api/project'
+import { getDetail, updateAuditInfo, infoList, updateStatus, updateAuditStatus, unlock, updateRole, auditDelete, getUserList, auditAdd, reviewAdd, reviewList, jugeBind, judeUnbind } from '@/api/project'
 const query = {
   page: 1,
   length: 10,
@@ -405,16 +401,27 @@ export default {
       if (this.activeName === 'third') {
         this.queryReviewUserList()
       }
+      if (this.activeName === 'second') {
+        this.getInfoList()
+      }
     },
     queryDetail() {
       getDetail({
         id: this.projectId
       }).then(res => {
-        this.detail = res.data
+        this.detail.head = res.data.head
+        this.detail.basic = res.data.basic
         const item = JSON.parse(res.data.head['projtype'])
         this.detail.head.projtype = item.length > 0 ? item.join('/') : ''
         this.basicForm.projstart = this.detail.basic.projstart
         this.basicForm.projauditcontent = this.detail.basic.projauditcontent
+      })
+    },
+    getInfoList() {
+      infoList({
+        id: this.projectId
+      }).then(res => {
+        this.detail.auditgroup = res.data.auditgroup || {}
       })
     },
     queryReviewUserList() {
@@ -422,8 +429,8 @@ export default {
         id: this.projectId
       }, this.reviewQuery)
       reviewList(params).then(res => {
-        this.reviewTotal = res.total || 0
-        this.reviewUserList = res.list
+        this.reviewTotal = +res.data.total || 0
+        this.reviewUserList = +res.data.list
       })
     },
     handleSaveBasic() {
@@ -563,8 +570,14 @@ export default {
       })
     },
     closeAuditAddDialog() {
-      if (this.addUser.length > 0) {
-        this.showVerify = true
+      if (this.activeName === 'second') {
+        if (this.addUser.length > 0) {
+          this.showVerify = true
+        }
+        this.getInfoList()
+      }
+      if (this.activeName === 'third') {
+        this.queryReviewUserList()
       }
     },
     changeNeedThird() {
@@ -608,6 +621,7 @@ export default {
         projid: this.projectId
       }).then(res => {
         this.$message.success('解除成功')
+        this.queryReviewUserList()
       })
     }
   }
