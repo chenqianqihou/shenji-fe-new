@@ -605,7 +605,7 @@ export default {
          }
          reviewAdd({
            id: currentGroudId,
-           pids: addUser,
+           pids: addUser.map(row => +row),
            type: type
          }).then(res => {
            this.listQuery.ismedium = 2

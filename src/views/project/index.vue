@@ -241,8 +241,8 @@ export default {
   methods: {
     toOrgName(id) {
       if (this.selectList.organlist) {
-        const item = this.selectList.organlist.find(row => row.id === id)
-        return item.name || id
+        const item = this.selectList.organlist.find(row => row.id === +id)
+        return item ? item.name : id
       }
       return id
     },
