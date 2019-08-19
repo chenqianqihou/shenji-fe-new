@@ -90,6 +90,12 @@ const memStatusMap = {
   2: '不在点'
 }
 
+const scoreMap = {
+  0: '无需评分',
+  1: '未评分',
+  2: '无需评分'
+}
+
 export {
   props,
   stsMap,
@@ -98,5 +104,6 @@ export {
   auditOptMap,
   roleMap,
   auditStatusMap,
-  memStatusMap
+  memStatusMap,
+  scoreMap
 }
