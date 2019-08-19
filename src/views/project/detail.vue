@@ -696,7 +696,7 @@ export default {
     display: flex;
     .basic-box {
       font-size: 14px;
-      width: calc(100% - 250px);
+      width: calc(100% - 170px);
       &-col {
         padding: 10px 0;
       }
@@ -705,7 +705,7 @@ export default {
       }
     }
     .tag-box {
-      width: 240px;
+      width: 160px;
       &-label {
         margin-bottom: 10px;
       }
