@@ -60,8 +60,10 @@ const stsMap = {
 const auditOptMap = {
   1: '进点',
   2: '实施结束',
-  3: '开始报告',
-  4: '报告结束'
+  3: '开始审理',
+  4: '结束审理',
+  5: '开始报告',
+  6: '报告结束'
 }
 
 const auditStatusMap = {

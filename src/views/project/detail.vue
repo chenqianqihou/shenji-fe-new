@@ -4,7 +4,7 @@
       <h4>项目{{ detail.basic.projectname || '详情' }}</h4>
       <div>
         <el-button size="mini" type="primary" @click="$router.push(`/project/edit/${projectId}`)">项目计划编辑</el-button>
-        <el-button size="mini" :class="`status-btn-${+detail.basic.projectstatus}`" @click="changeStatus" v-if="+detail.basic.projectstatus < 4">{{ operateMap[+detail.basic.projectstatus] }}</el-button>
+        <el-button v-if="+detail.basic.projectstatus < 4" size="mini" :class="`status-btn-${+detail.basic.projectstatus}`" @click="changeStatus">{{ operateMap[+detail.basic.projectstatus] }}</el-button>
       </div>
     </div>
     <div class="head-box">
@@ -80,16 +80,16 @@
           <div style="width: 140px;vertical-align: middle;line-height: 112px;">需要第三方人员：</div>
           <div style="flex: 1">
             <div style="margin: 10px;line-height: 28px;">
-              <el-checkbox v-model="listQuery.ismedium" :true-label="1" :false-label="2" @change="changeNeedThird">中介机构</el-checkbox>
+              <el-radio v-model="needThird" :label="1" @change="changeNeedThird">中介机构</el-radio>
               <span style="font-weight: bold; font-size:14px;">
                 中介审核：
                 {{ detail.auditgroup.medium ? (listQuery.ismedium === 1 && showVerify ? stsMap[detail.auditgroup.medium + 1] : stsMap[detail.auditgroup.medium]) : '-' }}
               </span>
-              <el-button type="danger" style="margin-left: 20px" size="mini" v-if="showVerify" @click="handleVerify">提交审核</el-button>
+              <el-button v-if="showVerify" type="danger" style="margin-left: 20px" size="mini" @click="handleVerify">提交审核</el-button>
             </div>
-            <el-divider style="margin: 0"></el-divider>
+            <el-divider style="margin: 0" />
             <div style="margin: 10px; line-height: 28px;">
-              <el-checkbox v-model="listQuery.isinternal" :true-label="1" :false-label="2"  @change="changeNeedThird">内审机构</el-checkbox>
+              <el-radio v-model="needThird" :label="2" @change="changeNeedThird">内审机构</el-radio>
               <span style="font-weight: bold;font-size:14px;">
                 内审审核：
                 {{ detail.auditgroup.internal ? (listQuery.isinternal === 1 && showVerify ? stsMap[detail.auditgroup.internal + 1] : stsMap[detail.auditgroup.internal]) : '-' }}
@@ -97,7 +97,7 @@
             </div>
           </div>
         </div>
-        <el-divider></el-divider>
+        <el-divider />
         <div v-for="(item, idx) in detail.auditgroup.list" :key="idx">
           <div style="display: flex;justify-content: space-between;">
             <h3>审计组{{ idx + 1 }}</h3>
@@ -129,8 +129,7 @@
                   {{ selectConfig.type[row.roletype] }}
                 </template>
               </el-table-column>
-              <el-table-column label="所属市县" align="center" prop="location">
-              </el-table-column>
+              <el-table-column label="所属市县" align="center" prop="location" />
               <el-table-column label="项目角色" align="center" prop="role">
                 <template slot-scope="{row}">
                   {{ roleMap[row.role] }}
@@ -162,7 +161,7 @@
               </el-table-column>
             </el-table>
           </div>
-          <el-divider v-if="(idx + 1) < detail.auditgroup.list.length"></el-divider>
+          <el-divider v-if="(idx + 1) < detail.auditgroup.list.length" />
         </div>
         <el-dialog title="修改角色" :visible.sync="roleDialogVisible" width="500px" center @close="closeRoleDialog">
           <el-form ref="roleForm" :model="roleForm">
@@ -186,7 +185,7 @@
           </div>
         </el-dialog>
       </el-tab-pane>
-      <el-tab-pane label="审理成员" name="third" v-if="detail.basic.projectstatus > 3">
+      <el-tab-pane v-if="detail.basic.projectstatus > 3" label="审理成员" name="third">
         <div style="margin-bottom: 20px">
           <el-button type="primary" @click="handleAdd">新增人员</el-button>
         </div>
@@ -221,15 +220,16 @@
           </el-table-column>
         </el-table>
       </el-tab-pane>
-      <el-tab-pane label="审计评价" name="fourth"  v-if="detail.basic.projectstatus > 3">审计评价</el-tab-pane>
+      <el-tab-pane v-if="detail.basic.projectstatus > 3" label="审计评价" name="fourth">审计评价</el-tab-pane>
     </el-tabs>
     <el-dialog
       title="添加成员"
       :visible.sync="memDialigVisible"
       width="1000px"
+      center
       @closed="closeAuditAddDialog"
-      center>
-       <el-form :inline="true">
+    >
+      <el-form :inline="true">
         <el-form-item label="工作状态">
           <el-select
             v-model="listQuery.jobstatus"
@@ -278,7 +278,7 @@
               type="text"
               size="mini"
               :class="{
-                'delete-row-class': addUser.indexOf(row.id) > -1 
+                'delete-row-class': addUser.indexOf(row.id) > -1
               }"
               @click="handleAuditOpt(row)"
             >{{ addUser.indexOf(row.id) > -1 ? '解除' : '添加' }}</el-button>
@@ -288,7 +288,7 @@
               size="mini"
               @click="handleAddJuge(row)"
             >
-            添加
+              添加
             </el-button>
           </template>
         </el-table-column>
@@ -316,7 +316,7 @@
             message: '请填写审理人数'
           }]"
         >
-          <el-input v-model="auditForm.people" type="number"></el-input>
+          <el-input v-model="auditForm.people" type="number" />
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -340,6 +340,9 @@ const query = {
   ismedium: 2
 }
 export default {
+  components: {
+    Pagination
+  },
   data() {
     return {
       detail: {
@@ -388,11 +391,9 @@ export default {
         page_size: 10,
         page: 1
       },
-      reviewTotal: 0
+      reviewTotal: 0,
+      needThird: 0
     }
-  },
-  components: {
-    Pagination
   },
   computed: {
     projectId() {
@@ -590,31 +591,40 @@ export default {
       }
     },
     changeNeedThird() {
+      if (this.needThird === 1) {
+        this.listQuery.ismedium = 1
+        this.listQuery.isinternal = 2
+      }
+      if (this.needThird === 2) {
+        this.listQuery.ismedium = 2
+        this.listQuery.isinternal = 1
+      }
       this.showVerify = false
       this.addUser = []
     },
     handleVerify() {
-      const { addUser, currentGroudId, listQuery: { isinternal, ismedium } } = this
-       if (addUser.length > 0) {
-         let type = []
-         if (isinternal === 1) {
-           type.push(2)
-         }
-         if (ismedium === 1) {
-           type.push(1)
-         }
-         reviewAdd({
-           id: currentGroudId,
-           pids: addUser.map(row => +row),
-           type: type
-         }).then(res => {
-           this.listQuery.ismedium = 2
-           this.listQuery.isinternal = 2
-           this.addUser = []
-           this.showVerify = false
-           this.$message.success('提交成功')
-         })
-       }
+      const { addUser, currentGroudId, listQuery: { isinternal, ismedium }} = this
+      if (addUser.length > 0) {
+        let type
+        if (isinternal === 1) {
+          type = 2
+        }
+        if (ismedium === 1) {
+          type = 1
+        }
+        reviewAdd({
+          id: currentGroudId,
+          pids: addUser.map(row => +row),
+          type: type
+        }).then(res => {
+          this.needThird = 0
+          this.listQuery.ismedium = 2
+          this.listQuery.isinternal = 2
+          this.addUser = []
+          this.showVerify = false
+          this.$message.success('提交成功')
+        })
+      }
     },
     handleAddJuge(row) {
       jugeBind({
