@@ -211,6 +211,15 @@ export const constantRoutes = [
           noCache: true
         },
         hidden: true
+      },
+      {
+        path: 'objective-score',
+        component: () => import('@/views/audit/objective-score/index'),
+        name: 'auditobjectiveScore',
+        meta: {
+          title: '客观分数配置',
+          noCache: true
+        }
       }
     ]
   },

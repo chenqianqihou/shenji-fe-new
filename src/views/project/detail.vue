@@ -124,7 +124,7 @@
           <div>
             <el-button type="primary" @click="handleAdd(item.id)">新增人员</el-button>
             <el-button
-              :type="[1, 3].includes(item.operate) ? `success` : 'error'"
+              :type="[1, 3].includes(item.operate) ? `success` : 'danger'"
               @click="changeAuditStatus(item.operate, item.id)"
             >{{ auditOptMap[item.operate] }}</el-button>
           </div>
@@ -502,6 +502,7 @@ export default {
         operate: opt
       }).then(res => {
         this.$message.success("操作成功")
+        this.getInfoList()
       })
     },
     handleShowRole(row, id) {
