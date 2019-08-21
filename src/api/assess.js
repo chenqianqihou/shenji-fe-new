@@ -21,3 +21,11 @@ export function fetchViolations(params) {
     params
   })
 }
+
+export function saveConfig(data) {
+  return request({
+    url: '/assess/saveconfig',
+    method: 'post',
+    data
+  })
+}

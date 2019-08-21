@@ -9,7 +9,7 @@
           @click="$router.push(`/project/edit/${projectId}`)"
         >项目计划编辑</el-button>
         <el-button
-          v-if="+detail.basic.projectstatus < 4"
+          v-if="+detail.basic.projectstatus > 0 && +detail.basic.projectstatus < 4"
           size="mini"
           :class="`status-btn-${+detail.basic.projectstatus}`"
           @click="changeStatus"
@@ -118,12 +118,13 @@
             <h3>审计组{{ idx + 1 }}</h3>
             <div>
               <h4>审计状态</h4>
-              <span>{{ auditStatusMap[+item.status] }}</span>
+              <span>{{ auditStatusMap[+item.status] || '-' }}</span>
             </div>
           </div>
           <div>
             <el-button type="primary" @click="handleAdd(item.id)">新增人员</el-button>
             <el-button
+              v-if="item.operate"
               :type="[1, 3].includes(item.operate) ? `success` : 'danger'"
               @click="changeAuditStatus(item.operate, item.id)"
             >{{ auditOptMap[item.operate] }}</el-button>
