@@ -29,3 +29,27 @@ export function saveConfig(data) {
     data
   })
 }
+
+export function deleteConfig(data) {
+  return request({
+    url: '/assess/deleteconfig',
+    method: 'post',
+    data
+  })
+}
+
+export function fetchForm(data) {
+  return request({
+    url: '/assess/form',
+    method: 'post',
+    data
+  })
+}
+
+export function submitForm(data) {
+  return request({
+    url: '/assess/submit',
+    method: 'post',
+    data
+  })
+}

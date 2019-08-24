@@ -123,6 +123,21 @@ export const constantRoutes = [
     }]
   },
   {
+    path: '/result',
+    component: Layout,
+    redirect: '/result/index',
+    children: [{
+      path: 'index',
+      component: () => import('@/views/result/index'),
+      name: 'result',
+      meta: {
+        title: '成果管理',
+        icon: 'example',
+        noCache: true
+      }
+    }]
+  },
+  {
     path: '/audit',
     component: Layout,
     redirect: '/audit/personnel',

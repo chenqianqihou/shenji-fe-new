@@ -34,6 +34,29 @@ const props = [{
   append: '天'
 }]
 
+const detailMemProps = [{
+  value: 'name',
+  label: '姓名'
+}, {
+  value: 'id',
+  label: '人员ID'
+}, {
+  value: 'projrole',
+  label: '项目角色'
+}, {
+  value: 'typeName',
+  label: '机构类型'
+}, {
+  value: 'organizationLabel',
+  label: '所属机构'
+}, {
+  value: 'departmentLabel',
+  label: '所属部门'
+}, {
+  value: 'locationName',
+  label: '所属市县'
+}]
+
 const statusMap = {
   1: '计划阶段',
   2: '实施阶段',
@@ -93,7 +116,7 @@ const memStatusMap = {
 const scoreMap = {
   0: '无需评分',
   1: '未评分',
-  2: '无需评分'
+  2: '已评分'
 }
 
 export {
@@ -105,5 +128,6 @@ export {
   roleMap,
   auditStatusMap,
   memStatusMap,
-  scoreMap
+  scoreMap,
+  detailMemProps
 }

@@ -63,7 +63,7 @@
 </template>
 
 <script>
-import { fetchScore, fetchViolations, saveConfig } from '@/api/assess'
+import { fetchScore, fetchViolations, saveConfig, deleteConfig } from '@/api/assess'
 import { format } from 'path'
 const subItem = {
   nameone: '',
@@ -133,7 +133,16 @@ export default {
       list.push(Object.assign({}, subItem))
     },
     handleRemove3(list, idx) {
-      list.splice(idx, 1)
+      const current = list[idx]
+      if (current.id) {
+        deleteConfig({
+          configid: current.id
+        }).then(res => {
+          list.splice(idx, 1)
+        })
+      } else {
+        list.splice(idx, 1)
+      }
     },
     handleAdd5(list) {
       list.push(Object.assign({}, subCasItem))
