@@ -135,6 +135,35 @@ export const constantRoutes = [
         icon: 'example',
         noCache: true
       }
+    }, {
+      path: 'create',
+      component: () => import('@/views/result/create'),
+      name: 'resultCreate',
+      meta: {
+        title: '新建成果',
+        noCache: true
+      },
+      hidden: true
+    // },
+    // {
+    //   path: 'result/detail/:id',
+    //   component: () => import('@/views/result/detail'),
+    //   name: 'resultDetail',
+    //   meta: {
+    //     title: '成果信息',
+    //     noCache: true
+    //   },
+    //   hidden: true
+    // },
+    // {
+    //   path: 'result/edit/:id',
+    //   component: () => import('@/views/result/edit'),
+    //   name: 'resultEdit',
+    //   meta: {
+    //     title: '编辑成果',
+    //     noCache: true
+    //   },
+    //   hidden: true
     }]
   },
   {

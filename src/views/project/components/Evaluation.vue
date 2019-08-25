@@ -23,15 +23,17 @@
                 {{ config.roleMap[row.projrole] }}
               </template>
             </el-table-column>
-            <el-table-column label="评分状态" align="center" prop="status" v-if="!isLeader">
-              <template slot-scope="{row}">
-                {{ config.scoreMap[row.status] }}
+            <template>
+              <el-table-column label="评分状态" align="center" prop="status" v-if="!isLeader">
+                <template slot-scope="{row}">
+                  {{ config.scoreMap[row.status] }}
+                </template>
+              </el-table-column>
+              <template v-else>
+                <el-table-column label="客观分数" align="center" prop="objectivescore" show-overflow-tooltip />
+                <el-table-column label="主观分数" align="center" prop="subjectivescore" show-overflow-tooltip />
+                <el-table-column label="总分数" align="center" prop="totalscore" show-overflow-tooltip />
               </template>
-            </el-table-column>
-            <template v-else>
-              <el-table-column label="客观分数" align="center" prop="objectivescore" show-overflow-tooltip />
-              <el-table-column label="主观分数" align="center" prop="subjectivescore" show-overflow-tooltip />
-              <el-table-column label="总分数" align="center" prop="totalscore" show-overflow-tooltip />
             </template>
             <el-table-column label="操作" align="center">
               <template slot-scope="{row}">
@@ -130,8 +132,9 @@ export default {
       assess.fetchList({
         projectid: +this.projectId
       }).then(res => {
+        console.log(res.data)
         this.list = res.data.list || []
-        this.isLeader = res.isleader || 0
+        this.isLeader = res.data.isleader || 0
       })
     },
     queryDetail() {

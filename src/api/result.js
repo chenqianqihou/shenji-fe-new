@@ -21,3 +21,27 @@ export function deleteResult(data) {
     data
   })
 }
+
+export function submitResult(data) {
+  return request({
+    url: '/auditresults/submitresult',
+    method: 'post',
+    data
+  })
+}
+
+export function saveResult(data) {
+  return request({
+    url: '/auditresults/saveresult',
+    method: 'post',
+    data
+  })
+}
+
+export function projectList(data) {
+  return request({
+    url: '/auditresults/projectlist',
+    method: 'post',
+    data
+  })
+}
