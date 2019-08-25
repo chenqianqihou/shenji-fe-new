@@ -49,28 +49,33 @@
       <div v-else>暂无数据</div>
     </div>
     <div class="assess-content" v-loading="loading" v-else>
-      <el-page-header @back="goBack" />
+      <el-page-header @back="goBack"/>
       <el-row class="userinfo-box">
         <el-col v-for="(item, key) in config.detailMemProps" :key="key" :span="6" class="userinfo-box-col">
           <span class="userinfo-box-label">{{ item.label }}:</span>
           <span class="userinfo-box-value">{{ detail[item.value] || '' }}</span>
         </el-col>
       </el-row>
+      <el-divider></el-divider>
+      <div class="question-title" v-if="+actionRow.typeid === 7">审计组考核</div>
       <div class="question-box" v-for="(item, idx) in questions" :key="idx">
-        <h4>{{ item.title }}</h4>
+        <h4>
+          {{ item.title }}
+          <span class="question-subtitle-score">{{ [4,5,6].indexOf(+actionRow.typeid) === -1 ? `（${item.score}分）` : '' }}</span>
+        </h4>
         <el-divider></el-divider>
         <div>
-          <div v-for="(item, key) in item.list" :key="key" class="question-box-row">
-            <div>{{ key+1 }} . {{ item.title }}</div>
+          <div v-for="(itm, key) in item.list" :key="key" class="question-box-row">
+            <div>{{ key+1 }} . {{ itm.title }} {{ ([4,5,6].indexOf(+actionRow.typeid) === -1 ? `（${itm.score}分）` : '') }}</div>
             <div v-if="[4,5,6].indexOf(+actionRow.typeid) > -1">
               评分：
-              <el-select :value="answers[item.id]" @change="handleChange($event, item.id)">
-                <el-option v-for="(row, idx) in item.options" :key="idx" :value="row.score" :label="`${row.name}(${row.score}分)`"></el-option>
+              <el-select :value="answers[itm.id]" @change="handleChange($event, itm.id)">
+                <el-option v-for="(row, idx) in itm.options" :key="idx" :value="row.score" :label="`${row.name}(${row.score}分)`"></el-option>
               </el-select>
             </div>
             <div v-else>
-              <el-radio-group v-model="answers[item.id]" @change="handleChange($event, item.id)">
-                <el-radio v-for="(row, idx) in item.options" :key="idx" :label="row.score">{{ row.name }}</el-radio>
+              <el-radio-group v-model="answers[itm.id]" @change="handleChange($event, itm.id)">
+                <el-radio v-for="(row, idx) in itm.options" :key="idx" :label="row.score">{{ row.name }}</el-radio>
               </el-radio-group>
             </div>
           </div>
@@ -84,10 +89,10 @@
             </el-col>
           </el-row>
         </div>
-        <div class="question-box-footer">
-          <el-button @click="goBack">取消</el-button>
-          <el-button type="primary" @click="handleSubmit">提交</el-button>
-        </div>
+      </div>
+      <div class="question-footer">
+        <el-button @click="goBack">取消</el-button>
+        <el-button type="primary" @click="handleSubmit">提交</el-button>
       </div>
     </div>
   </div>
@@ -145,14 +150,25 @@ export default {
           typeName: this.selectConfig.type[userinfo.type]
         })
         Object.keys(question).forEach(key => {
+          let score = 0
+          question[key].forEach(row => {
+            let maxRow = row.options.sort((a, b) => b.score - a.score)[0]
+            row.score = maxRow.score
+            score += row.score
+          })
           this.questions.push({
             title: key,
+            score: score,
             list: question[key]
           })
         })
         Object.keys(answer).forEach(key => {
-          let find = answer[key].find(row => row.selected)
-          this.$set(this.answers, key, find ? +find.score : '')
+          if (Array.isArray(answer[key])) {
+            let find = answer[key].find(row => row.selected)
+            this.$set(this.answers, key, find ? +find.score : '')
+          } else {
+            this.$set(this.answers, key, answer[key])
+          }
         })
         this.queryOrgListByType()
         this.loading = false
@@ -224,10 +240,10 @@ export default {
       const newAnswer = {}
       questions.forEach(question => {
         question.list.forEach(row => {
-          let newVal = answers[row.id] || 0
+          let newVal = answers[row.id]
           newAnswer[row.id] = []
           row.options.forEach(item => {
-            if (newVal && newVal === item.score) {
+            if (newVal === item.score) {
               item.selected = true
             }
             newAnswer[row.id].push(item)
@@ -264,6 +280,14 @@ export default {
       font-weight: bold;
     }
   }
+  .question-title {
+    font-size: 20px;
+    font-weight: 600;
+    margin-top: 20px;
+  }
+  .question-subtitle-score {
+    color: #FF0000;
+  }
   .question-box {
     font-size: 14px;
     margin-top: 20px;
@@ -279,10 +303,10 @@ export default {
         color: #FF0000;
       }
     }
-    &-footer {
-      margin-top: 30px;
-      text-align: center;
-    }
+  }
+  .question-footer {
+    margin-top: 30px;
+    text-align: center;
   }
 }
 </style>
