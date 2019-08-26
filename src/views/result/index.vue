@@ -49,16 +49,17 @@
           :show-file-list="false"
           :headers="{
             'AUTHORIZATION': $store.getters.token
-          }">
+          }"
+        >
           <el-button
             class="filter-item"
             type="primary"
           >上传导入</el-button>
         </el-upload>
         <el-button
+          v-download="download"
           class="filter-item"
           icon="el-icon-download"
-          v-download="download"
         >下载模板</el-button>
       </div>
 
@@ -175,7 +176,7 @@ export default {
     this.getList()
   },
   methods: {
-    download () {
+    download() {
       return downloadExcel()
     },
     getSelectConfig() {
@@ -224,7 +225,7 @@ export default {
           this.getList()
         })
       })
-    },
+    }
   }
 }
 </script>

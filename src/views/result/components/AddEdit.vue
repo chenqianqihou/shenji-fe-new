@@ -1,17 +1,19 @@
 <template>
-  <el-card :class="[
-    'result-addedit',
-    {
-      'result-addedit-readonly': readonly
-    }
-  ]">
+  <el-card
+    :class="[
+      'result-addedit',
+      {
+        'result-addedit-readonly': readonly
+      }
+    ]"
+  >
     <div slot="header" class="clearfix">
       <span>{{ resultId ? '编辑' : '新建' }}审计成果</span>
     </div>
     <div class="result-addedit-content">
       <el-form label-position="right" label-width="auto">
         <h4>基本信息</h4>
-        <el-divider></el-divider>
+        <el-divider />
         <el-form-item label="人员ID">
           {{ userinfo.pid }}
         </el-form-item>
@@ -20,46 +22,46 @@
         </el-form-item>
         <el-form-item label="项目名称">
           <el-select
-            filterable
             v-model="form.projectid"
-            @change="handleChangeProject"
+            filterable
             :disabled="readonly"
+            @change="handleChangeProject"
           >
-          <el-option v-for="item in projectList" :key="item.id" :value="item.id" :label="item.name"></el-option>
+            <el-option v-for="item in projectList" :key="item.id" :value="item.id" :label="item.name" />
           </el-select>
         </el-form-item>
         <el-form-item label="项目编号">
-          <el-input v-model="project.projectnum" readonly :disabled="readonly"></el-input>
+          <el-input v-model="project.projectnum" readonly :disabled="readonly" />
         </el-form-item>
         <el-form-item label="项目年度">
-          <el-input v-model="project.projyear" readonly :disabled="readonly"></el-input>
+          <el-input v-model="project.projyear" readonly :disabled="readonly" />
         </el-form-item>
         <el-form-item label="项目层级">
-          <el-input :value="project.projlevel && originConfig.projlevel ? originConfig.projlevel[+project.projlevel] : ''" readonly :disabled="readonly"></el-input>
+          <el-input :value="project.projlevel && originConfig.projlevel ? originConfig.projlevel[+project.projlevel] : ''" readonly :disabled="readonly" />
         </el-form-item>
         <el-form-item label="项目类型">
-          <el-input :value="project.projtype ? project.projTypeName : ''" readonly :disabled="readonly"></el-input>
+          <el-input :value="project.projtype ? project.projTypeName : ''" readonly :disabled="readonly" />
         </el-form-item>
         <el-form-item label="项目角色">
-          <el-input :value="projConfig.roleMap[+project.roletype]" readonly :disabled="readonly"></el-input>
+          <el-input :value="projConfig.roleMap[+project.roletype]" readonly :disabled="readonly" />
         </el-form-item>
         <el-form-item label="报告撰写">
           <span v-if="readonly">{{ radioMap[+form.havereport] || '-' }}</span>
-          <el-radio-group v-model="form.havereport" v-else>
+          <el-radio-group v-else v-model="form.havereport">
             <el-radio label="1">是</el-radio>
             <el-radio label="2">否</el-radio>
           </el-radio-group>
         </el-form-item>
         <h4>审计成果</h4>
-        <el-divider></el-divider>
+        <el-divider />
         <el-form-item label="查出问题性质">
-          <el-select v-model="form.problemid" @change="handleChangeQuestion1" :disabled="readonly">
-            <el-option v-for="item in question1List" :key="item.id" :label="item.name" :value="+item.id"></el-option>
+          <el-select v-model="form.problemid" :disabled="readonly" @change="handleChangeQuestion1">
+            <el-option v-for="item in question1List" :key="item.id" :label="item.name" :value="+item.id" />
           </el-select>
         </el-form-item>
         <el-form-item label="查出问题明细">
           <el-select v-model="form.problemdetailid" :disabled="readonly">
-            <el-option v-for="item in question2List" :key="item.id" :label="item.name" :value="+item.id"></el-option>
+            <el-option v-for="item in question2List" :key="item.id" :label="item.name" :value="+item.id" />
           </el-select>
         </el-form-item>
         <el-form-item label="处理金额">
@@ -81,69 +83,69 @@
           <el-input v-model="form.amountsix" :disabled="readonly"><template slot="suffix">元</template></el-input>
         </el-form-item>
         <el-form-item label="问题描述">
-          <el-input v-model="form.desc" :disabled="readonly"></el-input>
+          <el-input v-model="form.desc" :disabled="readonly" />
         </el-form-item>
         <el-form-item label="是否单独查出">
           <span v-if="readonly">{{ radioMap[+form.isfindout] || '-' }}</span>
-          <el-radio-group v-model="form.isfindout" v-else>
+          <el-radio-group v-else v-model="form.isfindout">
             <el-radio label="1">是</el-radio>
             <el-radio label="2">否</el-radio>
           </el-radio-group>
         </el-form-item>
         <el-form-item label="查出人数">
-          <el-input v-model="form.findoutnum" :disabled="readonly"></el-input>
+          <el-input v-model="form.findoutnum" :disabled="readonly" />
         </el-form-item>
         <h4>移送处理情况</h4>
-        <el-divider></el-divider>
+        <el-divider />
         <el-form-item label="是否有移送事项">
           <span v-if="readonly">{{ radioMap[+form.istransfer] || '-' }}</span>
-          <el-radio-group v-model="form.istransfer" v-else>
+          <el-radio-group v-else v-model="form.istransfer">
             <el-radio label="1">是</el-radio>
             <el-radio label="2">否</el-radio>
           </el-radio-group>
         </el-form-item>
         <el-form-item label="移送处理机关">
           <el-select v-model="form.processorgans" :disabled="readonly">
-            <el-option v-for="(key, item) in config.tsOrgMap" :key="item" :label="key" :value="item"></el-option>
+            <el-option v-for="(key, item) in config.tsOrgMap" :key="item" :label="key" :value="item" />
           </el-select>
         </el-form-item>
         <el-form-item label="移送处理金额">
           <el-input v-model="form.transferamount" :disabled="readonly"><template slot="suffix">元</template></el-input>
         </el-form-item>
         <el-form-item label="移送人数">
-          <el-input v-model="form.transferpeoplenum" :disabled="readonly"></el-input>
+          <el-input v-model="form.transferpeoplenum" :disabled="readonly" />
         </el-form-item>
         <el-form-item label="送处理人员情况">
           <el-select v-model="form.transferpeopletype" :disabled="readonly">
-            <el-option v-for="(key, item) in config.tsPeopleMap" :key="item" :label="key" :value="item"></el-option>
+            <el-option v-for="(key, item) in config.tsPeopleMap" :key="item" :label="key" :value="item" />
           </el-select>
         </el-form-item>
         <el-form-item label="移送处理结果">
-          <el-input v-model="form.transferresult" :disabled="readonly"></el-input>
+          <el-input v-model="form.transferresult" :disabled="readonly" />
         </el-form-item>
         <h4>综合成果</h4>
-        <el-divider></el-divider>
+        <el-divider />
         <el-form-item label="是否纳入本级工作报告">
           <span v-if="readonly">{{ radioMap[+form.bringintoone] || '-' }}</span>
-          <el-radio-group v-model="form.bringintoone" v-else>
+          <el-radio-group v-else v-model="form.bringintoone">
             <el-radio label="1">是</el-radio>
             <el-radio label="2">否</el-radio>
           </el-radio-group>
         </el-form-item>
         <el-form-item label="是否纳入上级审计工作报告">
           <span v-if="readonly">{{ radioMap[+form.bringintoone] || '-' }}</span>
-          <el-radio-group v-model="form.bringintotwo" v-else>
+          <el-radio-group v-else v-model="form.bringintotwo">
             <el-radio label="1">是</el-radio>
             <el-radio label="2">否</el-radio>
           </el-radio-group>
         </el-form-item>
         <el-form-item label="评优">
           <el-select v-model="form.appraisal" :disabled="readonly">
-            <el-option v-for="(key, val) in config.evaluationMap" :label="key" :value="val" :key="val"></el-option>
+            <el-option v-for="(key, val) in config.evaluationMap" :key="val" :label="key" :value="val" />
           </el-select>
         </el-form-item>
       </el-form>
-      <div class="result-addedit-footer" v-if="!readonly">
+      <div v-if="!readonly" class="result-addedit-footer">
         <el-button @click="handleSave">保存</el-button>
         <el-button type="primary" @click="handleSubmit">提交</el-button>
       </div>
@@ -202,7 +204,7 @@ export default {
       Promise.all([
         this.queryProjectList(),
         this.getSelectConfig(),
-        this.fetchViolations(),
+        this.fetchViolations()
       ]).then(() => {
         this.queryDetail()
       })
@@ -236,7 +238,7 @@ export default {
     async queryProjectList() {
       const res = await projectList()
       res.data.forEach(row => {
-        let find = this.projectList.find(item => item.id && +item.id === +row.id)
+        const find = this.projectList.find(item => item.id && +item.id === +row.id)
         if (!find) {
           this.projectList.push(row)
         }
@@ -255,7 +257,7 @@ export default {
           if (row.name === projtype[0]) {
             row.list.forEach(row1 => {
               if (row1.name === projtype[1]) {
-                 this.question1List = row1.list || []
+                this.question1List = row1.list || []
               }
             })
           }
