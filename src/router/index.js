@@ -167,6 +167,21 @@ export const constantRoutes = [
     }]
   },
   {
+    path: '/review',
+    component: Layout,
+    redirect: '/review/index',
+    children: [{
+      path: 'index',
+      component: () => import('@/views/review/index'),
+      name: 'review',
+      meta: {
+        title: '审核管理',
+        icon: 'tab',
+        noCache: true
+      }
+    }]
+  },
+  {
     path: '/audit',
     component: Layout,
     redirect: '/audit/personnel',

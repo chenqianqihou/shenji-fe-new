@@ -44,6 +44,7 @@
           @click="$router.push('/result/create')"
         >新建</el-button>
         <el-upload
+          disabled
           class="upload-demo"
           :action="`${url}/auditresults/excelupload`"
           :show-file-list="false"
@@ -52,6 +53,7 @@
           }"
         >
           <el-button
+            disabled
             class="filter-item"
             type="primary"
           >上传导入</el-button>
@@ -60,6 +62,7 @@
           v-download="download"
           class="filter-item"
           icon="el-icon-download"
+          disabled
         >下载模板</el-button>
       </div>
 
@@ -102,7 +105,7 @@
         </el-table-column>
         <el-table-column label="项目角色" align="center">
           <template slot-scope="{row}">
-            {{ row.people_msg.role }}
+            {{ roleMap[+row.roletype] }}
           </template>
         </el-table-column>
         <el-table-column label="审核状态" align="center">
@@ -152,6 +155,7 @@ import Pagination from '@/components/Pagination'
 import { fetchList, downloadExcel, deleteResult } from '@/api/result'
 import { selectConfig } from '@/api/project'
 import { statusMap } from './config'
+import { roleMap } from '../project/config'
 const queryString = {
   projectid: '',
   status: '',
@@ -167,30 +171,32 @@ export default {
       listQuery: Object.assign({}, queryString),
       total: 0,
       statusMap,
+      roleMap,
       originConfig: {},
       url
     }
   },
   created() {
-    this.getSelectConfig()
-    this.getList()
+    Promise.all([this.getSelectConfig()]).then(() => {
+      this.listQuery.start = 0
+      this.getList()
+    })
   },
   methods: {
     download() {
       return downloadExcel()
     },
-    getSelectConfig() {
-      selectConfig().then(res => {
-        const keys = Object.keys(res.data)
-        const values = Object.values(res.data)
-        values.forEach((row, idx) => {
-          this.originConfig[keys[idx]] = {}
-          row.forEach(r => {
-            let item
-            if (typeof r === 'object') {
-              this.originConfig[keys[idx]][Object.keys(r)[0]] = Object.values(r)[0]
-            }
-          })
+    async getSelectConfig() {
+      const res = await selectConfig()
+      const keys = Object.keys(res.data)
+      const values = Object.values(res.data)
+      values.forEach((row, idx) => {
+        this.originConfig[keys[idx]] = {}
+        row.forEach(r => {
+          let item
+          if (typeof r === 'object') {
+            this.originConfig[keys[idx]][Object.keys(r)[0]] = Object.values(r)[0]
+          }
         })
       })
     },
