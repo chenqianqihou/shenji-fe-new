@@ -45,3 +45,11 @@ export function projectList(data) {
     data
   })
 }
+
+export function getDetail(data) {
+  return request({
+    url: '/auditresults/details',
+    method: 'post',
+    data
+  })
+}

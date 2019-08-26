@@ -144,26 +144,26 @@ export const constantRoutes = [
         noCache: true
       },
       hidden: true
-    // },
-    // {
-    //   path: 'result/detail/:id',
-    //   component: () => import('@/views/result/detail'),
-    //   name: 'resultDetail',
-    //   meta: {
-    //     title: '成果信息',
-    //     noCache: true
-    //   },
-    //   hidden: true
-    // },
-    // {
-    //   path: 'result/edit/:id',
-    //   component: () => import('@/views/result/edit'),
-    //   name: 'resultEdit',
-    //   meta: {
-    //     title: '编辑成果',
-    //     noCache: true
-    //   },
-    //   hidden: true
+    },
+    {
+      path: 'detail/:id',
+      component: () => import('@/views/result/detail'),
+      name: 'resultDetail',
+      meta: {
+        title: '成果信息',
+        noCache: true
+      },
+      hidden: true
+    },
+    {
+      path: 'edit/:id',
+      component: () => import('@/views/result/edit'),
+      name: 'resultEdit',
+      meta: {
+        title: '编辑成果',
+        noCache: true
+      },
+      hidden: true
     }]
   },
   {

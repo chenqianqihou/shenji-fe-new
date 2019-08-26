@@ -128,6 +128,7 @@
             <el-button
               size="mini"
               type="text"
+              @click="$router.push(`/result/edit/${row.id}`)"
             >修改</el-button>
           </template>
         </el-table-column>
