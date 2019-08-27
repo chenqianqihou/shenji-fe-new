@@ -12,14 +12,19 @@
             />
           </el-form-item>
           <el-form-item label="项目年度">
-            <el-date-picker
+            <!-- <el-date-picker
               v-model="listQuery.projyear"
               type="year"
               placeholder="选择年">
-            </el-date-picker>
+            </el-date-picker> -->
+            <el-select v-model="listQuery.projyear">
+              <el-option v-for="(row, idx) in listSetting.years" :key="idx" :value="row" :label="row"></el-option>
+            </el-select>
           </el-form-item>
           <el-form-item label="项目层级">
-            <el-select v-model="listQuery.projlevel"></el-select>
+            <el-select v-model="listQuery.projlevel">
+              <el-option v-for="(row, idx) in listSetting.levels" :key="idx" :value="row" :label="originConfig.projlevel ? originConfig.projlevel[+row] : row"></el-option>
+            </el-select>
           </el-form-item>
           <el-button
             class="filter-item"
@@ -38,32 +43,32 @@
         >
           <el-table-column label="项目编号" align="center">
             <template slot-scope="{row}">
-              {{ row.project_msg.projectnum }}
+              {{ row.projectnum }}
             </template>
           </el-table-column>
           <el-table-column label="项目名称" align="center">
             <template slot-scope="{row}">
-              {{ row.project_msg.name }}
+              {{ row.name }}
             </template>
           </el-table-column>
           <el-table-column label="项目年度" align="center">
             <template slot-scope="{row}">
-              {{ row.project_msg.projyear }}
+              {{ row.projyear }}
             </template>
           </el-table-column>
           <el-table-column label="项目单位" align="center">
             <template slot-scope="{row}">
-              {{ row.project_msg.projyear }}
+              {{ row.projorgan }}
             </template>
           </el-table-column>
           <el-table-column label="项目层级" align="center">
             <template slot-scope="{row}">
-              {{ row.project_msg.projlevel && originConfig.projlevel ? originConfig.projlevel[+row.project_msg.projlevel] : row.project_msg.projlevel }}
+              {{ row.projlevel && originConfig.projlevel ? originConfig.projlevel[+row.projlevel] : row.projlevel }}
             </template>
           </el-table-column>
           <el-table-column label="计划时长（天）" align="center">
             <template slot-scope="{row}">
-              {{ row.people_msg.name }}
+              {{ row.plantime }}
             </template>
           </el-table-column>
           <el-table-column label="审核状态" align="center">
@@ -88,8 +93,8 @@
         <pagination
           v-show="total>0"
           :total="total"
-          :page.sync="listQuery.start"
-          :limit.sync="listQuery.length"
+          :page.sync="listQuery.page"
+          :limit.sync="listQuery.page_size"
           @pagination="getList"
         />
       </el-tab-pane>
@@ -119,32 +124,32 @@
         >
           <el-table-column label="项目编号" align="center">
             <template slot-scope="{row}">
-              {{ row.project_msg.projectnum }}
+              {{ row.projectnum }}
             </template>
           </el-table-column>
           <el-table-column label="项目名称" align="center">
             <template slot-scope="{row}">
-              {{ row.project_msg.name }}
+              {{ row.name }}
             </template>
           </el-table-column>
           <el-table-column label="项目层级" align="center">
             <template slot-scope="{row}">
-              {{ row.project_msg.projlevel && originConfig.projlevel ? originConfig.projlevel[+row.project_msg.projlevel] : row.project_msg.projlevel }}
+              {{ row.projlevel && originConfig.projlevel ? originConfig.projlevel[+row.projlevel] : row.projlevel }}
             </template>
           </el-table-column>
           <el-table-column label="项目年度" align="center">
             <template slot-scope="{row}">
-              {{ row.project_msg.projyear }}
+              {{ row.projyear }}
             </template>
           </el-table-column>
           <el-table-column label="姓名" align="center">
             <template slot-scope="{row}">
-              {{ row.people_msg.name }}
+              {{ row.pname }}
             </template>
           </el-table-column>
           <el-table-column label="人员ID" align="center">
             <template slot-scope="{row}">
-              {{ row.people_msg.id }}
+              {{ row.pid }}
             </template>
           </el-table-column>
           <el-table-column label="项目角色" align="center">
@@ -174,8 +179,8 @@
         <pagination
           v-show="total>0"
           :total="total"
-          :page.sync="listQuery.start"
-          :limit.sync="listQuery.length"
+          :page.sync="resultQuery.page"
+          :limit.sync="resultQuery.page_size"
           @pagination="getList"
         />
       </el-tab-pane>
@@ -184,8 +189,11 @@
 </template>
 
 <script>
-import { fetchList, fetchResultList } from '@/api/review'
+import { fetchList, fetchResultList, fetchConfig } from '@/api/review'
+import { selectConfig } from '@/api/project'
 import Pagination from '@/components/Pagination'
+import { statusMap } from '@/views/result/config'
+import { roleMap } from '@/views/project/config'
 const queryString = {
   projyear: '',
   query: '',
@@ -208,30 +216,59 @@ export default {
       resultQuery: Object.assign({}, resultQuery),
       resultListLoading: false,
       resultList: [],
-      resultTotal: 0
+      resultTotal: 0,
+      listSetting: {},
+      originConfig: {},
+      statusMap,
+      roleMap
     }
   },
   components: { Pagination },
   created() {
-    // this.getList()
+    Promise.all([this.getSelectConfig()]).then(() => {
+      this.getList()
+    })
+    this.getConfig()
+    // this.getResultList()
   },
   methods: {
+    async getSelectConfig() {
+      const res = await selectConfig()
+      const keys = Object.keys(res.data)
+      const values = Object.values(res.data)
+      values.forEach((row, idx) => {
+        this.originConfig[keys[idx]] = {}
+        row.forEach(r => {
+          let item
+          if (typeof r === 'object') {
+            this.originConfig[keys[idx]][Object.keys(r)[0]] = Object.values(r)[0]
+          }
+        })
+      })
+    },
     getList() {
       const { listQuery } = this
       this.listLoading = true
       fetchList(listQuery).then(res => {
-        this.list = res.data.list
-        this.total = res.data.total
+        this.list = res.data.list || []
+        this.total = +res.data.total
         this.listLoading = false
       })
     },
     getResultList() {
       const { resultQuery } = this
       this.resultListLoading = true
-      fetchList(listQuery).then(res => {
-        this.resultList = res.data.list
-        this.resultTotal = res.data.total
+      fetchResultList(resultQuery).then(res => {
+        this.resultList = res.data.list || []
+        this.resultTotal = +res.data.total
         this.resultListLoading = false
+      })
+    },
+    getConfig() {
+      fetchConfig().then(res => {
+        const { data } = res
+        this.listSetting.levels = data.projlevels.map(row => row.projlevel)
+        this.listSetting.years = data.projyears.map(row => row.projyear)
       })
     }
   }

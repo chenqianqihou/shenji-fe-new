@@ -223,6 +223,9 @@ export default {
     font-size: 20px;
     margin-bottom: 20px;
   }
+  .el-input-number .el-input__inner{
+    text-align: left !important;
+  }
   .cascader{
     margin-bottom: 20px;
   }

@@ -88,6 +88,8 @@
                 v-else-if="['achievements', 'comment'].includes(item.value)"
                 v-model="form[item.value]"
                 maxlength="200"
+                type="textarea"
+                :rows="4"
                 show-word-limit
               />
               <el-input v-else-if="!!item.readonly" v-model="readonly[item.value]" readonly />
@@ -179,7 +181,10 @@ export default {
               }
             })
           } else {
-            this.form.qualification.push(Array.from(qualiArray))
+            this.form.qualification.push({
+              info: '',
+              time: ''
+            })
           }
         }
         this.queryOrgListByType()
@@ -193,7 +198,10 @@ export default {
     },
     handleAddTrain(item) {
       if (item === 'qualification') {
-        this.form[item].push(Array.from(qualiArray))
+        this.form[item].push({
+          info: '',
+          time: ''
+        })
       } else {
         this.form[item].push('')
       }
@@ -209,7 +217,12 @@ export default {
         this.formProps.job.forEach(row => {
           if (row.canplus) {
             if (row.value === 'qualification') {
-              this.$set(this.form, row.value, Array.from(qualiArray))
+              this.$set(this.form, row.value, [
+                {
+                  info: '',
+                  time: ''
+                }
+              ])
             } else {
               this.form[row.value] = ['']
             }
@@ -342,6 +355,7 @@ export default {
           }
           optMethod(form).then(res => {
             this.$message.success('操作成功')
+            delete this.form.qualification
             this.returnBack()
           })
         }

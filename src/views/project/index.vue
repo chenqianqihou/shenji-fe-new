@@ -82,6 +82,7 @@
       </el-form>
       <div class="audit-project-actions">
         <el-button
+          v-if="showCreate"
           class="filter-item"
           type="primary"
           icon="el-icon-plus"
@@ -153,7 +154,7 @@
               size="mini"
               type="text"
               @click="handleChangeStatus(row)"
-            >{{ operateMap[row.status] }}</el-button>
+            >{{ operateMap[row.operate] }}</el-button>
             <el-button
               size="mini"
               type="text"
@@ -200,6 +201,7 @@
 
 <script>
 import Pagination from '@/components/Pagination'
+import { getInfo } from '@/api/user'
 import { fetchList, deleteProject, selectConfig, selectList, updateStatus } from '@/api/project'
 import { statusMap, operateMap } from './config'
 const queryString = {
@@ -230,15 +232,25 @@ export default {
         num: '',
         status: ''
       },
-      auditDialogVisible: false
+      auditDialogVisible: false,
+      showCreate: false
     }
   },
   created() {
     this.getSelectConfig()
     this.getSelectList()
     this.getList()
+    this.queryInfo()
   },
   methods: {
+    queryInfo() {
+      getInfo().then(res => {
+        const { data } = res
+        if (data.role && data.role.length > 0) {
+          this.showCreate = data.role.includes("2")
+        }
+      })
+    },
     toOrgName(id) {
       if (this.selectList.organlist) {
         const item = this.selectList.organlist.find(row => row.id === +id)
@@ -303,13 +315,13 @@ export default {
       })
     },
     handleChangeStatus(row) {
-      if (+row.status === 3) {
-        this.auditForm.operate = +row.status + 1
+      if (+row.operate === 3) {
+        this.auditForm.operate = +row.operate
         this.auditForm.id = row.id
         this.auditDialogVisible = true
       } else {
         updateStatus({
-          operate: +row.status + 1,
+          operate: +row.operate,
           id: row.id
         }).then(res => {
           this.$message.success('操作成功')

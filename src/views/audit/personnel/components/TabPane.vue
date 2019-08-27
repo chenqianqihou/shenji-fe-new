@@ -135,7 +135,7 @@
         </template>
         <el-table-column label="工作状态" align="center" prop="status">
           <template slot-scope="{row}">
-            {{ selectConfig.status[row.status] || row.status }}
+            {{ selectConfig.status[+row.status] || row.status }}
           </template>
         </el-table-column>
         <el-table-column label="兼办项目" align="center" prop="projectnum" />
@@ -146,6 +146,7 @@
         >
           <template slot-scope="{row}">
             <el-button
+              :disabled="+row.status === 1"
               size="mini"
               type="text"
               @click="handleDelete(row)"

@@ -258,7 +258,7 @@ export default {
       if (val) {
         const { violations } = this
         const current = this.projectList.find(row => +row.id === +val)
-        const projtype = JSON.parse(current.projtype)
+        const projtype = current ? JSON.parse(current.projtype) : []
         this.project = Object.assign({}, current, {
           id: val,
           projTypeName: projtype.join('/')
@@ -280,7 +280,7 @@ export default {
       if (val) {
         const { question1List } = this
         const current = question1List.find(row => +row.id === +val)
-        this.question2List = current.list || []
+        this.question2List = current ? current.list : []
       }
     },
     async fetchViolations() {

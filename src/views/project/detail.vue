@@ -136,8 +136,8 @@
               <el-table-column label="性别" align="center" prop="roletype">
                 <template slot-scope="{row}">{{ selectConfig.sex[row.sex] }}</template>
               </el-table-column>
-              <el-table-column label="机构类型" prop="projorgan" align="roletype">
-                <template slot-scope="{row}">{{ selectConfig.type[row.roletype] }}</template>
+              <el-table-column label="机构类型" prop="projorgan" align="center">
+                <template slot-scope="{row}">{{ selectConfig.type[row.type] }}</template>
               </el-table-column>
               <el-table-column label="所属市县" align="center" prop="location" />
               <el-table-column label="项目角色" align="center" prop="role">

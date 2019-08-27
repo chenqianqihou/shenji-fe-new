@@ -1,17 +1,22 @@
 import request from '@/utils/request'
 
-export function fetchList(data) {
+export function fetchList(params) {
   return request({
     url: '/review/list',
-    method: 'post',
-    data
+    params
   })
 }
 
-export function fetchResultList(data) {
+export function fetchResultList(params) {
   return request({
     url: '/review/resultlist',
-    method: 'post',
-    data
+    params
+  })
+}
+
+export function fetchConfig(params) {
+  return request({
+    url: '/review/listsetting',
+    params
   })
 }

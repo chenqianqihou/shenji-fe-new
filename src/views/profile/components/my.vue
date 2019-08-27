@@ -4,7 +4,7 @@
       <div class="form-set-title">{{ tagList[key] }}</div>
       <template v-for="(item, idx) in items">
         <el-row
-          v-if="!item.depend || (detail.type === 3 && item.force === 3) || (detail.type !== 3 && item.not === 3)"
+          v-if="!item.depend || (+detail.type === 3 && +item.force === 3) || (+detail.type !== 3 && +item.not === 3)"
           :key="idx"
           :gutter="20"
           class="row-class"
