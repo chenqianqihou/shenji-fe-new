@@ -163,12 +163,16 @@ export default {
           location.push(row)
         })
         this.form = Object.assign({}, this.form, res.data, { location })
-        if (this.form.workbegin) {
+        if (this.form.workbegin && +this.form.workbegin > 0) {
           this.form.workbegin *= 1000
+        } else {
+          this.form.workbegin = ''
         }
         if (+this.form.type === 3) {
-          if (this.form.auditbegin) {
+          if (this.form.auditbegin && +this.form.auditbegin > 0) {
             this.form.auditbegin *= 1000
+          } else {
+            this.form.auditbegin = ''
           }
           if (this.form.train.length === 0) {
             this.form.train = ['']

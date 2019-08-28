@@ -154,7 +154,7 @@ export default {
       return '-'
     },
     formatDate(val) {
-      return val ? parseTime(val * 1000, '{y}-{m}-{d}') : val
+      return val && +val > 0 ? parseTime(val * 1000, '{y}-{m}-{d}') : '-'
     },
     formatArea(val) {
       if (!val) return
