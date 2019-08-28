@@ -15,7 +15,7 @@ Vue.directive('download', {
           el.classList.remove('is-disabled')
         }, 300)
         const { data, headers } = response
-        const disposition = headers ? headers['content-disposition'] : ''
+        const disposition = headers ? headers['Content-Disposition'] : ''
         const match = disposition.match(/filename=(.*)/i)
         if (!match) {
           console.error("filename doesn't exist")

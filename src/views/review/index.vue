@@ -12,11 +12,6 @@
             />
           </el-form-item>
           <el-form-item label="项目年度">
-            <!-- <el-date-picker
-              v-model="listQuery.projyear"
-              type="year"
-              placeholder="选择年">
-            </el-date-picker> -->
             <el-select v-model="listQuery.projyear">
               <el-option v-for="(row, idx) in listSetting.years" :key="idx" :value="row" :label="row"></el-option>
             </el-select>
@@ -29,9 +24,11 @@
           <el-button
             class="filter-item"
             type="primary"
+            @click="handleFilter"
           >查询</el-button>
           <el-button
             class="filter-item"
+            @click="handleResetFilter"
           >重置</el-button>
         </el-form>
         <el-table
@@ -102,6 +99,7 @@
         <el-form :inline="true" class="filter-container audit-project-filter">
           <el-form-item>
             <el-input
+              v-model="resultQuery.query"
               placeholder="请输入项目编号/项目名称"
               style="width: 200px"
               class="filter-item"
@@ -116,8 +114,8 @@
           >重置</el-button>
         </el-form>
         <el-table
-          v-loading="listLoading"
-          :data="list"
+          v-loading="resultListLoading"
+          :data="resultList"
           border
           highlight-current-row
           style="width: 100%"
@@ -177,11 +175,11 @@
         </el-table>
 
         <pagination
-          v-show="total>0"
-          :total="total"
+          v-show="resultTotal>0"
+          :total="resultTotal"
           :page.sync="resultQuery.page"
           :limit.sync="resultQuery.page_size"
-          @pagination="getList"
+          @pagination="getResultList"
         />
       </el-tab-pane>
     </el-tabs>
@@ -198,12 +196,12 @@ const queryString = {
   projyear: '',
   query: '',
   projlevel: '',
-  page: 0,
+  page: 1,
   page_size: 20
 }
 const resultQuery = {
   query: '',
-  page: 0,
+  page: 1,
   page_size: 20
 }
 export default {
@@ -229,7 +227,7 @@ export default {
       this.getList()
     })
     this.getConfig()
-    // this.getResultList()
+    this.getResultList()
   },
   methods: {
     async getSelectConfig() {
@@ -254,6 +252,14 @@ export default {
         this.total = +res.data.total
         this.listLoading = false
       })
+    },
+    handleFilter() {
+      this.listQuery.page = 0
+      this.getList()
+    },
+    handleResetFilter() {
+      this.listQuery = Object.assign({}, queryString)
+      this.getList()
     },
     getResultList() {
       const { resultQuery } = this

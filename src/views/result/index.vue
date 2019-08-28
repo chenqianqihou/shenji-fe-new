@@ -44,16 +44,16 @@
           @click="$router.push('/result/create')"
         >新建</el-button>
         <el-upload
-          disabled
           class="upload-demo"
           :action="`${url}/auditresults/excelupload`"
           :show-file-list="false"
           :headers="{
             'AUTHORIZATION': $store.getters.token
-          }"
+          }" 
+          :on-success="handleSuccess"
+          :on-error="uploadError"
         >
           <el-button
-            disabled
             class="filter-item"
             type="primary"
           >上传导入</el-button>
@@ -62,7 +62,6 @@
           v-download="download"
           class="filter-item"
           icon="el-icon-download"
-          disabled
         >下载模板</el-button>
       </div>
 
@@ -185,6 +184,7 @@ export default {
   methods: {
     download() {
       return downloadExcel()
+      // window.open(`${url}/../static/导入模板-个人审计成果.xlsx`)
     },
     async getSelectConfig() {
       const res = await selectConfig()
@@ -231,6 +231,14 @@ export default {
           this.getList()
         })
       })
+    },
+    handleSuccess(res) {
+      this.$message.success('上传成功')
+      this.start = 0
+      this.getList()
+    },
+    uploadError(err) {
+      console.log(err)
     }
   }
 }
