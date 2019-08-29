@@ -179,6 +179,15 @@ export const constantRoutes = [
         icon: 'tab',
         noCache: true
       }
+    }, {
+      path: '/review/people/:id',
+      component: () => import('@/views/review/people'),
+      name: 'reviewPeople',
+      meta: {
+        title: '人员调配审核',
+        noCache: true
+      },
+      hidden: true
     }]
   },
   {

@@ -43,6 +43,13 @@ service.interceptors.response.use(
    */
   response => {
     const res = response.data
+    const { config, headers, status } = response
+    if (status === 200 && config.responseType === 'blob') {
+      return {
+        data: res,
+        headers
+      }
+    }
     if (res.error.returnCode !== 0 && res.error !== 0) {
       if (res.error.returnCode === 40100) {
         // to re-login

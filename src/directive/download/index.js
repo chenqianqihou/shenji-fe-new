@@ -15,13 +15,13 @@ Vue.directive('download', {
           el.classList.remove('is-disabled')
         }, 300)
         const { data, headers } = response
-        const disposition = headers ? headers['Content-Disposition'] : ''
+        const disposition = headers ? headers['content-disposition'] : ''
         const match = disposition.match(/filename=(.*)/i)
         if (!match) {
           console.error("filename doesn't exist")
           return false
         }
-        const filename = decodeURIComponent(match[1])
+        const filename = decodeURIComponent(match[1].replace(/"/g, ''))
         const reader = new FileReader()
         reader.readAsDataURL(data)
         reader.onload = (e) => {

@@ -82,6 +82,7 @@
               <el-button
                 size="mini"
                 type="text"
+                @click="$router.push(`/review/people/${row.id}`)"
               >去审核</el-button>
             </template>
           </el-table-column>

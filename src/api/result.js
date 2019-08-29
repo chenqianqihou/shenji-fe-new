@@ -10,7 +10,8 @@ export function fetchList(data) {
 
 export function downloadExcel() {
   return request({
-    url: '/auditresults/excel'
+    url: '/auditresults/excel',
+    responseType: 'blob'
   })
 }
 

@@ -123,7 +123,7 @@ export default {
         }
         return selectConfig[key][val]
       }
-      return val
+      return isArray(val) ? val.join() : val
     },
     formatQualification(val) {
       if (val && val.length > 0) {

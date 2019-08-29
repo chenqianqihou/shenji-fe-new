@@ -20,3 +20,18 @@ export function fetchConfig(params) {
     params
   })
 }
+
+export function reviewInfo(params) {
+  return request({
+    url: '/review/info',
+    params
+  })
+}
+
+export function reviewPeople(data) {
+  return request({
+    url: '/review/operate',
+    method: 'post',
+    data
+  })
+}
