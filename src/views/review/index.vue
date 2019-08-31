@@ -82,8 +82,10 @@
               <el-button
                 size="mini"
                 type="text"
+                v-if="+row.status === 3"
                 @click="$router.push(`/review/people/${row.id}`)"
               >去审核</el-button>
+              <span v-else>-</span>
             </template>
           </el-table-column>
         </el-table>
@@ -153,12 +155,12 @@
           </el-table-column>
           <el-table-column label="项目角色" align="center">
             <template slot-scope="{row}">
-              {{ roleMap[+row.roletype] }}
+              {{ roleMap[+row.projrole] }}
             </template>
           </el-table-column>
           <el-table-column label="审核状态" align="center">
             <template slot-scope="{row}">
-              {{ statusMap[+row.status] }}
+              {{ resultStatus[+row.status] }}
             </template>
           </el-table-column>
           <el-table-column
@@ -170,7 +172,10 @@
               <el-button
                 size="mini"
                 type="text"
+                v-if="+row.status === 1"
+                @click="$router.push(`/review/result/${row.id}`)"
               >去审核</el-button>
+              <span v-else>-</span>
             </template>
           </el-table-column>
         </el-table>
@@ -193,6 +198,11 @@ import { selectConfig } from '@/api/project'
 import Pagination from '@/components/Pagination'
 import { statusMap } from '@/views/result/config'
 import { roleMap } from '@/views/project/config'
+const resultStatus = {
+  1: '待审核',
+  2: '通过',
+  3: '驳回'
+}
 const queryString = {
   projyear: '',
   query: '',
@@ -219,7 +229,8 @@ export default {
       listSetting: {},
       originConfig: {},
       statusMap,
-      roleMap
+      roleMap,
+      resultStatus
     }
   },
   components: { Pagination },

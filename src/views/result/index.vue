@@ -22,7 +22,7 @@
               style="width: 150px"
               class="filter-item"
             >
-              <el-option v-for="(item, key) in statusMap" :key="item" :value="key" :label="item" />
+              <el-option v-for="(item, key) in resultStatus" :key="item" :value="key" :label="item" />
             </el-select>
           </el-form-item>
           <el-button
@@ -109,7 +109,7 @@
         </el-table-column>
         <el-table-column label="审核状态" align="center">
           <template slot-scope="{row}">
-            {{ statusMap[+row.status] }}
+            {{ resultStatus[+row.status] }}
           </template>
         </el-table-column>
         <el-table-column
@@ -153,7 +153,7 @@ const url = process.env.VUE_APP_BASE_API
 import Pagination from '@/components/Pagination'
 import { fetchList, downloadExcel, deleteResult } from '@/api/result'
 import { selectConfig } from '@/api/project'
-import { statusMap } from './config'
+import { statusMap, resultStatus } from './config'
 import { roleMap } from '../project/config'
 const queryString = {
   projectid: '',
@@ -172,7 +172,8 @@ export default {
       statusMap,
       roleMap,
       originConfig: {},
-      url
+      url,
+      resultStatus
     }
   },
   created() {

@@ -186,6 +186,15 @@ export const constantRoutes = [
         noCache: true
       },
       hidden: true
+    }, {
+      path: '/review/result/:id',
+      component: () => import('@/views/review/result'),
+      name: 'reviewResult',
+      meta: {
+        title: '审计成果审核',
+        noCache: true
+      },
+      hidden: true
     }]
   },
   {

@@ -111,12 +111,27 @@ export default {
       }
     },
     handleReview(val) {
-      reviewPeople({
-        status: val,
-        id: this.id
-      }).then(res => {
-        this.$message.success('操作成功')
-        this.$router.push('/review/index')
+      const tips = {
+        1: '确认审核通过？',
+        2: '确认驳回？'
+      }
+      const buttons = {
+        1: '审核通过',
+        2: '已驳回'
+      }
+      this.$confirm(tips[+val], '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning',
+        center: true
+      }).then(() => {
+        reviewPeople({
+          status: val,
+          id: this.id
+        }).then(res => {
+          this.$message.success(buttons[+val])
+          this.$router.push('/review/index')
+        })
       })
     }
   },

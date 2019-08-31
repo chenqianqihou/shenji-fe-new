@@ -35,3 +35,18 @@ export function reviewPeople(data) {
     data
   })
 }
+
+export function reviewDetail(params) {
+  return request({
+    url: '/review/resultdetails',
+    params
+  })
+}
+
+export function resultOperate(data) {
+  return request({
+    url: '/review/resultoperate',
+    method: 'post',
+    data
+  })
+}

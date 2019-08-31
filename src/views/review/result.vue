@@ -2,13 +2,11 @@
   <el-card
     :class="[
       'result-addedit',
-      {
-        'result-addedit-readonly': readonly
-      }
+      'result-addedit-readonly'
     ]"
   >
     <div slot="header" class="clearfix">
-      <span>{{ readonly ? '查看' : (resultId ? '编辑' : '新建') }}审计成果</span>
+      <span>审计成果审核</span>
     </div>
     <div class="result-addedit-content" v-loading="loading">
       <el-form label-position="right" label-width="auto">
@@ -25,7 +23,6 @@
             v-model="form.projectid"
             filterable
             :disabled="readonly"
-            placeholder=""
             @change="handleChangeProject"
           >
             <el-option v-for="item in projectList" :key="item.id" :value="item.id" :label="item.name" />
@@ -90,8 +87,7 @@
           <el-input v-model="form.amountsix" :disabled="readonly" v-else><template slot="suffix">元</template></el-input>
         </el-form-item>
         <el-form-item label="问题描述">
-          <el-input v-model="form.desc" :disabled="readonly" v-if="readonly" />
-          <el-input v-model="form.desc" type="textarea" :rows="4" v-else maxlength="300" show-word-limit />
+          <el-input v-model="form.desc" :disabled="readonly" />
         </el-form-item>
         <el-form-item label="是否单独查出">
           <span v-if="readonly">{{ radioMap[+form.isfindout] || '-' }}</span>
@@ -130,8 +126,7 @@
           </el-select>
         </el-form-item>
         <el-form-item label="移送处理结果">
-          <el-input v-model="form.transferresult" :disabled="readonly" v-if="readonly" />
-          <el-input v-model="form.transferresult" type="textarea" :rows="4" v-else maxlength="300" show-word-limit />
+          <el-input v-model="form.transferresult" :disabled="readonly" />
         </el-form-item>
         <h4>综合成果</h4>
         <el-divider />
@@ -155,31 +150,27 @@
           </el-select>
         </el-form-item>
       </el-form>
-      <div v-if="!readonly" class="result-addedit-footer">
-        <el-button @click="handleSave">保存</el-button>
-        <el-button type="primary" @click="handleSubmit">提交</el-button>
+      <div class="result-addedit-footer">
+        <el-button type="primary" @click="handleReviewResult(1)">审核通过</el-button>
+        <el-button @click="handleReviewResult(1)">驳回</el-button>
       </div>
     </div>
   </el-card>
 </template>
 
 <script>
-import { submitResult, saveResult, projectList, getDetail } from '@/api/result'
+import { reviewDetail, resultOperate } from '@/api/review'
+import { projectList } from '@/api/result'
 import { getInfo } from '@/api/user'
 import { fetchViolations } from '@/api/assess'
 import { selectConfig } from '@/api/project'
-import * as config from '../config'
+import * as config from '../result/config'
 import * as projConfig from '@/views/project/config'
 export default {
-  props: {
-    resultId: Number,
-    readonly: {
-      type: Boolean,
-      default: false
-    }
-  },
   data() {
     return {
+      readonly: true,
+      resultId: this.$route.params.id,
       userinfo: {},
       project: {
         id: '',
@@ -211,21 +202,13 @@ export default {
     }
   },
   created() {
-    if (this.resultId) {
-      this.loading = true
-      Promise.all([
-        this.queryProjectList(),
-        this.getSelectConfig(),
-        this.fetchViolations()
-      ]).then(() => {
-        this.queryDetail()
-      })
-    } else {
-      this.getUserinfo()
-      this.queryProjectList()
-      this.getSelectConfig()
+    Promise.all([
+      this.queryProjectList(),
+      this.getSelectConfig(),
       this.fetchViolations()
-    }
+    ]).then(() => {
+      this.queryDetail()
+    })
   },
   methods: {
     getUserinfo() {
@@ -234,12 +217,17 @@ export default {
       })
     },
     queryDetail() {
-      getDetail({
+      reviewDetail({
         id: this.resultId
       }).then(res => {
         const { data } = res
-        this.userinfo = data.people_msg
-        this.form = Object.assign({}, data, {
+        this.userinfo = data.basic_info
+        this.form = Object.assign({}, {
+          ...data.basic_info,
+          ...data.audit_result,
+          ...data.move_result_info,
+          ...data.total_result_info
+        }, {
           problemid: +data.problemid,
           problemdetailid: +data.problemdetailid
         })
@@ -303,18 +291,28 @@ export default {
         })
       })
     },
-    handleSave() {
-      const params = Object.assign({}, this.form)
-      saveResult(params).then(res => {
-        this.$message.success('保存成功')
-        this.$router.push('/result')
-      })
-    },
-    handleSubmit() {
-      const params = Object.assign({}, this.form)
-      submitResult(params).then(res => {
-        this.$message.success('提交成功')
-        this.$router.push('/result')
+    handleReviewResult(val) {
+      const tips = {
+        1: '确认审核通过？',
+        2: '确认驳回？'
+      }
+      const buttons = {
+        1: '审核通过',
+        2: '已驳回'
+      }
+      this.$confirm(tips[+val], '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning',
+        center: true
+      }).then(() => {
+        resultOperate({
+          status: val,
+          id: this.id
+        }).then(res => {
+          this.$message.success(buttons[+val])
+          this.$router.push('/review/index')
+        })
       })
     }
   }
@@ -336,7 +334,7 @@ export default {
     .el-input, .el-select, .el-select .el-input.is-disabled {
       .el-input__inner {
         border: none !important;
-        background-color: #ffffff;
+        background-color: #FFF;
         color: #303133;
         padding-left: 0;
         cursor: default;
@@ -348,3 +346,4 @@ export default {
   }
 }
 </style>
+

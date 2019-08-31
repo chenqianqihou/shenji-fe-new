@@ -1,8 +1,9 @@
 export const statusMap = {
-  1: '待提审',
-  2: '待审核',
-  3: '审核通过',
-  4: '审核未通过'
+  1: '无需审核',
+  2: '待提审',
+  3: '待审核',
+  4: '审核通过',
+  5: '审核未通过'
 }
 
 export const evaluationMap = {
@@ -27,4 +28,10 @@ export const tsOrgMap = {
   1: '司法机关',
   2: '纪检监察机关',
   3: '有关部门'
+}
+
+export const resultStatus = {
+  1: '待审核',
+  2: '通过',
+  3: '驳回'
 }
