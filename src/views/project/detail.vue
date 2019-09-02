@@ -11,9 +11,9 @@
         <el-button
           v-if="+detail.basic.projectstatus > 0 && +detail.basic.projectstatus < 4"
           size="mini"
-          :class="`status-btn-${+detail.basic.projectstatus}`"
+          :class="`status-btn-${+detail.basic.projectstatus + 1}`"
           @click="changeStatus"
-        >{{ operateMap[+detail.basic.projectstatus] }}</el-button>
+        >{{ operateMap[+detail.basic.projectstatus + 1] }}</el-button>
       </div>
     </div>
     <div class="head-box">
@@ -95,7 +95,7 @@
                 {{ detail.auditgroup.medium ? (listQuery.ismedium === 1 && showVerify ? stsMap[detail.auditgroup.medium + 1] : stsMap[detail.auditgroup.medium]) : '-' }}
               </span>
               <el-button
-                v-if="showVerify"
+                v-if="detail.auditgroup.medium && listQuery.ismedium === 1 && showVerify"
                 type="danger"
                 style="margin-left: 20px"
                 size="mini"
@@ -109,6 +109,13 @@
                 内审审核：
                 {{ detail.auditgroup.internal ? (listQuery.isinternal === 1 && showVerify ? stsMap[detail.auditgroup.internal + 1] : stsMap[detail.auditgroup.internal]) : '-' }}
               </span>
+              <el-button
+                v-if="detail.auditgroup.internal && listQuery.isinternal === 1 && showVerify"
+                type="danger"
+                style="margin-left: 20px"
+                size="mini"
+                @click="handleVerify"
+              >提交审核</el-button>
             </div>
           </div>
         </div>
@@ -124,7 +131,7 @@
           <div>
             <el-button type="primary" @click="handleAdd(item.id)">新增人员</el-button>
             <el-button
-              v-if="item.operate"
+              v-if="item.operate && +detail.basic.projectstatus >= 2"
               :type="[1, 3].includes(item.operate) ? `success` : 'danger'"
               @click="changeAuditStatus(item.operate, item.id)"
             >{{ auditOptMap[item.operate] }}</el-button>
@@ -144,15 +151,18 @@
                 <template slot-scope="{row}">{{ roleMap[row.role] }}</template>
               </el-table-column>
               <el-table-column label="操作" align="center" width="300">
-                <template slot-scope="{row}">
-                  <el-button size="mini" type="text" @click="handleAuditDelete(row, item.id)">删除</el-button>
-                  <el-button type="text" size="mini" @click="handleShowRole(row, item.id)">更改角色</el-button>
+                <template slot-scope="{row}" v-if="+detail.basic.projectstatus >= 2">
+                  <el-button size="mini" type="text" @click="handleAuditDelete(row, item.id)" v-if="+row.role !== 1">删除</el-button>
+                  <el-button type="text" size="mini" @click="handleShowRole(row, item.id)" v-if="+row.role !== 1">更改角色</el-button>
                   <el-button
                     v-if="+row.islock === 2"
                     type="text"
                     size="mini"
                     @click="handleUnlock(row, item.id)"
                   >解锁</el-button>
+                </template>
+                <template v-else>
+                  -
                 </template>
               </el-table-column>
             </el-table>

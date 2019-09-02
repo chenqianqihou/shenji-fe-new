@@ -111,9 +111,11 @@
           <el-button
             class="filter-item"
             type="primary"
+            @click="handleSearch"
           >查询</el-button>
           <el-button
             class="filter-item"
+            @click="handleResetSearch"
           >重置</el-button>
         </el-form>
         <el-table
@@ -172,7 +174,7 @@
               <el-button
                 size="mini"
                 type="text"
-                v-if="+row.status === 1"
+                v-if="+row.status === 2"
                 @click="$router.push(`/review/result/${row.id}`)"
               >去审核</el-button>
               <span v-else>-</span>
@@ -198,11 +200,7 @@ import { selectConfig } from '@/api/project'
 import Pagination from '@/components/Pagination'
 import { statusMap } from '@/views/result/config'
 import { roleMap } from '@/views/project/config'
-const resultStatus = {
-  1: '待审核',
-  2: '通过',
-  3: '驳回'
-}
+import { resultStatus } from '../result/config'
 const queryString = {
   projyear: '',
   query: '',
@@ -272,6 +270,14 @@ export default {
     handleResetFilter() {
       this.listQuery = Object.assign({}, queryString)
       this.getList()
+    },
+    handleSearch() {
+      this.resultQuery.page = 0
+      this.getResultList()
+    },
+    handleResetSearch() {
+      this.resultQuery = Object.assign({}, resultQuery)
+      this.getResultList()
     },
     getResultList() {
       const { resultQuery } = this

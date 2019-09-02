@@ -7,9 +7,10 @@
         :props="defaultProps"
         class="tree-class"
         node-key="id"
+        ref="leftTree"
         highlight-current
-        :default-expanded-keys="$route.query.organid ? [$route.query.organid] : []"
-        :current-node-key="$route.query.organid ? $route.query.organid : 'type-3'"
+        :default-expanded-keys="wtTreeNodeId ? defaultExpandKeys : []"
+        :current-node-key="wtTreeNodeId ? String(wtTreeNodeId) : 'type-3'"
         :expand-on-click-node="false"
         @node-click="handleClickNode"
       >
@@ -33,10 +34,11 @@
         :data="treeData"
         :props="defaultProps"
         class="tree-class"
+        ref="leftTree"
         node-key="id"
         highlight-current
-        :current-node-key="$route.query.organid ? $route.query.organid : `type-${$route.query.tab || 2}`"
-        :default-expanded-keys="$route.query.organid ? [$route.query.organid] : []"
+        :current-node-key="wtTreeNodeId ? String(wtTreeNodeId) : `type-${$route.query.tab || 2}`"
+        :default-expanded-keys="wtTreeNodeId ? defaultExpandKeys : []"
         :expand-on-click-node="false"
         @node-click="handleClickNode"
       />
@@ -276,7 +278,9 @@ export default {
       currentNodeData: {},
       treeNode: {},
       treeNodeOpt: '',
-      treeOptDialog: false
+      treeOptDialog: false,
+      wtTreeNodeId: this.$route.query.organid,
+      defaultExpandKeys: []
     }
   },
   watch: {
@@ -285,9 +289,9 @@ export default {
     }
   },
   created() {
-    if (this.$route.query.organid) {
+    if (this.wtTreeNodeId) {
       this.listQuery.organization = 3
-      this.listQuery.organid = +this.$route.query.organid
+      this.listQuery.organid = +this.wtTreeNodeId
     }
     this.queryOrgTree()
     this.getList()
@@ -347,7 +351,7 @@ export default {
         }
       })
     },
-    handleClickNode(node) {
+    handleClickNode(node, treeNode) {
       if (node.type !== 'parent' && node.type !== 'child') {
         this.listQuery.organization = 2
         this.listQuery.type = +node.type
@@ -363,6 +367,7 @@ export default {
         this.$router.replace({
           path: '/audit/personnel',
           query: Object.assign({}, this.$route.query, {
+            tab: node.otype ? node.otype : node.type,
             organid: +node.id
           })
         })
@@ -425,21 +430,27 @@ export default {
           const data = res.data.filter(row => +row.type === +this.type)
           this.treeData = data[0].list || data
           this.treeData.forEach(row => {
-            this.casdTreeProp(row.list, 3)
+            this.casdTreeProp(row, 3)
           })
         } else {
           this.treeData = res.data.filter(row => +row.type !== 3)
           this.treeData.forEach(row => {
-            this.casdTreeProp(row.list, row.type)
+            this.casdTreeProp(row, row.type)
           })
+          
+          console.log( this.defaultExpandKeys)
         }
       })
     },
-    casdTreeProp(data, type) {
-      data.forEach(row => {
+    casdTreeProp(node, type) {
+      node.list.forEach(row => {
         row.otype = type
+        row.id = String(row.id)
+        if (String(row.id) === String(this.wtTreeNodeId)) {
+          this.defaultExpandKeys = [node.id]
+        }
         if (row.list && row.list.length > 0) {
-          this.casdTreeProp(row.list, type)
+          this.casdTreeProp(row, type)
         }
       })
     },

@@ -31,7 +31,8 @@ export const tsOrgMap = {
 }
 
 export const resultStatus = {
-  1: '待审核',
-  2: '通过',
-  3: '驳回'
+  1: '待提审',
+  2: '待审核',
+  3: '审核通过',
+  4: '审核未通过'
 }
