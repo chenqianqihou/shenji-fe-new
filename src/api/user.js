@@ -104,3 +104,21 @@ export function changePwd(data) {
     data
   })
 }
+
+// 机构人员下载模板
+export function downloadOrgUser(params) {
+  return request({
+    url: '/user/organsexcel',
+    responseType: 'blob',
+    params
+  })
+}
+
+// 第三方人员下载模板
+export function downloadThirdUser(params) {
+  return request({
+    url: '/user/thirdpartexcel',
+    responseType: 'blob',
+    params
+  })
+}

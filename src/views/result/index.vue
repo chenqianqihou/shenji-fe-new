@@ -185,7 +185,6 @@ export default {
   methods: {
     download() {
       return downloadExcel()
-      // window.open(`${url}/../static/导入模板-个人审计成果.xlsx`)
     },
     async getSelectConfig() {
       const res = await selectConfig()
@@ -234,7 +233,7 @@ export default {
       })
     },
     handleSuccess(res) {
-      this.$message.success('上传成功')
+      this.$message.success('导入成功')
       this.start = 0
       this.getList()
     },

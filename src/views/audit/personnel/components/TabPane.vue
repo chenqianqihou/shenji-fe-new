@@ -82,25 +82,31 @@
         <el-button
           v-waves
           :disabled="checkedOptions.length === 0"
-          class="filter-item"
+          class="filter-item top-btn"
           type="primary"
           @click="handleDelete('')"
         >批量删除</el-button>
+        <el-upload
+          class="upload-demo"
+          :action="+type === 3 ? `${url}/user/organsexcelupload` : `${url}/user/thirdpartexcel`"
+          :show-file-list="false"
+          :headers="{
+            'AUTHORIZATION': $store.getters.token
+          }" 
+          :on-success="uploadSuccess"
+          :on-error="uploadError"
+        >
+          <el-button
+            class="filter-item top-btn"
+            type="primary"
+          >导入人员</el-button>
+        </el-upload>
         <el-button
           v-waves
-          :loading="downloadLoading"
-          class="filter-item"
-          type="primary"
-          disabled
-          @click="handleDownload"
-        >导入人员</el-button>
-        <el-button
-          v-waves
-          disabled=""
-          :loading="downloadLoading"
           class="filter-item"
           icon="el-icon-download"
-          @click="handleDownload"
+          :filename="+type === 3 ? '审计机关.xlsx': '第三方人员.xlsx'"
+          v-download="handleDownload"
         >下载模板</el-button>
       </div>
 
@@ -215,11 +221,12 @@
 </template>
 
 <script>
-import { fetchList, deleteUser, updateUserRole, resetPwd } from '@/api/user'
+import { fetchList, deleteUser, updateUserRole, resetPwd, downloadOrgUser, downloadThirdUser } from '@/api/user'
 import { getOrgTree, createByName, updateOrg, deleteOrg } from '@/api/org'
 import waves from '@/directive/waves' // waves directive
 import { parseTime } from '@/utils'
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
+const url = process.env.VUE_APP_BASE_API
 
 const queryString = {
   query: '',
@@ -240,6 +247,7 @@ export default {
   },
   data() {
     return {
+      url,
       tableKey: 2,
       list: null,
       total: 0,
@@ -252,7 +260,6 @@ export default {
         create: 'Create'
       },
       dialogPvVisible: false,
-      downloadLoading: false,
       checkedOptions: [],
       selectConfig: this.$store.getters.userSelectConfig,
       roleDialog: false,
@@ -286,6 +293,14 @@ export default {
     this.getList()
   },
   methods: {
+    uploadSuccess() {
+      this.$message.success('导入成功')
+      this.listQuery.page = 0
+      this.getList()
+    },
+    uploadError(err) {
+      console.log(err)
+    },
     handleResetPwd(row) {
       this.$confirm('确定要重置此用户密码吗?', '提示', {
         confirmButtonText: '确定',
@@ -497,24 +512,7 @@ export default {
       })
     },
     handleDownload() {
-      this.downloadLoading = true
-      import('@/vendor/Export2Excel').then(excel => {
-        const tHeader = ['timestamp', 'title', 'type', 'importance', 'status']
-        const filterVal = [
-          'timestamp',
-          'title',
-          'type',
-          'importance',
-          'status'
-        ]
-        const data = this.formatJson(filterVal, this.list)
-        excel.export_json_to_excel({
-          header: tHeader,
-          data,
-          filename: 'table-list'
-        })
-        this.downloadLoading = false
-      })
+      return +this.type === 3 ? downloadOrgUser() : downloadThirdUser()
     },
     formatJson(filterVal, jsonData) {
       return jsonData.map(v =>
@@ -556,7 +554,11 @@ export default {
     }
   }
   .audit-personnel-actions {
+    display: flex;
     margin-bottom: 15px;
+    .top-btn {
+      margin-right: 10px;
+    }
   }
   .full-width {
     width: 100%;

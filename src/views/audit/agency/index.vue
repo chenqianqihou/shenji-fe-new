@@ -45,19 +45,30 @@
         >新增机构</el-button>
         <el-button
           :disabled="checkedOptions.length === 0"
-          class="filter-item"
+          class="filter-item top-btn"
           type="primary"
           @click="handleDelete('')"
         >批量删除</el-button>
+         <el-upload
+          class="upload-demo"
+          :action="`${url}/organization/excelupload`"
+          :show-file-list="false"
+          :headers="{
+            'AUTHORIZATION': $store.getters.token
+          }" 
+          :on-success="uploadSuccess"
+          :on-error="uploadError"
+        >
+          <el-button
+            class="filter-item top-btn"
+            type="primary"
+          >批量导入</el-button>
+        </el-upload>
         <el-button
-          class="filter-item"
-          type="primary"
-          disabled
-        >批量导入</el-button>
-        <el-button
-          disabled
           class="filter-item"
           icon="el-icon-download"
+          filename="机构.xlsx"
+          v-download="handleDownload"
         >下载模板</el-button>
       </div>
 
@@ -125,8 +136,10 @@
 
 <script>
 import Pagination from '@/components/Pagination'
-import { fetchList, deleteOrg } from '@/api/org'
+import { fetchList, deleteOrg, downloadOrg } from '@/api/org'
 import { parseTime } from '@/utils'
+
+const url = process.env.VUE_APP_BASE_API
 const queryString = {
   key: '',
   type: '',
@@ -137,6 +150,7 @@ export default {
   components: { Pagination },
   data() {
     return {
+      url,
       listLoading: false,
       list: [],
       listQuery: Object.assign({}, queryString),
@@ -149,6 +163,14 @@ export default {
     this.getList()
   },
   methods: {
+    uploadSuccess() {
+      this.$message.success('导入成功')
+      this.listQuery.start = 0
+      this.getList()
+    },
+    uploadError(err) {
+      console.log(err)
+    },
     parseDate(time) {
       return parseTime(time * 1000, '{y}-{m}-{d}')
     },
@@ -187,6 +209,9 @@ export default {
     },
     handleSelectionChange(rows) {
       this.checkedOptions = rows
+    },
+    handleDownload() {
+      return downloadOrg()
     }
   }
 }
@@ -204,7 +229,11 @@ export default {
     }
   }
   .audit-agency-actions {
+    display: flex;
     margin-bottom: 15px;
+    .top-btn {
+      margin-right: 10px;
+    }
   }
   .full-width {
     width: 100%;

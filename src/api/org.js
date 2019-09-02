@@ -61,3 +61,11 @@ export function createByName(data) {
     data
   })
 }
+
+export function downloadOrg(params) {
+  return request({
+    url: '/organization/excel',
+    responseType: 'blob',
+    params
+  })
+}

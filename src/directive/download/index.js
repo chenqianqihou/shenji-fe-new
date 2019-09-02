@@ -21,7 +21,10 @@ Vue.directive('download', {
           console.error("filename doesn't exist")
           return false
         }
-        const filename = decodeURIComponent(match[1].replace(/"/g, ''))
+        let filename = decodeURIComponent(match[1].replace(/"/g, ''))
+        if (el.getAttribute('filename')) {
+          filename = el.getAttribute('filename')
+        }
         const reader = new FileReader()
         reader.readAsDataURL(data)
         reader.onload = (e) => {
