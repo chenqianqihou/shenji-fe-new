@@ -43,10 +43,9 @@ export function reviewDetail(params) {
   })
 }
 
-export function resultOperate(data) {
+export function resultOperate(params) {
   return request({
     url: '/review/resultoperate',
-    method: 'post',
-    data
+    params
   })
 }

@@ -1,11 +1,28 @@
 <template>
-  <div :id="id" :class="className" :style="{height:height,width:width}" />
+  <div :style="{height:height, width:width}">
+    <div style="height: 45px;line-height: 45px;width: 100%;border-bottom: 1px solid #EEE;font-size: 16px;font-weight: bold;margin-bottom: 20px;">
+      整体概况
+    </div>
+    <el-form inline>
+      <el-form-item label="市/州">
+        <el-select v-model="form.city"></el-select>
+      </el-form-item>
+      <el-form-item label="区/县">
+        <el-select v-model="form.county"></el-select>
+      </el-form-item>
+      <el-form-item>
+        <el-button type="primary">查询</el-button>
+        <el-button>重置</el-button>
+      </el-form-item>
+    </el-form>
+    <div :id="id" :class="className" :style="{height: `calc(${height} - 140px)`, width: '60%'}"/>
+  </div>
 </template>
 
 <script>
 import echarts from "echarts"
 import resize from "./mixins/resize"
-import map from "@/utils/map.json"
+import map from "@/utils/guizhou.json"
 
 export default {
   mixins: [resize],
@@ -29,7 +46,11 @@ export default {
   },
   data() {
     return {
-      chart: null
+      chart: null,
+      form: {
+        city: '',
+        county: ''
+      }
     }
   },
   mounted() {
@@ -54,7 +75,7 @@ export default {
         },
         series: [
           {
-            name: "中国",
+            name: "贵州",
             type: "map",
             map: "guizhou",
             itemStyle: {

@@ -200,7 +200,11 @@ import { selectConfig } from '@/api/project'
 import Pagination from '@/components/Pagination'
 import { statusMap } from '@/views/result/config'
 import { roleMap } from '@/views/project/config'
-import { resultStatus } from '../result/config'
+const resultStatus = {
+  0: '待审核',
+  1: '通过',
+  2: '驳回'
+}
 const queryString = {
   projyear: '',
   query: '',

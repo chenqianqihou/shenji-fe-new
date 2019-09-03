@@ -13,14 +13,14 @@
         <h4>基本信息</h4>
         <el-divider />
         <el-form-item label="人员ID">
-          {{ userinfo.pid }}
+          {{ form.pnum }}
         </el-form-item>
         <el-form-item label="姓名">
-          {{ userinfo.name }}
+          {{ form.pname }}
         </el-form-item>
         <el-form-item label="项目名称">
           <el-select
-            v-model="form.projectid"
+            v-model="form.projname"
             filterable
             :disabled="readonly"
             @change="handleChangeProject"
@@ -29,19 +29,19 @@
           </el-select>
         </el-form-item>
         <el-form-item label="项目编号">
-          <el-input v-model="project.projectnum" readonly :disabled="readonly" />
+          <el-input v-model="form.projnum" readonly :disabled="readonly" />
         </el-form-item>
         <el-form-item label="项目年度">
-          <el-input v-model="project.projyear" readonly :disabled="readonly" />
+          <el-input v-model="form.projyear" readonly :disabled="readonly" />
         </el-form-item>
         <el-form-item label="项目层级">
-          <el-input :value="project.projlevel && originConfig.projlevel ? originConfig.projlevel[+project.projlevel] : ''" readonly :disabled="readonly" />
+          <el-input :value="form.projlevel && originConfig.projlevel ? originConfig.projlevel[+form.projlevel] : ''" readonly :disabled="readonly" />
         </el-form-item>
         <el-form-item label="项目类型">
-          <el-input :value="project.projtype ? project.projTypeName : ''" readonly :disabled="readonly" />
+          <el-input :value="form.typeName" readonly :disabled="readonly" />
         </el-form-item>
         <el-form-item label="项目角色">
-          <el-input :value="projConfig.roleMap[+project.roletype]" readonly :disabled="readonly" />
+          <el-input :value="projConfig.roleMap[+form.projrole]" readonly :disabled="readonly" />
         </el-form-item>
         <el-form-item label="报告撰写">
           <span v-if="readonly">{{ radioMap[+form.havereport] || '-' }}</span>
@@ -53,12 +53,12 @@
         <h4>审计成果</h4>
         <el-divider />
         <el-form-item label="查出问题性质">
-          <el-select v-model="form.problemid" :disabled="readonly" @change="handleChangeQuestion1">
+          <el-select v-model="form.problemtype" :disabled="readonly" @change="handleChangeQuestion1">
             <el-option v-for="item in question1List" :key="item.id" :label="item.name" :value="+item.id" />
           </el-select>
         </el-form-item>
         <el-form-item label="查出问题明细">
-          <el-select v-model="form.problemdetailid" :disabled="readonly">
+          <el-select v-model="form.problemdetail" :disabled="readonly">
             <el-option v-for="item in question2List" :key="item.id" :label="item.name" :value="+item.id" />
           </el-select>
         </el-form-item>
@@ -228,11 +228,8 @@ export default {
           ...data.move_result_info,
           ...data.total_result_info
         }, {
-          problemid: +data.problemid,
-          problemdetailid: +data.problemdetailid
+          typeName: data.basic_info.projtype ? JSON.parse(data.basic_info.projtype).join('/') : ''
         })
-        this.handleChangeProject(data.projectid)
-        this.handleChangeQuestion1(data.problemid)
         this.loading = false
       })
     },
@@ -308,7 +305,7 @@ export default {
       }).then(() => {
         resultOperate({
           status: val,
-          id: this.id
+          id: this.resultId
         }).then(res => {
           this.$message.success(buttons[+val])
           this.$router.push('/review/index')
