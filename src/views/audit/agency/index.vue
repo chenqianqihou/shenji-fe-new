@@ -49,13 +49,13 @@
           type="primary"
           @click="handleDelete('')"
         >批量删除</el-button>
-         <el-upload
+        <el-upload
           class="upload-demo"
           :action="`${url}/organization/excelupload`"
           :show-file-list="false"
           :headers="{
             'AUTHORIZATION': $store.getters.token
-          }" 
+          }"
           :on-success="uploadSuccess"
           :on-error="uploadError"
         >
@@ -65,10 +65,10 @@
           >批量导入</el-button>
         </el-upload>
         <el-button
+          v-download="handleDownload"
           class="filter-item"
           icon="el-icon-download"
           filename="机构.xlsx"
-          v-download="handleDownload"
         >下载模板</el-button>
       </div>
 

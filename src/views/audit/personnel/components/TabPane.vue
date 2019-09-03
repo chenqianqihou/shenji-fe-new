@@ -92,7 +92,7 @@
           :show-file-list="false"
           :headers="{
             'AUTHORIZATION': $store.getters.token
-          }" 
+          }"
           :on-success="uploadSuccess"
           :on-error="uploadError"
         >
@@ -103,10 +103,10 @@
         </el-upload>
         <el-button
           v-waves
+          v-download="handleDownload"
           class="filter-item"
           icon="el-icon-download"
           :filename="+type === 3 ? '审计机关.xlsx': '第三方人员.xlsx'"
-          v-download="handleDownload"
         >下载模板</el-button>
       </div>
 

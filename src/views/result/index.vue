@@ -49,7 +49,7 @@
           :show-file-list="false"
           :headers="{
             'AUTHORIZATION': $store.getters.token
-          }" 
+          }"
           :on-success="handleSuccess"
           :on-error="uploadError"
         >
