@@ -1,22 +1,25 @@
 <template>
   <div class="dashboard-editor-container">
-    <div style="background:#fff;padding:16px;margin-bottom:32px;height: 40vw;">
+    <div style="background:#fff;padding:0 16px 0 16px;margin-bottom:32px;height: 40vw;min-height:700px;">
       <chart height="100%" width="100%" />
     </div>
 
     <el-row :gutter="32">
       <el-col :xs="24" :sm="24" :lg="8">
         <div class="chart-wrapper">
+          <div class="dashboard-chart-title">审计特长</div>
           <raddar-chart />
         </div>
       </el-col>
       <el-col :xs="24" :sm="24" :lg="8">
         <div class="chart-wrapper">
+          <div class="dashboard-chart-title">年龄性别</div>
           <pie-chart />
         </div>
       </el-col>
       <el-col :xs="24" :sm="24" :lg="8">
         <div class="chart-wrapper">
+          <div class="dashboard-chart-title">项目类型</div>
           <bar-chart />
         </div>
       </el-col>
@@ -78,17 +81,20 @@ export default {
   background-color: #f0f2f5;
   position: relative;
 
-  .github-corner {
-    position: absolute;
-    top: 0px;
-    border: 0;
-    right: 0;
-  }
-
   .chart-wrapper {
     background: #fff;
-    padding: 16px 16px 0;
+    padding: 5px 16px 0;
     margin-bottom: 32px;
+  }
+
+  .dashboard-chart-title{
+    height: 45px;
+    line-height: 45px;
+    width: 100%;
+    border-bottom: 1px solid #EEE;
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 20px;
   }
 }
 

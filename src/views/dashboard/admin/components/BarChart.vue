@@ -1,5 +1,7 @@
 <template>
-  <div :class="className" :style="{height:height,width:width}" />
+  <div style="height: 400px;">
+    <div :class="className" :style="{height:height,width:width}" ref="chart2" />
+  </div>
 </template>
 
 <script>
@@ -7,7 +9,7 @@ import echarts from 'echarts'
 require('echarts/theme/macarons') // echarts theme
 import resize from './mixins/resize'
 
-const animationDuration = 6000
+const animationDuration = 3000
 
 export default {
   mixins: [resize],
@@ -22,7 +24,7 @@ export default {
     },
     height: {
       type: String,
-      default: '300px'
+      default: '320px'
     }
   },
   data() {
@@ -44,57 +46,58 @@ export default {
   },
   methods: {
     initChart() {
-      this.chart = echarts.init(this.$el, 'macarons')
+      this.chart = echarts.init(this.$refs.chart2, 'macarons')
 
       this.chart.setOption({
         tooltip: {
-          trigger: 'axis',
-          axisPointer: { // 坐标轴指示器，坐标轴触发有效
-            type: 'shadow' // 默认为直线，可选为：'line' | 'shadow'
-          }
+            trigger: 'item',
+            formatter: "{a} <br/>{b}: {c} ({d}%)"
         },
-        grid: {
-          top: 10,
-          left: '2%',
-          right: '2%',
-          bottom: '3%',
-          containLabel: true
+        legend: {
+            type: 'scroll',
+            orient: 'vertical',
+            right: 30,
+            top: 40,
+            bottom: 20,
+            data:['直接访问','邮件营销','联盟广告','视频广告','搜索引擎']
         },
-        xAxis: [{
-          type: 'category',
-          data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
-          axisTick: {
-            alignWithLabel: true
-          }
-        }],
-        yAxis: [{
-          type: 'value',
-          axisTick: {
-            show: false
-          }
-        }],
-        series: [{
-          name: 'pageA',
-          type: 'bar',
-          stack: 'vistors',
-          barWidth: '60%',
-          data: [79, 52, 200, 334, 390, 330, 220],
-          animationDuration
-        }, {
-          name: 'pageB',
-          type: 'bar',
-          stack: 'vistors',
-          barWidth: '60%',
-          data: [80, 52, 200, 334, 390, 330, 220],
-          animationDuration
-        }, {
-          name: 'pageC',
-          type: 'bar',
-          stack: 'vistors',
-          barWidth: '60%',
-          data: [30, 52, 200, 334, 390, 330, 220],
-          animationDuration
-        }]
+        series: [
+            {
+                 
+                name:'访问来源',
+                type:'pie',
+                radius: ['50%', '70%'],
+                center: ['35%', '50%'],
+                avoidLabelOverlap: false,
+                label: {
+                    normal: {
+                        show: true,
+                        position: 'center',
+                        color:'#4c4a4a',
+                        formatter: '共发布活动'
+                    },
+                    emphasis: {
+                        show: false,
+                        textStyle: {
+                            fontSize: '30',
+                            fontWeight: 'bold'
+                        }
+                    }
+                },
+                labelLine: {
+                    normal: {
+                        show: false
+                    }
+                },
+                data:[
+                    {value:335, name:'直接访问'},
+                    {value:310, name:'邮件营销'},
+                    {value:234, name:'联盟广告'},
+                    {value:135, name:'视频广告'},
+                    {value:1548, name:'搜索引擎'}
+                ]
+            }
+        ]
       })
     }
   }

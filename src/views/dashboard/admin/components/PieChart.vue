@@ -1,11 +1,21 @@
 <template>
-  <div :class="className" :style="{height:height,width:width}" />
+  <div style="height: 400px;">
+    <div :class="className" :style="{height:height,width:width}" ref="chart" />
+    <div style="height: 80px;">
+      <div style="height: 50px; margin: 15px 0;display:flex;background:#ebeef5;border-radius: 5px;text-align: center;line-height:50px;color: rgba(0, 0, 0, 0.65);">
+        <div :style="{width: '60%', background: '#409eff', 'border-radius': '5px', color: '#EEE'}">男 60%</div>
+        <div :style="{width: '40%'}">女 40%</div>
+      </div>
+    </div>
+  </div>
 </template>
 
 <script>
 import echarts from 'echarts'
 require('echarts/theme/macarons') // echarts theme
 import resize from './mixins/resize'
+
+const animationDuration = 3000
 
 export default {
   mixins: [resize],
@@ -20,7 +30,7 @@ export default {
     },
     height: {
       type: String,
-      default: '300px'
+      default: '320px'
     }
   },
   data() {
@@ -42,35 +52,57 @@ export default {
   },
   methods: {
     initChart() {
-      this.chart = echarts.init(this.$el, 'macarons')
+      this.chart = echarts.init(this.$refs.chart, 'macarons')
 
       this.chart.setOption({
         tooltip: {
-          trigger: 'item',
-          formatter: '{a} <br/>{b} : {c} ({d}%)'
+            trigger: 'item',
+            formatter: "{a} <br/>{b}: {c} ({d}%)"
         },
         legend: {
-          left: 'center',
-          bottom: '10',
-          data: ['Industries', 'Technology', 'Forex', 'Gold', 'Forecasts']
+            type: 'scroll',
+            orient: 'vertical',
+            right: 30,
+            top: 40,
+            bottom: 20,
+            data:['直接访问','邮件营销','联盟广告','视频广告','搜索引擎']
         },
         series: [
-          {
-            name: 'WEEKLY WRITE ARTICLES',
-            type: 'pie',
-            roseType: 'radius',
-            radius: [15, 95],
-            center: ['50%', '38%'],
-            data: [
-              { value: 320, name: 'Industries' },
-              { value: 240, name: 'Technology' },
-              { value: 149, name: 'Forex' },
-              { value: 100, name: 'Gold' },
-              { value: 59, name: 'Forecasts' }
-            ],
-            animationEasing: 'cubicInOut',
-            animationDuration: 2600
-          }
+            {
+                 
+                name:'访问来源',
+                type:'pie',
+                radius: ['50%', '70%'],
+                center: ['35%', '50%'],
+                avoidLabelOverlap: false,
+                label: {
+                    normal: {
+                        show: true,
+                        position: 'center',
+                        color:'#4c4a4a',
+                        formatter: '共发布活动'
+                    },
+                    emphasis: {
+                        show: false,
+                        textStyle: {
+                            fontSize: '30',
+                            fontWeight: 'bold'
+                        }
+                    }
+                },
+                labelLine: {
+                    normal: {
+                        show: false
+                    }
+                },
+                data:[
+                    {value:335, name:'直接访问'},
+                    {value:310, name:'邮件营销'},
+                    {value:234, name:'联盟广告'},
+                    {value:135, name:'视频广告'},
+                    {value:1548, name:'搜索引擎'}
+                ]
+            }
         ]
       })
     }
