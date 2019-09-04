@@ -28,7 +28,7 @@
 </template>
 
 <script>
-import Chart from '@/components/Charts/Keyboard'
+import Chart from './components/Keyboard'
 import LineChart from './components/LineChart'
 import RaddarChart from './components/RaddarChart'
 import PieChart from './components/PieChart'

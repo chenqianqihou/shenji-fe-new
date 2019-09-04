@@ -5,10 +5,14 @@
     </div>
     <el-form inline>
       <el-form-item label="市/州">
-        <el-select v-model="form.city"></el-select>
+        <el-select v-model="form.city" @change="handleChangeRegion">
+          <el-option v-for="(item, idx) in cityJson" :key="idx" :label="item.label" :value="item.value"></el-option>
+        </el-select>
       </el-form-item>
       <el-form-item label="区/县">
-        <el-select v-model="form.county"></el-select>
+        <el-select v-model="form.county">
+          <el-option v-for="(item, idx) in countyJson" :key="idx" :label="item.label" :value="item.value"></el-option>
+        </el-select>
       </el-form-item>
       <el-form-item>
         <el-button type="primary">查询</el-button>
@@ -73,6 +77,9 @@
 import echarts from "echarts"
 import resize from "./mixins/resize"
 import map from "@/utils/guizhou.json"
+import { regionData } from 'element-china-area-data'
+
+const guizhouData = regionData.find(row => +row.value === 520000)
 
 export default {
   mixins: [resize],
@@ -100,7 +107,9 @@ export default {
       form: {
         city: '',
         county: ''
-      }
+      },
+      cityJson: guizhouData.children || [],
+      countyJson: []
     }
   },
   mounted() {
@@ -113,7 +122,13 @@ export default {
     this.chart.dispose()
     this.chart = null
   },
-  methods: {
+  methods: { 
+    handleChangeRegion() {
+      if (this.form.city) {
+        const item = this.cityJson.find(row => row.value === this.form.city)
+        this.countyJson = item.children || []
+      }
+    },
     initChart() {
       this.chart = echarts.init(document.getElementById(this.id))
       echarts.registerMap("guizhou", map)
