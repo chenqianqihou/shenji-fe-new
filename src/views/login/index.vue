@@ -45,6 +45,8 @@
               name="password"
               tabindex="2"
               autocomplete="on"
+              :minlength="6"
+              :maxlength="20"
               @keyup.native="checkCapslock"
               @blur="capsTooltip = false"
               @keyup.enter.native="handleLogin"

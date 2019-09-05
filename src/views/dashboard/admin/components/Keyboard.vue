@@ -15,8 +15,8 @@
         </el-select>
       </el-form-item>
       <el-form-item>
-        <el-button type="primary">查询</el-button>
-        <el-button>重置</el-button>
+        <el-button type="primary" @click="handleSearch">查询</el-button>
+        <el-button @click="handleResetSearch">重置</el-button>
       </el-form-item>
     </el-form>
     <div :style="{height: `calc(${height} - 140px)`, display: 'flex'}">
@@ -76,9 +76,9 @@
 <script>
 import echarts from "echarts"
 import resize from "./mixins/resize"
+import axios from 'axios'
 import map from "@/utils/guizhou.json"
 import { regionData } from 'element-china-area-data'
-
 const guizhouData = regionData.find(row => +row.value === 520000)
 
 export default {
@@ -113,7 +113,19 @@ export default {
     }
   },
   mounted() {
-    this.initChart()
+    const that = this
+    this.initChart('guizhou', map)
+    this.chart.on('click', function (params) {
+      if (that.countyJson.length > 0) {
+        const county = that.countyJson.find(row => row.label === params.name)
+        that.form.county = county.value
+      } else {
+        const city = that.cityJson.find(row => row.label === params.name)
+        that.form.city = city.value
+        that.handleChangeRegion()
+        that.handleSearch()
+      }
+    })
   },
   beforeDestroy() {
     if (!this.chart) {
@@ -123,15 +135,31 @@ export default {
     this.chart = null
   },
   methods: { 
+    handleSearch() {
+      const { form: { city }} = this
+      const url = `/map/${city}_full.json`
+      axios({
+        url: url
+      }).then(res => {
+        this.initChart(city, res.data)
+      })
+    },
+    handleResetSearch() {
+      this.form.city = ''
+      this.form.county = ''
+      this.countyJson = []
+      this.initChart('guizhou', map)
+    },
     handleChangeRegion() {
       if (this.form.city) {
         const item = this.cityJson.find(row => row.value === this.form.city)
         this.countyJson = item.children || []
       }
     },
-    initChart() {
+    initChart(current, map) {
+      const that = this
       this.chart = echarts.init(document.getElementById(this.id))
-      echarts.registerMap("guizhou", map)
+      echarts.registerMap(current, map)
       this.chart.setOption({
         backgroundColor: "#FFF",
         tooltip : {
@@ -140,17 +168,21 @@ export default {
         },
         series: [
           {
-            name: "贵州",
+            name: current,
             type: "map",
-            map: "guizhou",
+            map: current,
             aspectScale: 1,
             zoom: 1,
             left: '5%',
             itemStyle: {
               normal: {
+                label: {
+                  show: true,
+                  color: '#FFFF'
+                },
                 areaColor: '#004981',
                 borderColor: '#029fd4',
-                borderWidth: 3
+                borderWidth: 2
               }
             },
             emphasis:{

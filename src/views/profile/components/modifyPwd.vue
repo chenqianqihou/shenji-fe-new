@@ -7,6 +7,8 @@
           autocomplete="off"
           show-password
           type="password"
+          :minlength="6"
+          :maxlength="20"
         />
       </el-form-item>
       <el-form-item label="新密码" prop="new">
@@ -15,6 +17,9 @@
           autocomplete="off"
           show-password
           type="password"
+          :minlength="6"
+          :maxlength="20"
+          placeholder="6-20位字符"
         />
       </el-form-item>
       <el-form-item label="重复密码" prop="renew">
@@ -23,6 +28,9 @@
           autocomplete="off"
           show-password
           type="password"
+          :minlength="6"
+          :maxlength="20"
+          placeholder="6-20位字符"
         />
       </el-form-item>
       <el-form-item>
@@ -39,6 +47,8 @@ export default {
     const validateOldPass = (rule, value, callback) => {
       if (value === '') {
         callback(new Error('请输入当前密码'))
+      } else if (value.length < 6) {
+        callback(new Error('当前密码不能少于6位'))
       } else {
         callback()
       }
@@ -46,6 +56,8 @@ export default {
     const validateNewPass = (rule, value, callback) => {
       if (value === '') {
         callback(new Error('请输入新密码'))
+      } else if (value.length < 6) {
+        callback(new Error('新密码不能少于6位'))
       } else {
         if (this.form.renew !== '') {
           this.$refs.pwdForm.validateField('checkPassword')
@@ -56,6 +68,8 @@ export default {
     const validateCfmPass = (rule, value, callback) => {
       if (value === '') {
         callback(new Error('请输入重复密码'))
+      } else if (value.length < 6) {
+        callback(new Error('重复密码不能少于6位'))
       } else if (value !== this.form.new) {
         callback(new Error('两次密码输入不一致'))
       } else {

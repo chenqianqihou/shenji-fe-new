@@ -141,7 +141,7 @@
         </el-table-column>
         <el-table-column label="项目阶段" align="center" prop="status">
           <template slot-scope="{row}">
-            {{ row.status && originConfig.projstage ? originConfig.projstage[+row.status] : '' }}
+            {{ row.status ? statusMap[+row.status] : '' }}
           </template>
         </el-table-column>
         <el-table-column

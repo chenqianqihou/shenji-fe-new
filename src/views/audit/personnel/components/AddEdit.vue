@@ -127,7 +127,8 @@ export default {
       tagObj: tagList,
       formProps: props,
       form: {
-        role: []
+        role: [],
+        train: ['']
       },
       readonly: {
         birthday: '',

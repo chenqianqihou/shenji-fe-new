@@ -58,6 +58,7 @@ const detailMemProps = [{
 }]
 
 const statusMap = {
+  0: '计划阶段',
   1: '计划阶段',
   2: '实施阶段',
   3: '审理阶段',
