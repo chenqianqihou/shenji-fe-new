@@ -1,5 +1,5 @@
 <template>
-  <div :style="{height:height, width:width}">
+  <div :style="{height:height, width:width}" v-loading="loading">
     <div class="dash-chart-title">
       整体概况
     </div>
@@ -115,23 +115,11 @@ export default {
         people: {},
         project: {}
       },
+      loading: false,
       regnum: []
     }
   },
   mounted() {
-    const that = this
-    this.initChart('guizhou', map)
-    this.chart.on('click', function (params) {
-      if (that.countyJson.length > 0) {
-        const county = that.countyJson.find(row => row.label === params.name)
-        that.form.county = county.value
-      } else {
-        const city = that.cityJson.find(row => row.label === params.name)
-        that.form.city = city.value
-        // that.handleChangeRegion()
-        that.handleSearch()
-      }
-    })
     this.queryUserLocation()
   },
   beforeDestroy() {
@@ -142,7 +130,22 @@ export default {
     this.chart = null
   },
   methods: {
+    initClick() {
+      const that = this
+      this.chart.on('click', function (params) {
+        if (that.countyJson.length > 0) {
+          const county = that.countyJson.find(row => row.label === params.name)
+          that.form.county = county.value
+        } else {
+          const city = that.cityJson.find(row => row.label === params.name)
+          that.form.city = city.value
+          // that.handleChangeRegion()
+          that.handleSearch()
+        }
+      })
+    },
     queryUserLocation() {
+      this.loading = true
       getUserLocation().then(res => {
         const { data } = res
         if (+data.regnum > 520000) {
@@ -152,7 +155,13 @@ export default {
         this.form.city = this.regnum[1] || ''
         // this.form.county = this.regnum[2] || ''
         // this.handleChangeRegion()
-        this.handleSearch()
+        if (!this.form.city) {
+          this.initChart('guizhou', map)
+          this.initClick()
+        } else {
+          this.handleSearch(true)
+        }
+        this.loading = false
       })
     },
     queryData() {
@@ -164,7 +173,7 @@ export default {
         this.detail = res.data || {}
       })
     },
-    handleSearch() {
+    handleSearch(first = false) {
       const { form: { city }} = this
       if (city) {
         const url = `/map/${city}_full.json`
@@ -172,6 +181,9 @@ export default {
           url: url
         }).then(res => {
           this.initChart(city, res.data)
+          if (first) {
+            this.initClick()
+          }
         })
       }
       this.queryData()
