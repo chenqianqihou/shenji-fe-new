@@ -4,17 +4,17 @@
       整体概况
     </div>
     <el-form inline>
-      <el-form-item label="市/州">
-        <el-select v-model="form.city" @change="handleChangeRegion">
+      <el-form-item label="市/州" v-if="regnum.length < 2">
+        <el-select v-model="form.city">
           <el-option v-for="(item, idx) in cityJson" :key="idx" :label="item.label" :value="item.value"></el-option>
         </el-select>
       </el-form-item>
-      <el-form-item label="区/县">
+      <!-- <el-form-item label="区/县">
         <el-select v-model="form.county">
           <el-option v-for="(item, idx) in countyJson" :key="idx" :label="item.label" :value="item.value"></el-option>
         </el-select>
-      </el-form-item>
-      <el-form-item>
+      </el-form-item> -->
+      <el-form-item v-if="regnum.length < 2">
         <el-button type="primary" @click="handleSearch">查询</el-button>
         <el-button @click="handleResetSearch">重置</el-button>
       </el-form-item>
@@ -27,15 +27,15 @@
           <el-row>
             <el-col :span="8" class="dash-statistic">
               <div class="dash-statistic-title">人员总数</div>
-              <div class="dash-statistic-content">100</div>
+              <div class="dash-statistic-content">{{ detail.people.total || 0 }}</div>
             </el-col>
             <el-col :span="8" class="dash-statistic">
               <div class="dash-statistic-title">在点</div>
-              <div class="dash-statistic-content">60</div>
+              <div class="dash-statistic-content">{{ detail.people.isjob || 0 }}</div>
             </el-col>
             <el-col :span="8" class="dash-statistic">
               <div class="dash-statistic-title">不在点</div>
-              <div class="dash-statistic-content">140</div>
+              <div class="dash-statistic-content">{{ detail.people.isnotjob || 0 }}</div>
             </el-col>
           </el-row>
         </div>
@@ -44,27 +44,27 @@
           <el-row>
             <el-col :span="8" class="dash-statistic">
               <div class="dash-statistic-title">项目数量</div>
-              <div class="dash-statistic-content">100</div>
+              <div class="dash-statistic-content">{{ detail.project.total || 0 }}</div>
             </el-col>
             <el-col :span="8" class="dash-statistic">
               <div class="dash-statistic-title">计划阶段</div>
-              <div class="dash-statistic-content">100</div>
+              <div class="dash-statistic-content">{{ detail.project.plan || 0 }}</div>
             </el-col>
             <el-col :span="8" class="dash-statistic">
               <div class="dash-statistic-title">实施阶段</div>
-              <div class="dash-statistic-content">100</div>
+              <div class="dash-statistic-content">{{ detail.project.doing || 0 }}</div>
             </el-col>
             <el-col :span="8" class="dash-statistic">
               <div class="dash-statistic-title">审理阶段</div>
-              <div class="dash-statistic-content">100</div>
+              <div class="dash-statistic-content">{{ detail.project.heard || 0 }}</div>
             </el-col>
             <el-col :span="8" class="dash-statistic">
               <div class="dash-statistic-title">报告阶段</div>
-              <div class="dash-statistic-content">100</div>
+              <div class="dash-statistic-content">{{ detail.project.report || 0 }}</div>
             </el-col>
             <el-col :span="8" class="dash-statistic">
               <div class="dash-statistic-title">已经结束</div>
-              <div class="dash-statistic-content">100</div>
+              <div class="dash-statistic-content">{{ detail.project.complete || 0 }}</div>
             </el-col>
           </el-row>
         </div>
@@ -78,6 +78,7 @@ import echarts from "echarts"
 import resize from "./mixins/resize"
 import axios from 'axios'
 import map from "@/utils/guizhou.json"
+import { getUserLocation, getAll } from '@/api/home'
 import { regionData } from 'element-china-area-data'
 const guizhouData = regionData.find(row => +row.value === 520000)
 
@@ -109,7 +110,12 @@ export default {
         county: ''
       },
       cityJson: guizhouData.children || [],
-      countyJson: []
+      countyJson: [],
+      detail: {
+        people: {},
+        project: {}
+      },
+      regnum: []
     }
   },
   mounted() {
@@ -122,10 +128,11 @@ export default {
       } else {
         const city = that.cityJson.find(row => row.label === params.name)
         that.form.city = city.value
-        that.handleChangeRegion()
+        // that.handleChangeRegion()
         that.handleSearch()
       }
     })
+    this.queryUserLocation()
   },
   beforeDestroy() {
     if (!this.chart) {
@@ -134,21 +141,47 @@ export default {
     this.chart.dispose()
     this.chart = null
   },
-  methods: { 
+  methods: {
+    queryUserLocation() {
+      getUserLocation().then(res => {
+        const { data } = res
+        if (+data.regnum > 520000) {
+          data.regnum = '52000,' + data.regnum
+        }
+        this.regnum = data.regnum ? data.regnum.split(',') : []
+        this.form.city = this.regnum[1] || ''
+        // this.form.county = this.regnum[2] || ''
+        // this.handleChangeRegion()
+        this.handleSearch()
+      })
+    },
+    queryData() {
+      const { form: { city, county}} = this
+      const params = {}
+      if (city) params.city = city
+      if (county) params.country = county
+      getAll(params).then(res => {
+        this.detail = res.data || {}
+      })
+    },
     handleSearch() {
       const { form: { city }} = this
-      const url = `/map/${city}_full.json`
-      axios({
-        url: url
-      }).then(res => {
-        this.initChart(city, res.data)
-      })
+      if (city) {
+        const url = `/map/${city}_full.json`
+        axios({
+          url: url
+        }).then(res => {
+          this.initChart(city, res.data)
+        })
+      }
+      this.queryData()
     },
     handleResetSearch() {
       this.form.city = ''
       this.form.county = ''
       this.countyJson = []
       this.initChart('guizhou', map)
+      this.queryData()
     },
     handleChangeRegion() {
       if (this.form.city) {

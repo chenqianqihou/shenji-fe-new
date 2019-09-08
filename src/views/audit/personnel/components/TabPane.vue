@@ -44,8 +44,8 @@
       />
     </div>
     <div style="flex: 1;margin-left: 20px;overflow:auto;">
-      <el-form :inline="true" class="filter-container audit-personnel-filter">
-        <el-form-item label="查询条件">
+      <el-form :inline="true" :model="listQuery" class="filter-container audit-personnel-filter" ref="filterForm">
+        <el-form-item label="查询条件" prop="query">
           <el-input
             v-model="listQuery.query"
             placeholder="请输入姓名/人员ID"
@@ -53,7 +53,7 @@
             class="filter-item"
           />
         </el-form-item>
-        <el-form-item label="工作状态">
+        <el-form-item label="工作状态" prop="status">
           <el-select
             v-model="listQuery.status"
             placeholder="请选择"
@@ -64,6 +64,73 @@
             <el-option v-for="(value, name) in selectConfig.status" :key="name" :label="value" :value="+name" />
           </el-select>
         </el-form-item>
+        <el-form-item label="性别" prop="sex">
+          <el-select
+            v-model="listQuery.sex"
+            placeholder="请选择"
+            clearable
+            style="width: 150px"
+            class="filter-item"
+          >
+            <el-option v-for="(value, name) in selectConfig.sex" :key="name" :label="value" :value="+name" />
+          </el-select>
+        </el-form-item>
+        <el-form-item label="学历" prop="education">
+          <el-select
+            v-model="listQuery.education"
+            placeholder="请选择"
+            clearable
+            style="width: 150px"
+            class="filter-item"
+          >
+            <el-option v-for="(value, name) in selectConfig.education" :key="name" :label="value" :value="+name" />
+          </el-select>
+        </el-form-item>
+        <template v-if="+type === 3">
+          <el-form-item label="职称" prop="techtitle">
+            <el-select
+              v-model="listQuery.techtitle"
+              placeholder="请选择"
+              clearable
+              style="width: 150px"
+              class="filter-item"
+            >
+              <el-option v-for="(value, name) in selectConfig.techtitle" :key="name" :label="value" :value="+name" />
+            </el-select>
+          </el-form-item>
+          <el-form-item label="职务" prop="position">
+            <el-select
+              v-model="listQuery.position"
+              placeholder="请选择"
+              clearable
+              style="width: 150px"
+              class="filter-item"
+            >
+              <el-option v-for="(value, name) in selectConfig.position" :key="name" :label="value" :value="+name" />
+            </el-select>
+          </el-form-item>
+          <el-form-item label="特长" prop="expertise">
+            <el-select
+              v-model="listQuery.expertise"
+              placeholder="请选择"
+              clearable
+              style="width: 150px"
+              class="filter-item"
+            >
+              <el-option v-for="(value, name) in selectConfig.expertise" :key="name" :label="value" :value="+name" />
+            </el-select>
+          </el-form-item>
+          <el-form-item label="参加审计年月" prop="date">
+            <el-date-picker
+              v-model="listQuery.date"
+              type="monthrange"
+              value-format="timestamp"
+              range-separator="-"
+              start-placeholder="开始月份"
+              end-placeholder="结束月份">
+            </el-date-picker>
+          </el-form-item>
+        </template>
         <el-button
           class="filter-item"
           type="primary"
@@ -121,7 +188,7 @@
         style="width: 100%"
         @selection-change="handleSelectionChange"
       >
-        <el-table-column type="selection" align="center" />
+        <el-table-column type="selection" align="center" :selectable='checkboxInit' />
         <el-table-column label="姓名" align="center" prop="name" />
         <el-table-column label="人员ID" prop="pid" align="center" width="200" />
         <el-table-column label="性别" align="center" prop="sex">
@@ -297,6 +364,9 @@ export default {
     this.getList()
   },
   methods: {
+    checkboxInit(row){
+      return +row.status !== 1 ? 1 : 0
+    },
     uploadSuccess() {
       this.$message.success('导入成功')
       this.listQuery.page = 0
@@ -421,6 +491,7 @@ export default {
     },
     queryOrgTree() {
       getOrgTree().then(res => {
+        console.log(res)
         const typeList = this.selectConfig.type
         res.data.forEach(row => {
           row.name = typeList[row.type]
@@ -437,8 +508,6 @@ export default {
           this.treeData.forEach(row => {
             this.casdTreeProp(row, row.type)
           })
-          
-          console.log( this.defaultExpandKeys)
         }
       })
     },
@@ -458,12 +527,20 @@ export default {
       const _params = Object.assign({
         type: [1, 2, 3].includes(+this.$route.query.tab) ? +this.$route.query.tab : +this.type
       }, this.listQuery)
+      if (_params.organid >= 520000) {
+        _params.regnum = _params.organid
+        delete _params.organid
+      }
+      if (_params.date) {
+        if (_params.date[0]) _params.auditbeginleft = Math.floor(_params.date[0]/1000)
+        if (_params.date[1]) _params.auditbeginright = Math.floor(_params.date[1]/1000)
+      }
+      delete _params.date
+      delete _params.organization
       this.listLoading = true
       fetchList(_params).then(response => {
         this.list = response.data.list
         this.total = +response.data.total
-
-        // Just to simulate the time of the request
         this.listLoading = false
       })
     },
@@ -472,8 +549,9 @@ export default {
       this.getList()
     },
     handleResetFilter() {
-      this.listQuery.query = ''
-      this.listQuery.status = ''
+      this.page = 1
+      this.$refs.filterForm.resetFields()
+      // this.listQuery.query = ''
       this.getList()
     },
     handleSelectionChange(rows) {

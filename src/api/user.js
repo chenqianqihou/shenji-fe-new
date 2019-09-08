@@ -122,3 +122,19 @@ export function downloadThirdUser(params) {
     params
   })
 }
+
+export function authList(data) {
+  return request({
+    url: '/auth/list',
+    method: 'post',
+    data
+  })
+}
+
+export function changeAuth(data) {
+  return request({
+    url: '/auth/update',
+    method: 'post',
+    data
+  })
+}

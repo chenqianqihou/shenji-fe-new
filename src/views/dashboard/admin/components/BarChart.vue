@@ -1,14 +1,15 @@
 <template>
   <div style="height: 400px;">
-    <div :class="className" :style="{height:height,width:width}" ref="chart2" />
+    <div :class="className" :style="{height:height,width:width}" ref="chart1" />
   </div>
 </template>
 
 <script>
-import echarts from 'echarts'
-require('echarts/theme/macarons') // echarts theme
-import resize from './mixins/resize'
-
+import echarts from "echarts"
+require("echarts/theme/macarons") // echarts theme
+import { getProject } from "@/api/home"
+import resize from "./mixins/resize"
+import { project } from "../../config"
 const animationDuration = 3000
 
 export default {
@@ -16,26 +17,26 @@ export default {
   props: {
     className: {
       type: String,
-      default: 'chart'
+      default: "chart"
     },
     width: {
       type: String,
-      default: '100%'
+      default: "100%"
     },
     height: {
       type: String,
-      default: '320px'
+      default: "320px"
     }
   },
   data() {
     return {
-      chart: null
+      chart: null,
+      data: {},
+      chartData: []
     }
   },
   mounted() {
-    this.$nextTick(() => {
-      this.initChart()
-    })
+    this.queryData()
   },
   beforeDestroy() {
     if (!this.chart) {
@@ -45,58 +46,79 @@ export default {
     this.chart = null
   },
   methods: {
+    queryData() {
+      this.data = {}
+      this.chartData = []
+      getProject().then(res => {
+        this.data = res.data
+        const { list } = this.data
+        Object.keys(list).forEach(key => {
+          this.chartData.push({
+            value: list[key],
+            name: project[key]
+          })
+        })
+        this.initChart()
+      })
+    },
     initChart() {
-      this.chart = echarts.init(this.$refs.chart2, 'macarons')
+      const that = this
+      const { data, chartData } = this
+      this.chart = echarts.init(this.$refs.chart1, "macarons");
 
       this.chart.setOption({
         tooltip: {
-            trigger: 'item',
-            formatter: "{a} <br/>{b}: {c} ({d}%)"
+          trigger: "item",
+          formatter: "{b}: {c} ({d}%)"
         },
         legend: {
-            type: 'scroll',
-            orient: 'vertical',
-            right: 30,
-            top: 40,
-            bottom: 20,
-            data:['直接访问','邮件营销','联盟广告','视频广告','搜索引擎']
+          type: "scroll",
+          orient: "vertical",
+          right: 30,
+          top: 40,
+          bottom: 20,
+          data: Object.values(project),
+          formatter: function(name) {
+            let total = 0
+            let tarValue
+            for (var i = 0, l = chartData.length; i < l; i++) {
+              total += chartData[i].value
+              if (chartData[i].name == name) {
+                tarValue = chartData[i].value
+              }
+            }
+            return `${name}（${tarValue}）`
+          }
         },
         series: [
-            {
-                 
-                name:'访问来源',
-                type:'pie',
-                radius: ['50%', '70%'],
-                center: ['35%', '50%'],
-                avoidLabelOverlap: false,
-                label: {
-                    normal: {
-                        show: true,
-                        position: 'center',
-                        color:'#4c4a4a',
-                        formatter: '共发布活动'
-                    },
-                    emphasis: {
-                        show: false,
-                        textStyle: {
-                            fontSize: '30',
-                            fontWeight: 'bold'
-                        }
-                    }
-                },
-                labelLine: {
-                    normal: {
-                        show: false
-                    }
-                },
-                data:[
-                    {value:335, name:'直接访问'},
-                    {value:310, name:'邮件营销'},
-                    {value:234, name:'联盟广告'},
-                    {value:135, name:'视频广告'},
-                    {value:1548, name:'搜索引擎'}
-                ]
-            }
+          {
+            type: "pie",
+            radius: ["50%", "70%"],
+            center: ["35%", "50%"],
+            avoidLabelOverlap: false,
+            label: {
+              normal: {
+                show: true,
+                position: "center",
+                color: "#4c4a4a",
+                fontSize: 16,
+                formatter: `项目总数\n\n${data.total}`
+              },
+              emphasis: {
+                show: false,
+                textStyle: {
+                  fontSize: "30",
+                  fontWeight: "bold"
+                }
+              }
+            },
+            labelLine: {
+              normal: {
+                show: false
+              }
+            },
+            data: chartData
+          }
         ]
       })
     }

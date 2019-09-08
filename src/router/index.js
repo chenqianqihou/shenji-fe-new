@@ -295,6 +295,15 @@ export const constantRoutes = [
           title: '客观分数配置',
           noCache: true
         }
+      },
+      {
+        path: 'permission',
+        component: () => import('@/views/audit/permission/index'),
+        name: 'auditPermission',
+        meta: {
+          title: '权限配置',
+          noCache: true
+        }
       }
     ]
   },

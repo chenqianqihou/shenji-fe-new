@@ -1,10 +1,10 @@
 <template>
   <div style="height: 400px;">
-    <div :class="className" :style="{height:height,width:width}" ref="chart" />
+    <div :class="className" :style="{height:height,width:width}" ref="chart2" />
     <div style="height: 80px;">
-      <div style="height: 50px; margin: 15px 0;display:flex;background:#ebeef5;border-radius: 5px;text-align: center;line-height:50px;color: rgba(0, 0, 0, 0.65);">
-        <div :style="{width: '60%', background: '#409eff', 'border-radius': '5px', color: '#EEE'}">男 60%</div>
-        <div :style="{width: '40%'}">女 40%</div>
+      <div style="height: 50px; margin: 15px 0;display:flex;background:#ebeef5;border-radius: 5px;text-align: center;line-height:50px;color: rgba(0, 0, 0, 0.65);" v-if="data.total">
+        <div :style="{width: `${gender.male}%`, background: '#409eff', 'border-radius': '5px', color: '#EEE'}">男 {{gender.male}}%</div>
+        <div :style="{width: `${gender.female}%`}" v-if="data.gender.female > 0">女 {{gender.female}}%</div>
       </div>
     </div>
   </div>
@@ -14,6 +14,8 @@
 import echarts from 'echarts'
 require('echarts/theme/macarons') // echarts theme
 import resize from './mixins/resize'
+import { getSex } from '@/api/home'
+import { sex } from "../../config"
 
 const animationDuration = 3000
 
@@ -35,13 +37,14 @@ export default {
   },
   data() {
     return {
-      chart: null
+      chart: null,
+      data: {},
+      chartData: [],
+      gender: {}
     }
   },
   mounted() {
-    this.$nextTick(() => {
-      this.initChart()
-    })
+    this.queryData()
   },
   beforeDestroy() {
     if (!this.chart) {
@@ -51,58 +54,82 @@ export default {
     this.chart = null
   },
   methods: {
+    queryData() {
+      this.data = {}
+      this.chartData = []
+      getSex().then(res => {
+        this.data = res.data
+        const { data } = this
+        const { age } = this.data
+        Object.keys(age).forEach(key => {
+          this.chartData.push({
+            value: age[key],
+            name: sex[key]
+          })
+        })
+        this.gender.male = data.total ? ((data.gender.man / data.total) * 100).toFixed(2) : 0
+        this.gender.female = data.total ? ((data.gender.female / data.total) * 100).toFixed(2) : 0
+        this.initChart()
+      })
+    },
     initChart() {
-      this.chart = echarts.init(this.$refs.chart, 'macarons')
+      const that = this
+      const { data, chartData } = this
+      this.chart = echarts.init(this.$refs.chart2, "macarons")
 
       this.chart.setOption({
         tooltip: {
-            trigger: 'item',
-            formatter: "{a} <br/>{b}: {c} ({d}%)"
+          trigger: "item",
+          formatter: "{b}: {c} ({d}%)"
         },
         legend: {
-            type: 'scroll',
-            orient: 'vertical',
-            right: 30,
-            top: 40,
-            bottom: 20,
-            data:['直接访问','邮件营销','联盟广告','视频广告','搜索引擎']
+          type: "scroll",
+          orient: "vertical",
+          right: 30,
+          top: 40,
+          bottom: 20,
+          data: Object.values(sex),
+          formatter: function(name) {
+            let total = 0
+            let tarValue
+            for (var i = 0, l = chartData.length; i < l; i++) {
+              total += chartData[i].value
+              if (chartData[i].name == name) {
+                tarValue = chartData[i].value
+              }
+            }
+            return `${name}（${tarValue}）`
+          }
         },
         series: [
-            {
-                 
-                name:'访问来源',
-                type:'pie',
-                radius: ['50%', '70%'],
-                center: ['35%', '50%'],
-                avoidLabelOverlap: false,
-                label: {
-                    normal: {
-                        show: true,
-                        position: 'center',
-                        color:'#4c4a4a',
-                        formatter: '共发布活动'
-                    },
-                    emphasis: {
-                        show: false,
-                        textStyle: {
-                            fontSize: '30',
-                            fontWeight: 'bold'
-                        }
-                    }
-                },
-                labelLine: {
-                    normal: {
-                        show: false
-                    }
-                },
-                data:[
-                    {value:335, name:'直接访问'},
-                    {value:310, name:'邮件营销'},
-                    {value:234, name:'联盟广告'},
-                    {value:135, name:'视频广告'},
-                    {value:1548, name:'搜索引擎'}
-                ]
-            }
+          {
+            type: "pie",
+            radius: ["50%", "70%"],
+            center: ["35%", "50%"],
+            avoidLabelOverlap: false,
+            label: {
+              normal: {
+                show: true,
+                position: "center",
+                color: "#4c4a4a",
+                fontSize: 16,
+                formatter: `总人数\n\n${data.total}`
+              },
+              emphasis: {
+                show: false,
+                textStyle: {
+                  fontSize: "30",
+                  fontWeight: "bold"
+                }
+              }
+            },
+            labelLine: {
+              normal: {
+                show: false
+              }
+            },
+            data: chartData
+          }
         ]
       })
     }
