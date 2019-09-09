@@ -155,6 +155,7 @@ import { fetchList, downloadExcel, deleteResult } from '@/api/result'
 import { selectConfig } from '@/api/project'
 import { statusMap, resultStatus } from './config'
 import { roleMap } from '../project/config'
+import { isArray } from '@/utils'
 const queryString = {
   projectid: '',
   status: '',
@@ -177,10 +178,7 @@ export default {
     }
   },
   created() {
-    Promise.all([this.getSelectConfig()]).then(() => {
-      this.listQuery.start = 0
-      this.getList()
-    })
+    this.getSelectConfig()
   },
   methods: {
     download() {
@@ -198,13 +196,16 @@ export default {
             this.originConfig[keys[idx]][Object.keys(r)[0]] = Object.values(r)[0]
           }
         })
+        this.listQuery.start = 0
+        this.getList()
       })
     },
     getList() {
       const _params = Object.assign({}, this.listQuery)
       this.listLoading = true
       fetchList(_params).then(response => {
-        this.list = response.data.list
+        console.log(response)
+        this.list = isArray(response.data.list) ? response.data.list : Object.values(response.data.list)
         this.total = +response.data.total
         this.listLoading = false
       })

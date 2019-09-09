@@ -158,6 +158,7 @@ export default {
         if (!this.form.city) {
           this.initChart('guizhou', map)
           this.initClick()
+          this.queryData()
         } else {
           this.handleSearch(true)
         }
