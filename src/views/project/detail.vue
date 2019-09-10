@@ -146,7 +146,11 @@
               <el-table-column label="机构类型" prop="projorgan" align="center">
                 <template slot-scope="{row}">{{ selectConfig.type[row.type] }}</template>
               </el-table-column>
-              <el-table-column label="所属市县" align="center" prop="location" />
+              <el-table-column label="所属市县" align="center" prop="location">
+                <template slot-scope="{row}">
+                  {{ formatArea(row.location) }}
+                </template>
+              </el-table-column>
               <el-table-column label="项目角色" align="center" prop="role">
                 <template slot-scope="{row}">{{ roleMap[row.role] }}</template>
               </el-table-column>
@@ -206,7 +210,11 @@
           <el-table-column label="成员姓名" align="center" prop="name" show-overflow-tooltip />
           <el-table-column label="性别" align="center" prop="sex" show-overflow-tooltip />
           <el-table-column label="所属部门" prop="department" align="center" show-overflow-tooltip />
-          <el-table-column label="所属市县" align="center" prop="location" show-overflow-tooltip />
+          <el-table-column label="所属市县" align="center" prop="location" show-overflow-tooltip>
+            <template slot-scope="{row}">
+              {{ formatArea(row.location) }}
+            </template>
+          </el-table-column>
           <el-table-column label="审计组" align="center" prop="group" />
           <el-table-column label="操作" align="center">
             <template slot-scope="{row}">
@@ -246,7 +254,11 @@
         <el-table-column label="成员姓名" align="center" prop="name" show-overflow-tooltip />
         <el-table-column label="性别" align="center" prop="sex" show-overflow-tooltip />
         <el-table-column label="机构类型" prop="type" align="center" show-overflow-tooltip />
-        <el-table-column label="所属市县" align="center" prop="department" show-overflow-tooltip />
+        <el-table-column label="所属市县" align="center" prop="department" show-overflow-tooltip>
+          <template slot-scope="{row}">
+            {{ formatArea(row.location) }}
+          </template>
+        </el-table-column>
         <el-table-column label="工作状态" align="center" prop="isjob" show-overflow-tooltip />
         <el-table-column label="兼办项目" align="center" prop="projectnum" />
         <el-table-column label="操作" align="center">
@@ -343,6 +355,7 @@ import {
   jugeBind,
   judeUnbind
 } from "@/api/project"
+import { CodeToText } from 'element-china-area-data'
 const query = {
   page: 1,
   length: 10,
@@ -416,6 +429,15 @@ export default {
     this.queryDetail()
   },
   methods: {
+    formatArea(val) {
+      if (!val) return
+      const areaCode = val.split(',')
+      const areas = []
+      areaCode.forEach(row => {
+        areas.push(CodeToText[row])
+      })
+      return areas.join('/')
+    },
     changeTab() {
       if (this.activeName === "third") {
         this.queryReviewUserList()
