@@ -1,6 +1,6 @@
 <template>
   <div style="height: 400px;">
-    <div :class="className" :style="{height:height,width:width}" ref="chart1" />
+    <div :class="className" ref="chart1" />
   </div>
 </template>
 
@@ -18,14 +18,6 @@ export default {
     className: {
       type: String,
       default: "chart"
-    },
-    width: {
-      type: String,
-      default: "100%"
-    },
-    height: {
-      type: String,
-      default: "320px"
     }
   },
   data() {
@@ -73,9 +65,7 @@ export default {
         },
         legend: {
           type: "scroll",
-          orient: "vertical",
-          right: 30,
-          top: 40,
+          orient: "horizontal",
           bottom: 20,
           data: Object.values(project),
           formatter: function(name) {
@@ -94,7 +84,7 @@ export default {
           {
             type: "pie",
             radius: ["50%", "70%"],
-            center: ["35%", "50%"],
+            center: ['50%', '40%'],
             avoidLabelOverlap: false,
             label: {
               normal: {
@@ -125,3 +115,9 @@ export default {
   }
 }
 </script>
+<style lang="scss" scoped>
+.chart {
+  width: 100%;
+  height: 100%;
+}
+</style>

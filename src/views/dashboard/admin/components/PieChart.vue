@@ -84,9 +84,7 @@ export default {
         },
         legend: {
           type: "scroll",
-          orient: "vertical",
-          right: 30,
-          top: 40,
+          orient: "horizontal",
           bottom: 20,
           data: Object.values(sex),
           formatter: function(name) {
@@ -105,7 +103,7 @@ export default {
           {
             type: "pie",
             radius: ["50%", "70%"],
-            center: ["35%", "50%"],
+            center: ['50%', '40%'],
             avoidLabelOverlap: false,
             label: {
               normal: {
