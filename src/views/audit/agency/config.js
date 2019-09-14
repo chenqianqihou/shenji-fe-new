@@ -116,7 +116,15 @@ const props = {
     value: 'contactnumber',
     label: '联系电话',
     required: true,
-    type: 'number'
+    validator: [{
+      validator: (rule, value, callback) => {
+        if (!/^1[3|4|5|6|7|8][0-9]{9}$/.test(value) && !/^\d{3}-\d{7,8}|\d{4}-\d{7,8}$/.test(value)) {
+          callback('联系人电话格式错误')
+        } else {
+          callback()
+        }
+      }
+    }]
   }, {
     value: ['officenum', 'officeaddress'],
     label: '办公地址',

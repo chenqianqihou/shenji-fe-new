@@ -503,7 +503,7 @@ export default {
     },
     changeStatus() {
       const status = this.detail.basic.projectstatus
-      if (+status === 3) {
+      if (+status + 1 === 3) {
         this.auditDialogVisible = true
       } else {
         this.handleChangeStatus()

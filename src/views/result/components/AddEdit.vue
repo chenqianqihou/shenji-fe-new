@@ -53,17 +53,30 @@
             <el-radio label="2">否</el-radio>
           </el-radio-group>
         </el-form-item>
+        <el-form-item label="承担项目综合协调工作">
+          <span v-if="readonly">{{ radioMap[+form.havecoordinate] || '-' }}</span>
+          <el-radio-group v-else v-model="form.havecoordinate">
+            <el-radio label="1">是</el-radio>
+            <el-radio label="2">否</el-radio>
+          </el-radio-group>
+        </el-form-item>
+        <el-form-item label="承担项目数据分析工作">
+          <span v-if="readonly">{{ radioMap[+form.haveanalyse] || '-' }}</span>
+          <el-radio-group v-else v-model="form.haveanalyse">
+            <el-radio label="1">是</el-radio>
+            <el-radio label="2">否</el-radio>
+          </el-radio-group>
+        </el-form-item>
         <h4>审计成果</h4>
         <el-divider />
         <el-form-item label="查出问题性质">
-          <el-select v-model="form.problemid" :disabled="readonly" @change="handleChangeQuestion1">
+          <el-select v-model="form.problemid" :disabled="readonly">
             <el-option v-for="item in question1List" :key="item.id" :label="item.name" :value="+item.id" />
           </el-select>
         </el-form-item>
-        <el-form-item label="查出问题明细">
-          <el-select v-model="form.problemdetailid" :disabled="readonly">
-            <el-option v-for="item in question2List" :key="item.id" :label="item.name" :value="+item.id" />
-          </el-select>
+        <el-form-item label="问题描述">
+          <el-input v-model="form.desc" :disabled="readonly" v-if="readonly" />
+          <el-input v-model="form.desc" type="textarea" :rows="4" v-else maxlength="300" show-word-limit />
         </el-form-item>
         <el-form-item label="处理金额">
           <span v-if="readonly">{{ form.amountone }}元</span>
@@ -89,10 +102,6 @@
           <span v-if="readonly">{{ form.amountsix }}元</span>
           <el-input v-model="form.amountsix" :disabled="readonly" v-else><template slot="suffix">元</template></el-input>
         </el-form-item>
-        <el-form-item label="问题描述">
-          <el-input v-model="form.desc" :disabled="readonly" v-if="readonly" />
-          <el-input v-model="form.desc" type="textarea" :rows="4" v-else maxlength="300" show-word-limit />
-        </el-form-item>
         <el-form-item label="是否单独查出">
           <span v-if="readonly">{{ radioMap[+form.isfindout] || '-' }}</span>
           <el-radio-group v-else v-model="form.isfindout">
@@ -113,7 +122,7 @@
           </el-radio-group>
         </el-form-item>
         <el-form-item label="移送处理机关">
-          <span v-if="readonly">{{ +form.processorgans ? form.processorgans : '' }}</span>
+          <span v-if="readonly">{{ +form.processorgans ? config.tsOrgMap[+form.processorgans] : '' }}</span>
           <el-select v-model="form.processorgans" v-else>
             <el-option v-for="(key, item) in config.tsOrgMap" :key="item" :label="key" :value="item" />
           </el-select>
@@ -122,14 +131,14 @@
           <span v-if="readonly">{{ form.transferamount }}元</span>
           <el-input v-model="form.transferamount" :disabled="readonly" v-else><template slot="suffix">元</template></el-input>
         </el-form-item>
-        <el-form-item label="移送人数">
-          <el-input v-model="form.transferpeoplenum" :disabled="readonly" />
-        </el-form-item>
         <el-form-item label="送处理人员情况">
-          <span v-if="readonly">{{ +form.transferpeopletype ? form.transferpeopletype : '' }}</span>
-          <el-select v-model="form.transferpeopletype" v-else>
-            <el-option v-for="(key, item) in config.tsPeopleMap" :key="item" :label="key" :value="item" />
-          </el-select>
+          <template v-for="(key, item) in config.tsPeopleMap">
+            <div :key="item" class="people-area">
+              <span class="people-label">{{ key }}</span>
+              <span v-if="readonly">{{transferpeople[item] || 0 }}人</span>
+              <el-input v-model="transferpeople[item]" v-else><template slot="suffix">人</template></el-input>
+            </div>
+          </template>
         </el-form-item>
         <el-form-item label="移送处理结果">
           <el-input v-model="form.transferresult" :disabled="readonly" v-if="readonly" />
@@ -152,7 +161,7 @@
           </el-radio-group>
         </el-form-item>
         <el-form-item label="评优">
-          <span v-if="readonly">{{ +form.appraisal ? form.appraisal : '' }}</span>
+          <span v-if="readonly">{{ +form.appraisal ? config.evaluationMap[form.appraisal] : '' }}</span>
           <el-select v-model="form.appraisal" v-else>
             <el-option v-for="(key, val) in config.evaluationMap" :key="val" :label="key" :value="val" />
           </el-select>
@@ -197,8 +206,10 @@ export default {
         isfindout: 0,
         istransfer: 0,
         bringintoone: 0,
-        bringintotwo: 0
+        bringintotwo: 0,
+        transferpeople: {}
       },
+      transferpeople: {},
       radioMap: {
         1: '是',
         2: '否'
@@ -246,8 +257,16 @@ export default {
           problemid: +data.problemid,
           problemdetailid: +data.problemdetailid
         })
+        Object.keys(config.tsPeopleMap).forEach(key => {
+          if (data.transferpeople[config.tsPeopleMap[key]]) {
+            this.transferpeople[key] = data.transferpeople[config.tsPeopleMap[key]]
+          }
+        })
+        if (!this.form.transferpeople) {
+          this.form.transferpeople = {}
+        }
         this.handleChangeProject(data.projectid)
-        this.handleChangeQuestion1(data.problemid)
+        // this.handleChangeQuestion1(data.problemid)
         this.loading = false
       })
     },
@@ -307,14 +326,31 @@ export default {
       })
     },
     handleSave() {
+      const { transferpeople } = this
       const params = Object.assign({}, this.form)
+      console.log(this.form)
+      Object.keys(config.tsPeopleMap).forEach(key => {
+        if (transferpeople[key]) {
+          params.transferpeople[config.tsPeopleMap[key]] = transferpeople[key]
+        } else {
+          delete params.transferpeople[config.tsPeopleMap[key]]
+        }
+      })
       saveResult(params).then(res => {
         this.$message.success('保存成功')
         this.$router.push('/result')
       })
     },
     handleSubmit() {
+      const { transferpeople } = this
       const params = Object.assign({}, this.form)
+      Object.keys(config.tsPeopleMap).forEach(key => {
+        if (transferpeople[key]) {
+          params.transferpeople[config.tsPeopleMap[key]] = transferpeople[key]
+        } else {
+          delete params.transferpeople[config.tsPeopleMap[key]]
+        }
+      })
       submitResult(params).then(res => {
         this.$message.success('提交成功')
         this.$router.push('/result')
@@ -347,6 +383,13 @@ export default {
       .el-input__suffix {
         display: none;
       }
+    }
+  }
+  .people-area{
+    margin-bottom: 10px;
+    .people-label {
+      width: 100px;
+      display: inline-block;
     }
   }
 }

@@ -43,6 +43,12 @@
           icon="el-icon-plus"
           @click="$router.push('/result/create')"
         >新建</el-button>
+        <el-button
+          :disabled="checkedOptions.length === 0"
+          class="filter-item top-btn"
+          type="primary"
+          @click="handleDelete('')"
+        >批量删除</el-button>
         <el-upload
           class="upload-demo"
           :action="`${url}/auditresults/excelupload`"
@@ -71,7 +77,9 @@
         border
         highlight-current-row
         style="width: 100%"
+        @selection-change="handleSelectionChange"
       >
+        <el-table-column type="selection" align="center" :selectable='checkboxInit' />
         <el-table-column label="项目编号" align="center">
           <template slot-scope="{row}">
             {{ row.project_msg.projectnum }}
@@ -174,13 +182,20 @@ export default {
       roleMap,
       originConfig: {},
       url,
-      resultStatus
+      resultStatus,
+      checkedOptions: []
     }
   },
   created() {
     this.getSelectConfig()
   },
   methods: {
+    checkboxInit(row){
+      return +row.status !== 2 ? 1 : 0
+    },
+    handleSelectionChange(rows) {
+      this.checkedOptions = rows
+    },
     download() {
       return downloadExcel()
     },
@@ -219,6 +234,7 @@ export default {
       this.getList()
     },
     handleDelete(row) {
+      const rows = row ? [row.id] : this.checkedOptions.map(row => row.id)
       this.$confirm('此操作将永久删除, 是否继续?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
@@ -226,7 +242,7 @@ export default {
         center: true
       }).then(() => {
         deleteResult({
-          id: [row.id]
+          id: rows
         }).then(res => {
           this.$message.success('删除成功!')
           this.getList()

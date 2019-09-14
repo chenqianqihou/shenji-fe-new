@@ -7,7 +7,7 @@
       <h4>{{ config.name }}</h4>
       <div>
         <div v-for="(item, idx) in config.list" :key="idx" style="margin-left: 15px;">
-          <div class="sub-title">{{ item.name }}:</div>
+          <div class="sub-title">{{ item.name  }}:</div>
           <div class="sub-content">
             <template v-if="+item.kindid === 3">
               <div v-for="(child, cidx) in item.list" :key="cidx" class="sub-content-row">

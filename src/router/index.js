@@ -95,7 +95,8 @@ export const constantRoutes = [
       name: 'projectCreate',
       meta: {
         title: '新建项目',
-        noCache: true
+        noCache: true,
+        activeMenu: '/project/index'
       },
       hidden: true
     },
@@ -105,7 +106,8 @@ export const constantRoutes = [
       name: 'projectDetail',
       meta: {
         title: '项目详情',
-        noCache: true
+        noCache: true,
+        activeMenu: '/project/index'
       },
       hidden: true
     },
@@ -115,7 +117,8 @@ export const constantRoutes = [
       name: 'projectEdit',
       meta: {
         title: '编辑项目',
-        noCache: true
+        noCache: true,
+        activeMenu: '/project/index'
       },
       hidden: true
     }]
@@ -139,7 +142,8 @@ export const constantRoutes = [
       name: 'resultCreate',
       meta: {
         title: '新建成果',
-        noCache: true
+        noCache: true,
+        activeMenu: '/result/index'
       },
       hidden: true
     },
@@ -149,7 +153,8 @@ export const constantRoutes = [
       name: 'resultDetail',
       meta: {
         title: '成果信息',
-        noCache: true
+        noCache: true,
+        activeMenu: '/result/index'
       },
       hidden: true
     },
@@ -159,7 +164,8 @@ export const constantRoutes = [
       name: 'resultEdit',
       meta: {
         title: '编辑成果',
-        noCache: true
+        noCache: true,
+        activeMenu: '/result/index'
       },
       hidden: true
     }]
@@ -183,7 +189,8 @@ export const constantRoutes = [
       name: 'reviewPeople',
       meta: {
         title: '人员调配审核',
-        noCache: true
+        noCache: true,
+        activeMenu: '/review/index'
       },
       hidden: true
     }, {
@@ -192,7 +199,8 @@ export const constantRoutes = [
       name: 'reviewResult',
       meta: {
         title: '审计成果审核',
-        noCache: true
+        noCache: true,
+        activeMenu: '/review/index'
       },
       hidden: true
     }]
@@ -224,7 +232,8 @@ export const constantRoutes = [
         name: 'auditPersonnelCreate',
         meta: {
           title: '新建人员',
-          noCache: true
+          noCache: true,
+          activeMenu: '/audit/personnel'
         },
         hidden: true
       },
@@ -234,7 +243,8 @@ export const constantRoutes = [
         name: 'auditPersonnelDetail',
         meta: {
           title: '人员信息',
-          noCache: true
+          noCache: true,
+          activeMenu: '/audit/personnel'
         },
         hidden: true
       },
@@ -244,7 +254,8 @@ export const constantRoutes = [
         name: 'auditPersonnelEdit',
         meta: {
           title: '编辑人员',
-          noCache: true
+          noCache: true,
+          activeMenu: '/audit/personnel'
         },
         hidden: true
       },
@@ -263,7 +274,8 @@ export const constantRoutes = [
         name: 'auditAgencyCreate',
         meta: {
           title: '新建机构',
-          noCache: true
+          noCache: true,
+          activeMenu: '/audit/agency'
         },
         hidden: true
       },
@@ -273,7 +285,8 @@ export const constantRoutes = [
         name: 'auditAgencyDetail',
         meta: {
           title: '机构信息',
-          noCache: true
+          noCache: true,
+          activeMenu: '/audit/agency'
         },
         hidden: true
       },
@@ -283,7 +296,8 @@ export const constantRoutes = [
         name: 'auditAgencyEdit',
         meta: {
           title: '编辑机构',
-          noCache: true
+          noCache: true,
+          activeMenu: '/audit/agency'
         },
         hidden: true
       },

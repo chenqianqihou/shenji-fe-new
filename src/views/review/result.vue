@@ -50,17 +50,30 @@
             <el-radio label="2">否</el-radio>
           </el-radio-group>
         </el-form-item>
+        <el-form-item label="承担项目综合协调工作">
+          <span v-if="readonly">{{ radioMap[+form.havecoordinate] || '-' }}</span>
+          <el-radio-group v-else v-model="form.havecoordinate">
+            <el-radio label="1">是</el-radio>
+            <el-radio label="2">否</el-radio>
+          </el-radio-group>
+        </el-form-item>
+        <el-form-item label="承担项目数据分析工作">
+          <span v-if="readonly">{{ radioMap[+form.haveanalyse] || '-' }}</span>
+          <el-radio-group v-else v-model="form.haveanalyse">
+            <el-radio label="1">是</el-radio>
+            <el-radio label="2">否</el-radio>
+          </el-radio-group>
+        </el-form-item>
         <h4>审计成果</h4>
         <el-divider />
         <el-form-item label="查出问题性质">
-          <el-select v-model="form.problemtype" :disabled="readonly" @change="handleChangeQuestion1">
+          <el-select v-model="form.problemtype" :disabled="readonly">
             <el-option v-for="item in question1List" :key="item.id" :label="item.name" :value="+item.id" />
           </el-select>
         </el-form-item>
-        <el-form-item label="查出问题明细">
-          <el-select v-model="form.problemdetail" :disabled="readonly">
-            <el-option v-for="item in question2List" :key="item.id" :label="item.name" :value="+item.id" />
-          </el-select>
+        <el-form-item label="问题描述">
+          <el-input v-model="form.desc" :disabled="readonly" v-if="readonly" />
+          <el-input v-model="form.desc" type="textarea" :rows="4" v-else maxlength="300" show-word-limit />
         </el-form-item>
         <el-form-item label="处理金额">
           <span v-if="readonly">{{ form.amountone }}元</span>
@@ -85,9 +98,6 @@
         <el-form-item label="审计后挽回（避免损失）金额">
           <span v-if="readonly">{{ form.amountsix }}元</span>
           <el-input v-model="form.amountsix" :disabled="readonly" v-else><template slot="suffix">元</template></el-input>
-        </el-form-item>
-        <el-form-item label="问题描述">
-          <el-input v-model="form.desc" :disabled="readonly" />
         </el-form-item>
         <el-form-item label="是否单独查出">
           <span v-if="readonly">{{ radioMap[+form.isfindout] || '-' }}</span>
@@ -117,13 +127,14 @@
           <span v-if="readonly">{{ form.transferamount }}元</span>
           <el-input v-model="form.transferamount" :disabled="readonly" v-else><template slot="suffix">元</template></el-input>
         </el-form-item>
-        <el-form-item label="移送人数">
-          <el-input v-model="form.transferpeoplenum" :disabled="readonly" />
-        </el-form-item>
         <el-form-item label="送处理人员情况">
-          <el-select v-model="form.transferpeopletype" :disabled="readonly">
-            <el-option v-for="(key, item) in config.tsPeopleMap" :key="item" :label="key" :value="item" />
-          </el-select>
+          <template v-for="(key, item) in config.tsPeopleMap">
+            <div :key="item" class="people-area">
+              <span class="people-label">{{ key }}</span>
+              <span v-if="readonly">{{transferpeople[item] || 0 }}人</span>
+              <el-input v-model="transferpeople[item]" v-else><template slot="suffix">人</template></el-input>
+            </div>
+          </template>
         </el-form-item>
         <el-form-item label="移送处理结果">
           <el-input v-model="form.transferresult" :disabled="readonly" />
@@ -187,6 +198,7 @@ export default {
         bringintoone: 0,
         bringintotwo: 0
       },
+      transferpeople: {},
       radioMap: {
         1: '是',
         2: '否'
@@ -229,6 +241,11 @@ export default {
           ...data.total_result_info
         }, {
           typeName: data.basic_info.projtype ? JSON.parse(data.basic_info.projtype).join('/') : ''
+        })
+        Object.keys(config.tsPeopleMap).forEach(key => {
+          if (data.transferpeople[config.tsPeopleMap[key]]) {
+            this.transferpeople[key] = data.transferpeople[config.tsPeopleMap[key]]
+          }
         })
         this.loading = false
       })
