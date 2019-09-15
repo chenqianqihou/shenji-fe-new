@@ -7,7 +7,8 @@
       <h4>{{ config.name }}</h4>
       <div>
         <div v-for="(item, idx) in config.list" :key="idx" style="margin-left: 15px;">
-          <div class="sub-title">{{ item.name  }}:</div>
+          <div class="sub-title-big" v-if="filterItem(config.list, item)">移送处理人员情况及人数</div>
+          <div class="sub-title">{{ item.name.replace('移送处理人员情况及人数:', '') }}:</div>
           <div class="sub-content">
             <template v-if="+item.kindid === 3">
               <div v-for="(child, cidx) in item.list" :key="cidx" class="sub-content-row">
@@ -116,6 +117,10 @@ export default {
     this.fetchViolations()
   },
   methods: {
+    filterItem(list, item) {
+      const some = list.filter(row => row.name.includes('移送处理人员情况及人数:'))
+      return some[0] ? some[0].id === item.id : false
+    },
     fetch() {
       fetchScore().then(res => {
         formatData(res.data)
@@ -175,6 +180,12 @@ export default {
   .sub-title {
     font-size: 14px;
     font-weight: 600;
+    &-big {
+      font-size: 15px;
+      margin-bottom: 10px;
+      margin-top: 10px;
+      font-weight: 600;
+    }
   }
   .sub-content {
     margin-top: 10px;
