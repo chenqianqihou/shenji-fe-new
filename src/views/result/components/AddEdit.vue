@@ -255,18 +255,18 @@ export default {
       }).then(res => {
         const { data } = res
         this.userinfo = data.people_msg
+        if (data.transferpeople) {
+          data.transferpeople = JSON.parse(data.transferpeople)
+        }
+        Object.keys(config.tsPeopleMap).forEach(key => {
+          if (data.transferpeople[config.tsPeopleMap[key]]) {
+            this.$set(this.transferpeople, key, data.transferpeople[config.tsPeopleMap[key]])
+          }
+        })
         this.form = Object.assign({}, data, {
           problemid: +data.problemid,
           problemdetailid: +data.problemdetailid
         })
-        Object.keys(config.tsPeopleMap).forEach(key => {
-          if (data.transferpeople[config.tsPeopleMap[key]]) {
-            this.transferpeople[key] = data.transferpeople[config.tsPeopleMap[key]]
-          }
-        })
-        if (!this.form.transferpeople) {
-          this.form.transferpeople = {}
-        }
         this.handleChangeProject(data.projectid)
         // this.handleChangeQuestion1(data.problemid)
         this.loading = false
