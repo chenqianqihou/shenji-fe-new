@@ -21,7 +21,7 @@
             </template>
             <template v-else>
               <el-row v-for="(row, i) in item.list" :key="i" class="sub-content-row">
-                <template v-if="+row.typeid === 4">
+                <template v-if="+row.kindid === 2">
                   <el-cascader
                     style="min-width: 600px"
                     v-model="row.nameone"
@@ -76,7 +76,7 @@ const subCasItem = {
   nameone: [],
   nametwo: '',
   score: 0,
-  typeid: 4
+  kindid: 2
 }
 const formatMap = (arr) => {
   arr.forEach(row => {

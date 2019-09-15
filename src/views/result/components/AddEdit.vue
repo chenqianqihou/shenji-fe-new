@@ -207,6 +207,8 @@ export default {
         istransfer: 0,
         bringintoone: 0,
         bringintotwo: 0,
+        havecoordinate: 0,
+        haveanalyse: 0,
         transferpeople: {}
       },
       transferpeople: {},
