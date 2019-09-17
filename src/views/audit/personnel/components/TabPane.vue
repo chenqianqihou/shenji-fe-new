@@ -524,9 +524,9 @@ export default {
       })
     },
     getList() {
-      const _params = Object.assign({
+      const _params = Object.assign({}, this.listQuery, {
         type: [1, 2, 3].includes(+this.$route.query.tab) ? +this.$route.query.tab : +this.type
-      }, this.listQuery)
+      })
       if (_params.organid >= 520000) {
         _params.regnum = _params.organid
         delete _params.organid
