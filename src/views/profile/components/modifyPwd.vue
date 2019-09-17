@@ -34,7 +34,7 @@
         />
       </el-form-item>
       <el-form-item>
-        <el-button type="success" @click="onChangePassword">确认</el-button>
+        <el-button type="primary" @click="onChangePassword">确认</el-button>
       </el-form-item>
     </el-form>
   </div>
