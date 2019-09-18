@@ -127,6 +127,7 @@
         >
           <template slot-scope="{row}">
             <el-button
+              v-if="+row.status !== 2"
               size="mini"
               type="text"
               @click="handleDelete(row)"
@@ -137,6 +138,7 @@
               @click="$router.push(`/result/detail/${row.id}`)"
             >查看</el-button>
             <el-button
+              v-if="+row.status !== 2"
               size="mini"
               type="text"
               @click="$router.push(`/result/edit/${row.id}`)"

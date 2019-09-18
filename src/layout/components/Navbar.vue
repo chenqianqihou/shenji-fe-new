@@ -9,6 +9,7 @@
       <el-dropdown class="avatar-container right-menu-item hover-effect" trigger="click">
         <div class="avatar-wrapper">
           <el-avatar icon="el-icon-user-solid" size="small" />
+          <span class="user-name">{{ name }}</span>
           <i class="el-icon-arrow-down el-icon--right" />
         </div>
         <el-dropdown-menu slot="dropdown">
@@ -43,7 +44,8 @@ export default {
     ...mapGetters([
       'sidebar',
       'avatar',
-      'device'
+      'device',
+      'name'
     ])
   },
   methods: {
@@ -104,6 +106,11 @@ export default {
       font-size: 18px;
       color: #5a5e66;
       vertical-align: text-bottom;
+
+      .user-name{
+        font-size: 14px;
+        margin-left: 5px;
+      }
 
       &.hover-effect {
         cursor: pointer;

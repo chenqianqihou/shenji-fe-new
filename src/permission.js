@@ -4,14 +4,14 @@ import NProgress from 'nprogress' // progress bar
 import 'nprogress/nprogress.css' // progress bar style
 import getPageTitle from '@/utils/get-page-title'
 
-NProgress.configure({ showSpinner: false }) // NProgress Configuration
+NProgress.configure({ showSpinner: true }) // NProgress Configuration
 
 const whiteList = ['/login', '/auth-redirect'] // no redirect whitelist
 
 router.beforeEach(async(to, from, next) => {
-  if (to.path !== '/login' && !store.getters.userSelectConfig.role) {
-    store.dispatch('user/getUserConfig')
-  }
+  // if (to.path !== '/login' && !store.getters.userSelectConfig.role) {
+  //   store.dispatch('user/getUserConfig')
+  // }
   // start progress bar
   NProgress.start()
   document.title = getPageTitle(to.meta.title)

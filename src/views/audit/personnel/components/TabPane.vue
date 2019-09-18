@@ -431,6 +431,7 @@ export default {
             tab: node.type
           }
         })
+        delete this.listQuery.organid
       } else {
         this.listQuery.type = +node.otype
         this.listQuery.organization = 3

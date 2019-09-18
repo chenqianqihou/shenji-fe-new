@@ -62,20 +62,14 @@ const actions = {
   // get user info
   getInfo({ commit, state }) {
     return new Promise((resolve, reject) => {
-      getInfo(state.token).then(response => {
+      getInfo().then(response => {
         const { data } = response
 
         if (!data) {
           reject('验证失败，请重新登陆.')
         }
 
-        const { roles, name } = data
-
-        // roles must be a non-empty array
-        if (!roles || roles.length <= 0) {
-          reject('getInfo: roles must be a non-null array!')
-        }
-
+        const { name } = data
         // commit('SET_ROLES', roles)
         commit('SET_NAME', name)
         // commit('SET_AVATAR', avatar)
