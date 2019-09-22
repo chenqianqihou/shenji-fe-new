@@ -68,8 +68,24 @@ export function updateAuditInfo(data) {
 }
 
 export function updateStatus(data) {
+  let url = ''
+  switch (data.operate) {
+    case 1:
+      url = '/project/sure'
+      break
+    case 2:
+      url = '/project/begin'
+      break
+    case 3:
+      url = '/project/judge'
+      break
+    case 4:
+      url = '/project/finishJudge'
+      break
+  }
   return request({
-    url: '/project/updatestatus',
+    // url: '/project/updatestatus',
+    url,
     method: 'post',
     data
   })
@@ -158,5 +174,13 @@ export function infoList(params) {
   return request({
     url: '/project/infolist',
     params
+  })
+}
+
+export function getProjectTypeNum(data) {
+  return request({
+    url: '/project/projtypenum',
+    method: 'post',
+    data
   })
 }

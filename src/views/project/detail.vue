@@ -236,6 +236,16 @@
       @closed="closeAuditAddDialog"
     >
       <el-form :inline="true">
+        <!-- <el-form-item label="机构类型">
+          <el-select
+            v-model="listQuery.type"
+            placeholder="请选择"
+            style="width: 150px"
+            class="filter-item"
+          >
+            <el-option v-for="(idx, item) in selectConfig.type" :key="item" :value="item" :label="idx" />
+          </el-select>
+        </el-form-item> -->
         <el-form-item label="工作状态">
           <el-select
             v-model="listQuery.jobstatus"
@@ -246,6 +256,9 @@
             <el-option v-for="(idx, item) in memStatusMap" :key="item" :value="item" :label="idx" />
           </el-select>
         </el-form-item>
+        <el-form-item>
+          <el-input v-model="listQuery.query" placeholder="请选择输入查询条件"></el-input>
+        </el-form-item>
         <el-button class="filter-item" type="primary" @click="queryUserList">查询</el-button>
         <el-button class="filter-item" @click="handleResetFilter">重置</el-button>
       </el-form>
@@ -254,7 +267,7 @@
         <el-table-column label="成员姓名" align="center" prop="name" show-overflow-tooltip />
         <el-table-column label="性别" align="center" prop="sex" show-overflow-tooltip />
         <el-table-column label="机构类型" prop="type" align="center" show-overflow-tooltip />
-        <el-table-column label="所属市县" align="center" prop="department" show-overflow-tooltip>
+        <el-table-column label="所属市县" width="200px" align="center" prop="department" show-overflow-tooltip>
           <template slot-scope="{row}">
             {{ formatArea(row.location) }}
           </template>
@@ -286,11 +299,11 @@
         </el-table-column>
       </el-table>
       <pagination
-        v-show="reviewTotal>0"
-        :total="reviewTotal"
-        :page.sync="reviewQuery.page"
-        :limit.sync="reviewQuery.page_size"
-        @pagination="queryReviewUserList"
+        v-show="total>0"
+        :total="total"
+        :page.sync="listQuery.page"
+        :limit.sync="listQuery.length"
+        @pagination="queryUserList"
       />
       <!-- <span slot="footer" class="dialog-footer">
         <el-button @click="memDialigVisible = false">取 消</el-button>
@@ -361,7 +374,9 @@ const query = {
   length: 10,
   jobstatus: "",
   isinternal: 2,
-  ismedium: 2
+  ismedium: 2,
+  query: "",
+  type: ""
 }
 export default {
   components: {
@@ -405,6 +420,7 @@ export default {
       total: 0,
       listQuery: Object.assign({}, query),
       userList: [],
+      copyUserList: [],
       auditDialogVisible: false,
       auditForm: {
         people: ""
@@ -473,7 +489,6 @@ export default {
         this.reviewQuery
       )
       reviewList(params).then(res => {
-        console.log(res)
         this.reviewTotal = +res.data.total || 0
         this.reviewUserList = res.data.list
       })
@@ -579,8 +594,20 @@ export default {
       this.$refs["auditForm"].resetFields()
     },
     queryUserList() {
-      const params = Object.assign({}, this.listQuery)
+      const { listQuery } = this
+      const params = Object.assign({}, listQuery)
+      let organType = [1]
+      if (params.isinternal === 1) {
+        organType.push(2)
+        // delete params.isinternal
+      }
+      if (params.ismedium === 1) {
+        organType.push(3)
+        // delete params.ismedium
+      }
+      params.organType = organType.join()
       getUserList(params).then(res => {
+        this.copyUserList = res.data.list || []
         this.userList = res.data.list || []
         this.total = +res.data.total || 0
       })
@@ -614,7 +641,11 @@ export default {
       }
     },
     handleResetFilter() {
-      this.listQuery = Object.assign({}, query)
+      const { listQuery } = this
+      this.listQuery = Object.assign({}, query, {
+        isinternal: listQuery.isinternal,
+        ismedium: listQuery.ismedium
+      })
       this.queryUserList()
     },
     handleAudit() {

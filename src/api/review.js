@@ -29,8 +29,18 @@ export function reviewInfo(params) {
 }
 
 export function reviewPeople(data) {
+  let url = ''
+  switch (data.ptype) {
+    case 2:
+      url = '/review/neishenoperate'
+      break
+    case 1:
+      url = '/review/zhongjieoperate'
+      break
+  }
   return request({
-    url: '/review/operate',
+    // url: '/review/operate',
+    url,
     method: 'post',
     data
   })

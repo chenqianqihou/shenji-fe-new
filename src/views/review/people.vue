@@ -127,7 +127,8 @@ export default {
       }).then(() => {
         reviewPeople({
           status: val,
-          id: this.id
+          id: this.id,
+          ptype: this.detail.people.type
         }).then(res => {
           this.$message.success(buttons[+val])
           this.$router.push('/review/index')

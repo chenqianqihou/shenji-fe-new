@@ -157,7 +157,7 @@
         >批量删除</el-button>
         <el-upload
           class="upload-demo"
-          :action="+type === 3 ? `${url}/user/organsexcelupload` : `${url}/user/thirdpartexcel`"
+          :action="+type === 3 ? `${url}/user/organsexcelupload` : `${url}/user/thirdpartexcelupload`"
           :show-file-list="false"
           :headers="{
             'AUTHORIZATION': $store.getters.token
