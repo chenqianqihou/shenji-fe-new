@@ -304,6 +304,7 @@
         :page.sync="listQuery.page"
         :limit.sync="listQuery.length"
         @pagination="queryUserList"
+        style="padding: 0"
       />
       <!-- <span slot="footer" class="dialog-footer">
         <el-button @click="memDialigVisible = false">取 消</el-button>
