@@ -163,7 +163,7 @@
       </el-form>
       <div class="result-addedit-footer">
         <el-button type="primary" @click="handleReviewResult(1)">审核通过</el-button>
-        <el-button @click="handleReviewResult(1)">驳回</el-button>
+        <el-button @click="handleReviewResult(2)">驳回</el-button>
       </div>
     </div>
   </el-card>
@@ -196,7 +196,10 @@ export default {
         isfindout: 0,
         istransfer: 0,
         bringintoone: 0,
-        bringintotwo: 0
+        bringintotwo: 0,
+        havecoordinate: 0,
+        haveanalyse: 0,
+        transferpeople: {}
       },
       transferpeople: {},
       radioMap: {
@@ -242,9 +245,12 @@ export default {
         }, {
           typeName: data.basic_info.projtype ? JSON.parse(data.basic_info.projtype).join('/') : ''
         })
+        if (this.form.transferpeople) {
+          this.form.transferpeople = JSON.parse(this.form.transferpeople)
+        }
         Object.keys(config.tsPeopleMap).forEach(key => {
-          if (data.transferpeople[config.tsPeopleMap[key]]) {
-            this.transferpeople[key] = data.transferpeople[config.tsPeopleMap[key]]
+          if (this.form.transferpeople[config.tsPeopleMap[key]]) {
+            this.$set(this.transferpeople, key, this.form.transferpeople[config.tsPeopleMap[key]])
           }
         })
         this.loading = false
