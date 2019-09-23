@@ -134,10 +134,6 @@
             label="项目类型"
             prop="leader_projtype1"
             label-width="150px"
-            :rules="[{
-              required: true,
-              message: '请选择项目类型'
-            }]"
           >
             <el-select v-model="form.leader_projtype1" placeholder="请选择" @change="handleChangeLeaderType">
               <el-option v-for="(item, idx) in selectList.type" :key="idx" :value="item.name" :label="item.name" />
@@ -145,20 +141,13 @@
           </el-form-item>
           <el-form-item
             prop="leader_projtype_sub"
-            :rules="[{
-              required: true,
-              message: '请选择项目子类'
-            }]"
             label-width="150px"
           >
             <el-select v-model="form.leader_projtype_sub" placeholder="请选择" @change="handleFindTimes(1)">
               <el-option v-for="(item, idx) in selectList.subLeaderTypeList" :key="idx" :value="item" :label="item" />
             </el-select>
           </el-form-item>
-          <el-form-item label="组长次数" prop="leader_filternum" :rules="[{
-            required: true,
-            message: '请输入组长次数'
-          }]" label-width="150px">
+          <el-form-item label="组长次数" prop="leader_filternum" label-width="150px">
             <el-input-number v-model="form.leader_filternum" :min="0" :disabled="!!formId" @change="handleFindTimes(1)"></el-input-number>
           </el-form-item>
           <el-form-item label="所选条件审计人员数" label-width="150px">
@@ -174,10 +163,6 @@
             label="项目类型"
             prop="master_projtype1"
             label-width="150px"
-            :rules="[{
-              required: true,
-              message: '请选择项目类型'
-            }]"
           >
             <el-select v-model="form.master_projtype1" placeholder="请选择" @change="handleChangeMasterType">
               <el-option v-for="(item, idx) in selectList.type" :key="idx" :value="item.name" :label="item.name" />
@@ -185,20 +170,13 @@
           </el-form-item>
           <el-form-item
             prop="master_projtype_sub"
-            :rules="[{
-              required: true,
-              message: '请选择项目子类'
-            }]"
             label-width="150px"
           >
             <el-select v-model="form.master_projtype_sub" placeholder="请选择" @change="handleFindTimes(2)">
               <el-option v-for="(item, idx) in selectList.subMasterTypeList" :key="idx" :value="item" :label="item" />
             </el-select>
           </el-form-item>
-          <el-form-item label="主审次数" prop="master_filternum" :rules="[{
-            required: true,
-            message: '请输入主审次数'
-          }]" label-width="150px">
+          <el-form-item label="主审次数" prop="master_filternum" label-width="150px">
             <el-input-number v-model="form.master_filternum" :min="0" :disabled="!!formId" @change="handleFindTimes(2)"></el-input-number>
           </el-form-item>
           <el-form-item label="所选条件审计人员数" label-width="150px">

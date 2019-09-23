@@ -157,7 +157,7 @@
               <el-table-column label="操作" align="center" width="300">
                 <template slot-scope="{row}" v-if="+detail.basic.projectstatus >= 2">
                   <el-button size="mini" type="text" @click="handleAuditDelete(row, item.id)" v-if="+row.role !== 1">删除</el-button>
-                  <el-button type="text" size="mini" @click="handleShowRole(row, item.id)" v-if="+row.role !== 1">更改角色</el-button>
+                  <el-button type="text" size="mini" @click="handleShowRole(row, item.id)" v-if="+row.role !== 1 && +row.typeid === 3">更改角色</el-button>
                   <el-button
                     v-if="+row.islock === 2"
                     type="text"
@@ -201,7 +201,7 @@
           </div>
         </el-dialog>
       </el-tab-pane>
-      <el-tab-pane v-if="detail.basic.projectstatus > 3" label="审理成员" name="third">
+      <el-tab-pane v-if="detail.basic.projectstatus > 2" label="审理成员" name="third">
         <div style="margin-bottom: 20px">
           <el-button type="primary" @click="handleAdd">新增人员</el-button>
         </div>
@@ -219,12 +219,12 @@
           <el-table-column label="操作" align="center">
             <template slot-scope="{row}">
               <el-button size="mini" type="text" @click="handleUnbindJude(row)">解除</el-button>
-              <el-button v-if="+row.islock === 2" type="text" size="mini">更改审计组</el-button>
+              <el-button type="text" size="mini" @click="handleGroup(row)">更改审计组</el-button>
             </template>
           </el-table-column>
         </el-table>
       </el-tab-pane>
-      <el-tab-pane v-if="detail.basic.projectstatus > 3" label="审计评价" name="fourth">
+      <el-tab-pane v-if="detail.basic.projectstatus > 2" label="审计评价" name="fourth">
         <evaluation :project-id="projectId"></evaluation>
       </el-tab-pane>
     </el-tabs>
@@ -312,6 +312,33 @@
       </span>-->
     </el-dialog>
     <el-dialog
+      title="更改审计组"
+      :visible.sync="auditGroupVisible"
+      width="500px"
+      center
+      @close="closeGroupDialog"
+    >
+      <el-form ref="groupForm" :model="groupForm">
+        <el-form-item
+          label="审理人数"
+          label-width="100px"
+          prop="groupids"
+          :rules="[{
+            required: true,
+            message: '请选择审计组'
+          }]"
+        >
+          <el-select v-model="groupForm.groupids" multiple>
+            <el-option></el-option>
+          </el-select>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="auditGroupVisible = false">取 消</el-button>
+        <el-button type="primary" @click="handleChangeGroup">确 定</el-button>
+      </div>
+    </el-dialog>
+    <el-dialog
       title="填写审理人数"
       :visible.sync="auditDialogVisible"
       width="500px"
@@ -367,7 +394,8 @@ import {
   reviewAdd,
   reviewList,
   jugeBind,
-  judeUnbind
+  judeUnbind,
+  changeGroup
 } from "@/api/project"
 import { CodeToText } from 'element-china-area-data'
 const query = {
@@ -434,7 +462,12 @@ export default {
         page: 1
       },
       reviewTotal: 0,
-      needThird: 0
+      needThird: 0,
+      groupRow: {},
+      auditGroupVisible: false,
+      groupForm: {
+        groupids: []
+      }
     }
   },
   computed: {
@@ -543,6 +576,7 @@ export default {
         this.detail.basic.projectstatus = String(
           +this.detail.basic.projectstatus + 1
         )
+        this.queryDetail()
       })
     },
     changeAuditStatus(opt, id) {
@@ -593,6 +627,9 @@ export default {
     },
     closeAuditDialog() {
       this.$refs["auditForm"].resetFields()
+    },
+    closeGroupDialog() {
+      this.$refs['groupForm'].resetFields()
     },
     queryUserList() {
       const { listQuery } = this
@@ -653,6 +690,21 @@ export default {
       this.$refs["auditForm"].validate(valid => {
         if (valid) {
           this.handleChangeStatus()
+        }
+      })
+    },
+    handleGroup(row) {
+      this.groupRow = row
+      this.auditGroupVisible = true
+    },
+    handleChangeGroup() {
+      this.$refs["groupForm"].validate(valid => {
+        if (valid) {
+          const params = Object.assign({}, this.groupForm, {
+            projid: this.projectId,
+            pid: this.groupRow.pid
+          })
+          changeGroup
         }
       })
     },

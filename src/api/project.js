@@ -184,3 +184,11 @@ export function getProjectTypeNum(data) {
     data
   })
 }
+
+export function changeGroup(data) {
+  return request({
+    url: '/auditgroup/jugechange',
+    method: 'post',
+    data
+  })
+}
