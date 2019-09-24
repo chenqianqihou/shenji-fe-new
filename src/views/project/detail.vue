@@ -567,10 +567,7 @@ export default {
       if (+status === 3) {
         params.num = this.auditForm.people
       }
-      updateStatus({
-        operate: +status + 1,
-        id: this.projectId
-      }).then(res => {
+      updateStatus(params).then(res => {
         this.$message.success("操作成功")
         this.auditDialogVisible = false
         this.detail.basic.projectstatus = String(

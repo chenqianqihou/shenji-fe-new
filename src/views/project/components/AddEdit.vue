@@ -49,15 +49,15 @@
         <el-input v-model="form.projdesc" type="textarea" :rows="4" class="sub-width" />
       </el-form-item>
       <el-form-item
-        label="项目单位"
-        prop="projorgan"
+        prop="projlevel"
+        label="项目层级"
         :rules="[{
           required: true,
-          message: '请选择项目单位'
+          message: '请选择项目层级'
         }]"
       >
-        <el-select v-model="form.projorgan" placeholder="请选择" class="sub-width" @change="handleChangeOrg">
-          <el-option v-for="(item, idx) in selectList.organlist" :key="idx" :value="item.id" :label="item.name" />
+        <el-select v-model="form.projlevel" placeholder="请选择" class="sub-width" @change="handleGetOrg">
+          <el-option v-for="(item, idx) in selectConfig.projlevel" :key="idx" :value="item.value" :label="item.label" />
         </el-select>
       </el-form-item>
       <el-form-item
@@ -70,9 +70,23 @@
       >
         <el-cascader
           v-model="form.location"
+          :props="{ checkStrictly: true }"
           class="sub-width"
           :options="districts"
+          @change="handleGetOrg"
         />
+      </el-form-item>
+      <el-form-item
+        label="项目单位"
+        prop="projorgan"
+        :rules="[{
+          required: true,
+          message: '请选择项目单位'
+        }]"
+      >
+        <el-select v-model="form.projorgan" placeholder="请选择" class="sub-width" @change="handleChangeOrg">
+          <el-option v-for="(item, idx) in orgList" :key="idx" :value="item.value" :label="item.name" />
+        </el-select>
       </el-form-item>
       <el-form-item
         label="牵头业务部门"
@@ -107,18 +121,6 @@
       >
         <el-select v-model="form.subType" placeholder="请选择" class="sub-width">
           <el-option v-for="(item, idx) in selectList.subTypeList" :key="idx" :value="item" :label="item" />
-        </el-select>
-      </el-form-item>
-      <el-form-item
-        prop="projlevel"
-        label="项目层级"
-        :rules="[{
-          required: true,
-          message: '请选择项目层级'
-        }]"
-      >
-        <el-select v-model="form.projlevel" placeholder="请选择" class="sub-width">
-          <el-option v-for="(item, idx) in selectConfig.projlevel" :key="idx" :value="item.value" :label="item.label" />
         </el-select>
       </el-form-item>
       <div style="display: flex">
@@ -199,7 +201,7 @@
 </template>
 
 <script>
-import { selectConfig, selectList, createProject, getProjectDetail, updateProject, getProjectTypeNum } from '@/api/project'
+import { selectConfig, selectList, createProject, getProjectDetail, updateProject, getProjectTypeNum, getLocationOrg } from '@/api/project'
 import { regionData } from 'element-china-area-data'
 export default {
   name: 'AddEdit',
@@ -214,7 +216,8 @@ export default {
       selectConfig: {},
       selectList: {},
       leaderNum: 0,
-      masterNum: 0
+      masterNum: 0,
+      orgList: []
     }
   },
   computed: {
@@ -230,6 +233,23 @@ export default {
     this.getSelectList()
   },
   methods: {
+    handleGetOrg() {
+      const { form: { projlevel, location } } = this
+      if (projlevel && location) {
+        const params = {
+          projlevel,
+          location: location.join()
+        }
+        getLocationOrg(params).then(res => {
+          this.orgList = res.data.map(row => {
+            return {
+              value: Object.keys(row)[0],
+              name: Object.values(row)[0]
+            }
+          })
+        })
+      }
+    },
     queryDetail() {
       getProjectDetail({
         id: this.formId
@@ -287,16 +307,18 @@ export default {
       if (!this.formId) {
         this.form.leadorgan = ''
       }
-      const { form: { projorgan }} = this
-      if (this.selectList.organlist) {
-        const item = this.selectList.organlist.find(row => row.id === projorgan)
+      const { form: { projorgan }, selectList: { organlist }} = this
+      if (organlist) {
+        const findItem = organlist.find(row => row.id === +projorgan)
         this.selectList.subOrgList = []
-        item.partment.forEach(item => {
-          this.selectList.subOrgList.push({
-            id: +Object.keys(item)[0],
-            name: Object.values(item)[0]
+        if (findItem) {
+          findItem.partment.forEach(item => {
+            this.selectList.subOrgList.push({
+              id: +Object.keys(item)[0],
+              name: Object.values(item)[0]
+            })
           })
-        })
+        }
       }
     },
     handleChangeType() {

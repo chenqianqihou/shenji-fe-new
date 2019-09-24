@@ -192,3 +192,11 @@ export function changeGroup(data) {
     data
   })
 }
+
+export function getLocationOrg(data) {
+  return request({
+    url: '/project/locationorgan',
+    method: 'post',
+    data
+  })
+}

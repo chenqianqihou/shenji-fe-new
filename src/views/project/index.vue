@@ -229,8 +229,7 @@ export default {
       statusMap: statusMap,
       operateMap: operateMap,
       auditForm: {
-        num: '',
-        status: ''
+        num: ''
       },
       auditDialogVisible: false,
       showCreate: false
