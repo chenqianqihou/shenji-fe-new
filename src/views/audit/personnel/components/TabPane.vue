@@ -368,9 +368,14 @@ export default {
       return +row.status !== 1 ? 1 : 0
     },
     uploadSuccess() {
-      this.$message.success('导入成功')
-      this.listQuery.page = 0
-      this.getList()
+      const { error, data } = res
+      if (error.returnCode !== 0) {
+        this.$message.error(error.returnMessage)
+      } else {
+        this.$message.success('导入成功')
+        this.listQuery.page = 0
+        this.getList()
+      }
     },
     uploadError(err) {
       console.log(err)

@@ -65,6 +65,7 @@
           >上传导入</el-button>
         </el-upload>
         <el-button
+          filename="审计成果.xlsx"
           v-download="download"
           class="filter-item"
           icon="el-icon-download"
@@ -252,9 +253,14 @@ export default {
       })
     },
     handleSuccess(res) {
-      this.$message.success('导入成功')
-      this.start = 0
-      this.getList()
+      const { error, data } = res
+      if (error.returnCode !== 0) {
+        this.$message.error(error.returnMessage)
+      } else {
+        this.$message.success('导入成功')
+        this.start = 0
+        this.getList()
+      }
     },
     uploadError(err) {
       console.log(err)

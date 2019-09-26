@@ -11,7 +11,7 @@
       <span>{{ readonly ? '查看' : (resultId ? '编辑' : '新建') }}审计成果</span>
     </div>
     <div class="result-addedit-content" v-loading="loading">
-      <el-form label-position="right" label-width="auto">
+      <el-form label-position="right" :model="form" label-width="auto" ref="form">
         <h4>基本信息</h4>
         <el-divider />
         <el-form-item label="人员ID">
@@ -20,7 +20,10 @@
         <el-form-item label="姓名">
           {{ userinfo.name }}
         </el-form-item>
-        <el-form-item label="项目名称">
+        <el-form-item label="项目名称" prop="projectid" :rules="[{
+          required: true,
+          message: '项目名称不能为空'
+        }]">
           <el-select
             v-model="form.projectid"
             filterable
@@ -31,20 +34,35 @@
             <el-option v-for="item in projectList" :key="item.id" :value="item.id" :label="item.name" />
           </el-select>
         </el-form-item>
-        <el-form-item label="项目编号">
-          <el-input v-model="project.projectnum" readonly :disabled="readonly" />
+        <el-form-item label="项目编号" prop="projectnum" :rules="[{
+          required: true,
+          message: '项目编号不能为空'
+        }]">
+          <el-input v-model="form.projectnum" readonly :disabled="readonly" />
         </el-form-item>
-        <el-form-item label="项目年度">
-          <el-input v-model="project.projyear" readonly :disabled="readonly" />
+        <el-form-item label="项目年度" prop="projyear" :rules="[{
+          required: true,
+          message: '项目年度不能为空'
+        }]">
+          <el-input v-model="form.projyear" readonly :disabled="readonly" />
         </el-form-item>
-        <el-form-item label="项目层级">
-          <el-input :value="project.projlevel && originConfig.projlevel ? originConfig.projlevel[+project.projlevel] : ''" readonly :disabled="readonly" />
+        <el-form-item label="项目层级" prop="projlevel" :rules="[{
+          required: true,
+          message: '项目层级不能为空'
+        }]">
+          <el-input v-model="form.projlevel" readonly :disabled="readonly" />
         </el-form-item>
-        <el-form-item label="项目类型">
-          <el-input :value="project.projtype ? project.projTypeName : ''" readonly :disabled="readonly" />
+        <el-form-item label="项目类型" prop="projtype" :rules="[{
+          required: true,
+          message: '项目类型不能为空'
+        }]">
+          <el-input v-model="form.projtype" readonly :disabled="readonly" />
         </el-form-item>
-        <el-form-item label="项目角色">
-          <el-input :value="projConfig.roleMap[+project.roletype]" readonly :disabled="readonly" />
+        <el-form-item label="项目角色" prop="roletype" :rules="[{
+          required: true,
+          message: '项目角色不能为空'
+        }]">
+          <el-input v-model="form.roletype" readonly :disabled="readonly" />
         </el-form-item>
         <el-form-item label="报告撰写">
           <span v-if="readonly">{{ radioMap[+form.havereport] || '-' }}</span>
@@ -69,7 +87,10 @@
         </el-form-item>
         <h4>审计成果</h4>
         <el-divider />
-        <el-form-item label="查出问题性质">
+        <el-form-item label="查出问题性质" prop="problemid" :rules="[{
+          required: true,
+          message: '查出问题性质不能为空'
+        }]">
           <el-select v-model="form.problemid" :disabled="readonly">
             <el-option v-for="item in question1List" :key="item.id" :label="item.name" :value="+item.id" />
           </el-select>
@@ -202,6 +223,11 @@ export default {
         roletype: ''
       },
       form: {
+        projectnum: '',
+        projtype: '',
+        projyear: '',
+        projectnum: '',
+        roletype: '',
         havereport: 0,
         isfindout: 0,
         istransfer: 0,
@@ -290,6 +316,12 @@ export default {
           id: val,
           projTypeName: projtype.join('/')
         })
+        const { project, originConfig } = this
+        this.form.projectnum = project.projectnum
+        this.form.projyear = project.projyear
+        this.form.projlevel = this.project.projlevel && originConfig.projlevel ? originConfig.projlevel[+project.projlevel] : ''
+        this.form.projtype = project.projtype ? project.projTypeName : ''
+        this.form.roletype = projConfig.roleMap[+project.roletype]
         violations.forEach(row => {
           if (row.name === projtype[0]) {
             row.list.forEach(row1 => {
@@ -330,7 +362,6 @@ export default {
     handleSave() {
       const { transferpeople } = this
       const params = Object.assign({}, this.form)
-      console.log(this.form)
       Object.keys(config.tsPeopleMap).forEach(key => {
         if (transferpeople[key]) {
           params.transferpeople[config.tsPeopleMap[key]] = transferpeople[key]
@@ -338,9 +369,18 @@ export default {
           delete params.transferpeople[config.tsPeopleMap[key]]
         }
       })
-      saveResult(params).then(res => {
-        this.$message.success('保存成功')
-        this.$router.push('/result')
+      delete params.projectnum
+      delete params.projtype
+      delete params.projyear
+      delete params.projectnum
+      delete params.roletype
+      this.$refs['form'].validate((valid) => {
+        if (valid) {
+          saveResult(params).then(res => {
+            this.$message.success('保存成功')
+            this.$router.push('/result')
+          })
+        }
       })
     },
     handleSubmit() {
@@ -353,9 +393,18 @@ export default {
           delete params.transferpeople[config.tsPeopleMap[key]]
         }
       })
-      submitResult(params).then(res => {
-        this.$message.success('提交成功')
-        this.$router.push('/result')
+      delete params.projectnum
+      delete params.projtype
+      delete params.projyear
+      delete params.projectnum
+      delete params.roletype
+      this.$refs['form'].validate((valid) => {
+        if (valid) {
+          submitResult(params).then(res => {
+            this.$message.success('提交成功')
+            this.$router.push('/result')
+          })
+        }
       })
     }
   }
