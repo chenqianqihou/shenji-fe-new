@@ -20,10 +20,10 @@
         <el-form-item label="姓名">
           {{ userinfo.name }}
         </el-form-item>
-        <el-form-item label="项目名称" prop="projectid" :rules="[{
+        <el-form-item label="项目名称" prop="projectid" :rules="!readonly ? [{
           required: true,
           message: '项目名称不能为空'
-        }]">
+        }] : []">
           <el-select
             v-model="form.projectid"
             filterable
@@ -34,34 +34,34 @@
             <el-option v-for="item in projectList" :key="item.id" :value="item.id" :label="item.name" />
           </el-select>
         </el-form-item>
-        <el-form-item label="项目编号" prop="projectnum" :rules="[{
+        <el-form-item label="项目编号" prop="projectnum" :rules="!readonly ? [{
           required: true,
           message: '项目编号不能为空'
-        }]">
+        }] : []">
           <el-input v-model="form.projectnum" readonly :disabled="readonly" />
         </el-form-item>
-        <el-form-item label="项目年度" prop="projyear" :rules="[{
+        <el-form-item label="项目年度" prop="projyear" :rules="!readonly ? [{
           required: true,
           message: '项目年度不能为空'
-        }]">
+        }] : []">
           <el-input v-model="form.projyear" readonly :disabled="readonly" />
         </el-form-item>
-        <el-form-item label="项目层级" prop="projlevel" :rules="[{
+        <el-form-item label="项目层级" prop="projlevel" :rules="!readonly ? [{
           required: true,
           message: '项目层级不能为空'
-        }]">
+        }] : []">
           <el-input v-model="form.projlevel" readonly :disabled="readonly" />
         </el-form-item>
-        <el-form-item label="项目类型" prop="projtype" :rules="[{
+        <el-form-item label="项目类型" prop="projtype" :rules="!readonly ? [{
           required: true,
           message: '项目类型不能为空'
-        }]">
+        }] : []">
           <el-input v-model="form.projtype" readonly :disabled="readonly" />
         </el-form-item>
-        <el-form-item label="项目角色" prop="roletype" :rules="[{
+        <el-form-item label="项目角色" prop="roletype" :rules="!readonly ? [{
           required: true,
           message: '项目角色不能为空'
-        }]">
+        }] : []">
           <el-input v-model="form.roletype" readonly :disabled="readonly" />
         </el-form-item>
         <el-form-item label="报告撰写">
@@ -144,7 +144,7 @@
         </el-form-item>
         <el-form-item label="移送处理机关">
           <span v-if="readonly">{{ +form.processorgans ? config.tsOrgMap[+form.processorgans] : '' }}</span>
-          <el-select v-model="form.processorgans" v-else>
+          <el-select v-model="form.processorgans" clearable v-else>
             <el-option v-for="(key, item) in config.tsOrgMap" :key="item" :label="key" :value="item" />
           </el-select>
         </el-form-item>
