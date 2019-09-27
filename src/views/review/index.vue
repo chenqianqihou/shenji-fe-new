@@ -174,7 +174,7 @@
               <el-button
                 size="mini"
                 type="text"
-                v-if="+row.status === 2"
+                v-if="+row.status === 0"
                 @click="$router.push(`/review/result/${row.id}`)"
               >去审核</el-button>
               <span v-else>-</span>
@@ -202,8 +202,8 @@ import { statusMap } from '@/views/result/config'
 import { roleMap } from '@/views/project/config'
 const resultStatus = {
   0: '待审核',
-  1: '通过',
-  2: '驳回'
+  1: '审核通过',
+  2: '审核未通过'
 }
 const queryString = {
   projyear: '',
@@ -263,6 +263,7 @@ export default {
       this.listLoading = true
       fetchList(listQuery).then(res => {
         this.list = res.data.list || []
+        this.list.sort((a, b) => a.status - b.status)
         this.total = +res.data.total
         this.listLoading = false
       })
@@ -288,6 +289,7 @@ export default {
       this.resultListLoading = true
       fetchResultList(resultQuery).then(res => {
         this.resultList = res.data.list || []
+        this.resultList.sort((a, b) => a.status - b.status)
         this.resultTotal = +res.data.total
         this.resultListLoading = false
       })

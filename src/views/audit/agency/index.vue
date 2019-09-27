@@ -164,9 +164,14 @@ export default {
   },
   methods: {
     uploadSuccess() {
-      this.$message.success('导入成功')
-      this.listQuery.start = 0
-      this.getList()
+      const { error, data } = res
+      if (error.returnCode !== 0) {
+        this.$message.error(error.returnMessage)
+      } else {
+        this.$message.success('导入成功')
+        this.listQuery.start = 0
+        this.getList()
+      }
     },
     uploadError(err) {
       console.log(err)

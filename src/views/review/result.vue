@@ -118,8 +118,9 @@
             <el-radio label="2">否</el-radio>
           </el-radio-group>
         </el-form-item>
-        <el-form-item label="移送处理机关">
-          <el-select v-model="form.processorgans" :disabled="readonly">
+        <el-form-item label="移送处理机关">          
+          <span v-if="readonly">{{ +form.processorgans ? config.tsOrgMap[+form.processorgans] : '-' }}</span>
+          <el-select v-model="form.processorgans" v-else>
             <el-option v-for="(key, item) in config.tsOrgMap" :key="item" :label="key" :value="item" />
           </el-select>
         </el-form-item>
@@ -127,7 +128,7 @@
           <span v-if="readonly">{{ form.transferamount }}元</span>
           <el-input v-model="form.transferamount" :disabled="readonly" v-else><template slot="suffix">元</template></el-input>
         </el-form-item>
-        <el-form-item label="送处理人员情况">
+        <el-form-item label="移送处理人员情况">
           <template v-for="(key, item) in config.tsPeopleMap">
             <div :key="item" class="people-area">
               <span class="people-label">{{ key }}</span>
@@ -156,7 +157,8 @@
           </el-radio-group>
         </el-form-item>
         <el-form-item label="评优">
-          <el-select v-model="form.appraisal" :disabled="readonly">
+          <span v-if="readonly">{{ +form.appraisal ? config.evaluationMap[form.appraisal] : '-' }}</span>
+          <el-select v-model="form.appraisal" clearable v-else>
             <el-option v-for="(key, val) in config.evaluationMap" :key="val" :label="key" :value="val" />
           </el-select>
         </el-form-item>
