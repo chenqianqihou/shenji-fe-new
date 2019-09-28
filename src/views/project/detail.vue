@@ -718,6 +718,8 @@ export default {
             pid: +this.groupRow.id
           }
           changeGroup(params).then(res => {
+            this.queryReviewUserList()
+            this.auditGroupVisible = false
             this.$message.success('操作成功')
           })
         }
