@@ -200,3 +200,18 @@ export function getLocationOrg(data) {
     data
   })
 }
+
+export function getAuditGroups(params) {
+  return request({
+    url: '/auditgroup/ids',
+    params
+  })
+}
+
+export function downloadExcel(params) {
+  return request({
+    url: '/project/excel',
+    responseType: 'blob',
+    params
+  })
+}

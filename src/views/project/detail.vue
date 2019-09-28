@@ -266,7 +266,11 @@
         <el-table-column label="人员ID" align="center" prop="pid" show-overflow-tooltip />
         <el-table-column label="成员姓名" align="center" prop="name" show-overflow-tooltip />
         <el-table-column label="性别" align="center" prop="sex" show-overflow-tooltip />
-        <el-table-column label="机构类型" prop="type" align="center" show-overflow-tooltip />
+        <el-table-column label="机构类型" prop="type" align="center" show-overflow-tooltip>
+          <template slot-scope="{ row }">
+            {{ selectConfig.type[+row.type] }}
+          </template>
+        </el-table-column>
         <el-table-column label="所属市县" width="200px" align="center" prop="department" show-overflow-tooltip>
           <template slot-scope="{row}">
             {{ formatArea(row.location) }}
@@ -320,7 +324,7 @@
     >
       <el-form ref="groupForm" :model="groupForm">
         <el-form-item
-          label="审理人数"
+          label="审计组"
           label-width="100px"
           prop="groupids"
           :rules="[{
@@ -328,8 +332,8 @@
             message: '请选择审计组'
           }]"
         >
-          <el-select v-model="groupForm.groupids" multiple>
-            <el-option></el-option>
+          <el-select v-model="groupForm.groupids" multiple style="width: 100%;">
+            <el-option v-for="item in groupList" :key="item" :value="item" :label="`审计组${item}`"></el-option>
           </el-select>
         </el-form-item>
       </el-form>
@@ -395,7 +399,8 @@ import {
   reviewList,
   jugeBind,
   judeUnbind,
-  changeGroup
+  changeGroup,
+  getAuditGroups
 } from "@/api/project"
 import { CodeToText } from 'element-china-area-data'
 const query = {
@@ -467,7 +472,8 @@ export default {
       auditGroupVisible: false,
       groupForm: {
         groupids: []
-      }
+      },
+      groupList: []
     }
   },
   computed: {
@@ -631,13 +637,13 @@ export default {
     queryUserList() {
       const { listQuery } = this
       const params = Object.assign({}, listQuery)
-      let organType = [1]
+      let organType = [3]
       if (params.isinternal === 1) {
         organType.push(2)
         // delete params.isinternal
       }
       if (params.ismedium === 1) {
-        organType.push(3)
+        organType.push(1)
         // delete params.ismedium
       }
       params.organType = organType.join()
@@ -692,16 +698,28 @@ export default {
     },
     handleGroup(row) {
       this.groupRow = row
+      if (row.group && row.group !== "0") {
+        this.groupForm.groupids = row.group.split(',') || []
+      }
+      getAuditGroups({
+        projid: this.projectId
+      }).then(res => {
+        this.groupList = res.data
+      })
       this.auditGroupVisible = true
     },
     handleChangeGroup() {
       this.$refs["groupForm"].validate(valid => {
         if (valid) {
-          const params = Object.assign({}, this.groupForm, {
-            projid: this.projectId,
-            pid: this.groupRow.pid
+          const g = this.groupForm.groupids.map(r => +r)
+          const params = {
+            groupids: g,
+            projid: +this.projectId,
+            pid: +this.groupRow.id
+          }
+          changeGroup(params).then(res => {
+            this.$message.success('操作成功')
           })
-          changeGroup
         }
       })
     },

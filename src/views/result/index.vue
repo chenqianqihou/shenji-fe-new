@@ -65,7 +65,7 @@
           >上传导入</el-button>
         </el-upload>
         <el-button
-          filename="审计成果.xlsx"
+          filename="审计成果模板.xlsx"
           v-download="download"
           class="filter-item"
           icon="el-icon-download"
@@ -160,13 +160,13 @@
 </template>
 
 <script>
-const url = process.env.VUE_APP_BASE_API
 import Pagination from '@/components/Pagination'
 import { fetchList, downloadExcel, deleteResult } from '@/api/result'
 import { selectConfig } from '@/api/project'
 import { statusMap, resultStatus } from './config'
 import { roleMap } from '../project/config'
 import { isArray } from '@/utils'
+const url = process.env.VUE_APP_BASE_API
 const queryString = {
   projectid: '',
   status: '',

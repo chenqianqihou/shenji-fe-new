@@ -94,13 +94,24 @@
           type="primary"
           @click="handleDelete('')"
         >批量删除</el-button>
+        <el-upload
+          class="upload-demo"
+          :action="`${url}/project/excelupload`"
+          :show-file-list="false"
+          :headers="{
+            'AUTHORIZATION': $store.getters.token
+          }"
+          :on-success="handleSuccess"
+          :on-error="uploadError"
+        >
+          <el-button
+            class="filter-item"
+            type="primary"
+          >批量导入</el-button>
+        </el-upload>
         <el-button
-          class="filter-item"
-          type="primary"
-          disabled
-        >批量导入</el-button>
-        <el-button
-          disabled
+          filename="项目模板.xlsx"
+          v-download="download"
           class="filter-item"
           icon="el-icon-download"
         >下载模板</el-button>
@@ -202,8 +213,9 @@
 <script>
 import Pagination from '@/components/Pagination'
 import { getInfo } from '@/api/user'
-import { fetchList, deleteProject, selectConfig, selectList, updateStatus } from '@/api/project'
+import { fetchList, deleteProject, selectConfig, selectList, updateStatus, downloadExcel } from '@/api/project'
 import { statusMap, operateMap } from './config'
+const url = process.env.VUE_APP_BASE_API
 const queryString = {
   projyear: '',
   projlevel: '',
@@ -231,6 +243,7 @@ export default {
       auditForm: {
         num: ''
       },
+      url,
       auditDialogVisible: false,
       showCreate: false
     }
@@ -242,6 +255,9 @@ export default {
     this.queryInfo()
   },
   methods: {
+    download() {
+      return downloadExcel()
+    },
     queryInfo() {
       getInfo().then(res => {
         const { data } = res
@@ -354,6 +370,19 @@ export default {
           this.handleChangeStatusSubmit()
         }
       })
+    },
+    handleSuccess(res) {
+      const { error, data } = res
+      if (error.returnCode !== 0) {
+        this.$message.error(error.returnMessage)
+      } else {
+        this.$message.success('导入成功')
+        this.start = 0
+        this.getList()
+      }
+    },
+    uploadError(err) {
+      console.log(err)
     }
   }
 }
@@ -371,7 +400,11 @@ export default {
     }
   }
   .audit-project-actions {
+    display: flex;
     margin-bottom: 15px;
+    .upload-demo{
+      margin: 0 10px;
+    }
   }
   .full-width {
     width: 100%;
