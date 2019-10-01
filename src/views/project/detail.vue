@@ -9,7 +9,7 @@
           @click="$router.push(`/project/edit/${projectId}`)"
         >项目计划编辑</el-button>
         <el-button
-          v-if="+detail.basic.projectstatus > 0 && +detail.basic.projectstatus < 4"
+          v-if="+detail.basic.projectstatus >= 0 && +detail.basic.projectstatus < 4"
           size="mini"
           :class="`status-btn-${+detail.basic.projectstatus + 1}`"
           @click="changeStatus"
@@ -156,8 +156,8 @@
               </el-table-column>
               <el-table-column label="操作" align="center" width="300">
                 <template slot-scope="{row}" v-if="+detail.basic.projectstatus >= 2">
-                  <el-button size="mini" type="text" @click="handleAuditDelete(row, item.id)" v-if="+row.role !== 1">删除</el-button>
-                  <el-button type="text" size="mini" @click="handleShowRole(row, item.id)" v-if="+row.role !== 1 && +row.typeid === 3">更改角色</el-button>
+                  <el-button size="mini" type="text" @click="handleAuditDelete(row, item.id)" v-if="+row.roletype !== 1">删除</el-button>
+                  <el-button type="text" size="mini" @click="handleShowRole(row, item.id)" v-if="+row.roletype !== 1 && +row.typeid === 3">更改角色</el-button>
                   <el-button
                     v-if="+row.islock === 2"
                     type="text"
@@ -333,7 +333,7 @@
           }]"
         >
           <el-select v-model="groupForm.groupids" multiple style="width: 100%;">
-            <el-option v-for="item in groupList" :key="item" :value="item" :label="`审计组${item}`"></el-option>
+            <el-option v-for="(item, idx) in groupList" :key="item" :value="idx + 1" :label="`审计组${idx + 1}`"></el-option>
           </el-select>
         </el-form-item>
       </el-form>
@@ -665,7 +665,7 @@ export default {
       this.queryUserList()
     },
     handleAuditOpt(row) {
-      if (row.type === "审计机关") {
+      if (+row.type === 3) {
         auditAdd({
           id: this.currentGroudId,
           pid: row.id

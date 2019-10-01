@@ -62,7 +62,11 @@
           <el-table-column label="性别" align="center" prop="sex" />
           <el-table-column label="机构类型" align="center" prop="type" />
           <el-table-column label="所属机构" align="center" prop="location" />
-          <el-table-column label="所属市县" align="center" prop="organization" />
+          <el-table-column label="所属市县" align="center" prop="organization">
+            <template slot-scope="{row}">
+              {{ formatArea(row.organization) }}
+            </template>
+          </el-table-column>
           <el-table-column label="项目角色" align="center" prop="projrole" />
         </el-table>
       </div>
@@ -79,6 +83,7 @@ import {
   props
 } from "../project/config"
 import { reviewInfo, reviewPeople } from '@/api/review'
+import { CodeToText } from 'element-china-area-data'
 export default {
   data() {
     return {
@@ -99,6 +104,15 @@ export default {
     }
   },
   methods: {
+    formatArea(val) {
+      if (!val) return
+      const areaCode = val.split(',')
+      const areas = []
+      areaCode.forEach(row => {
+        areas.push(CodeToText[row])
+      })
+      return areas.join('/')
+    },
     reviewInfo1() {
       if (this.id) {
         reviewInfo({

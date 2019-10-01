@@ -163,7 +163,7 @@ export default {
     this.getList()
   },
   methods: {
-    uploadSuccess() {
+    uploadSuccess(res) {
       const { error, data } = res
       if (error.returnCode !== 0) {
         this.$message.error(error.returnMessage)
