@@ -157,7 +157,7 @@
               <el-table-column label="操作" align="center" width="300">
                 <template slot-scope="{row}" v-if="+detail.basic.projectstatus >= 2">
                   <el-button size="mini" type="text" @click="handleAuditDelete(row, item.id)" v-if="+row.roletype !== 1">删除</el-button>
-                  <el-button type="text" size="mini" @click="handleShowRole(row, item.id)" v-if="+row.roletype !== 1 && +row.typeid === 3">更改角色</el-button>
+                  <el-button type="text" size="mini" @click="handleShowRole(row, item.id)" v-if="+row.roletype !== 1 && +row.type === 3">更改角色</el-button>
                   <el-button
                     v-if="+row.islock === 2"
                     type="text"
@@ -623,6 +623,7 @@ export default {
         id: id
       }).then(res => {
         this.$message.success("删除成功")
+        this.getInfoList()
       })
     },
     closeRoleDialog() {
