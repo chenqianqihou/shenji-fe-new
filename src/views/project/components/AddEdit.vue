@@ -26,17 +26,21 @@
           <span slot="append">天</span>
         </el-input>
       </el-form-item>
-      <el-form-item label="项目年度" prop="projyear" :rules="[{
-        required: true,
-        message: '请选择项目年度'
-      }]">
+      <el-form-item
+        label="项目年度"
+        prop="projyear"
+        :rules="[{
+          required: true,
+          message: '请选择项目年度'
+        }]"
+      >
         <el-date-picker
           v-model="form.projyear"
           type="year"
           placeholder="选择年"
           value-format="yyyy"
-          class="sub-width">
-        </el-date-picker>
+          class="sub-width"
+        />
       </el-form-item>
       <el-form-item
         label="项目描述"
@@ -126,11 +130,16 @@
       <div style="display: flex">
         <div class="sub-label">角色</div>
         <div>
-          <el-form-item label="审计组长" prop="leadernum" :rules="[{
-            required: true,
-            message: '请输入审计组长人数'
-          }]" label-width="150px">
-            <el-input-number v-model="form.leadernum" :min="0" :disabled="!!formId"></el-input-number>
+          <el-form-item
+            label="审计组长"
+            prop="leadernum"
+            :rules="[{
+              required: true,
+              message: '请输入审计组长人数'
+            }]"
+            label-width="150px"
+          >
+            <el-input-number v-model="form.leadernum" :min="0" :disabled="!!formId" />
           </el-form-item>
           <el-form-item
             label="项目类型"
@@ -150,16 +159,21 @@
             </el-select>
           </el-form-item>
           <el-form-item label="组长次数" prop="leader_filternum" label-width="150px">
-            <el-input-number v-model="form.leader_filternum" :min="0" :disabled="!!formId" @change="handleFindTimes(1)"></el-input-number>
+            <el-input-number v-model="form.leader_filternum" :min="0" :disabled="!!formId" @change="handleFindTimes(1)" />
           </el-form-item>
           <el-form-item label="所选条件审计人员数" label-width="150px">
             {{ leaderNum }}
           </el-form-item>
-          <el-form-item label="主审" prop="masternum" :rules="[{
-            required: true,
-            message: '请输入主审人数'
-          }]" label-width="150px">
-            <el-input-number v-model="form.masternum" :min="0" :disabled="!!formId"></el-input-number>
+          <el-form-item
+            label="主审"
+            prop="masternum"
+            :rules="[{
+              required: true,
+              message: '请输入主审人数'
+            }]"
+            label-width="150px"
+          >
+            <el-input-number v-model="form.masternum" :min="0" :disabled="!!formId" />
           </el-form-item>
           <el-form-item
             label="项目类型"
@@ -179,16 +193,21 @@
             </el-select>
           </el-form-item>
           <el-form-item label="主审次数" prop="master_filternum" label-width="150px">
-            <el-input-number v-model="form.master_filternum" :min="0" :disabled="!!formId" @change="handleFindTimes(2)"></el-input-number>
+            <el-input-number v-model="form.master_filternum" :min="0" :disabled="!!formId" @change="handleFindTimes(2)" />
           </el-form-item>
           <el-form-item label="所选条件审计人员数" label-width="150px">
             {{ masterNum }}
           </el-form-item>
-          <el-form-item label="审计成员" prop="auditornum" :rules="[{
-            required: true,
-            message: '请输入审计成员人数'
-          }]" label-width="150px">
-            <el-input-number v-model="form.auditornum" :min="0" :disabled="!!formId"></el-input-number>
+          <el-form-item
+            label="审计成员"
+            prop="auditornum"
+            :rules="[{
+              required: true,
+              message: '请输入审计成员人数'
+            }]"
+            label-width="150px"
+          >
+            <el-input-number v-model="form.auditornum" :min="0" :disabled="!!formId" />
           </el-form-item>
         </div>
       </div>
@@ -209,6 +228,7 @@ export default {
     return {
       form: {
         leadorgan: '',
+        projorgan: '',
         subType: '',
         leader_projtype_sub: '',
         master_projtype_sub: ''
@@ -233,20 +253,19 @@ export default {
     this.getSelectList()
   },
   methods: {
-    handleGetOrg() {
-      const { form: { projlevel, location } } = this
+    async handleGetOrg() {
+      const { form: { projlevel, location }} = this
       if (projlevel && location) {
         const params = {
           projlevel,
           location: location.join()
         }
-        getLocationOrg(params).then(res => {
-          this.orgList = res.data.map(row => {
-            return {
-              value: Object.keys(row)[0],
-              name: Object.values(row)[0]
-            }
-          })
+        const res = await getLocationOrg(params)
+        this.orgList = res.data.map(row => {
+          return {
+            value: +Object.keys(row)[0],
+            name: Object.values(row)[0]
+          }
         })
       }
     },
@@ -265,7 +284,17 @@ export default {
             res.data[key] = +res.data[key]
           }
         })
-        this.form = res.data
+        this.form = Object.assign({}, res.data)
+        if (this.form.location) {
+          this.form.location = res.data.location.split(',')
+        }
+        if (this.form.projorgan) {
+          this.$set(this.form, 'projorgan', +res.data.projorgan)
+        }
+        if (this.form.leadorgan) {
+          this.$set(this.form, 'leadorgan', +res.data.leadorgan)
+        }
+        this.handleGetOrg()
         this.handleChangeOrg()
         this.handleChangeType()
       })
@@ -312,14 +341,15 @@ export default {
         const findItem = organlist.find(row => row.id === +projorgan)
         this.selectList.subOrgList = []
         if (findItem) {
-          findItem.partment.forEach(item => {
-            this.selectList.subOrgList.push({
+          this.selectList.subOrgList = findItem.partment.map(item => {
+            return {
               id: +Object.keys(item)[0],
               name: Object.values(item)[0]
-            })
+            }
           })
         }
       }
+      console.log(this.selectList.subOrgList)
     },
     handleChangeType() {
       const { form: { type, id }} = this
@@ -393,7 +423,7 @@ export default {
           master_filternum
         }
       } = this
-      let params = {
+      const params = {
         type: type
       }
       let willOption = false
