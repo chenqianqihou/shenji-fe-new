@@ -3,7 +3,7 @@
     <div class="assess-content" v-if="!isScoring">
       <template v-if="list.length > 0">
         <div v-for="(item, idx) in list" :key="idx">
-          <h3>审计组{{item.id}}</h3>
+          <h3>审计组{{idx + 1}}</h3>
           <el-table border :data="item.memList" highlight-current-row height="500px" style="width: 100%;">
             <el-table-column label="人员ID" align="center" prop="pnum" show-overflow-tooltip />
             <el-table-column label="成员姓名" align="center" prop="pname" show-overflow-tooltip />
