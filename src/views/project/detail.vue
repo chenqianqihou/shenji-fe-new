@@ -155,9 +155,9 @@
                 <template slot-scope="{row}">{{ roleMap[row.role] }}</template>
               </el-table-column>
               <el-table-column label="操作" align="center" width="300">
-                <template slot-scope="{row}" v-if="+detail.basic.projectstatus >= 2">
-                  <el-button size="mini" type="text" @click="handleAuditDelete(row, item.id)" v-if="+row.roletype !== 1">删除</el-button>
-                  <el-button type="text" size="mini" @click="handleShowRole(row, item.id)" v-if="+row.roletype !== 1 && +row.type === 3">更改角色</el-button>
+                <template slot-scope="{row}" v-if="+detail.basic.projectstatus >= 0">
+                  <el-button size="mini" type="text" @click="handleAuditDelete(row, item.id)" v-if="+row.role !== 1">删除</el-button>
+                  <el-button type="text" size="mini" @click="handleShowRole(row, item.id)" v-if="+row.role !== 1 && +row.type === 3">更改角色</el-button>
                   <el-button
                     v-if="+row.islock === 2"
                     type="text"
@@ -292,7 +292,7 @@
                 'delete-row-class': addUser.indexOf(row.id) > -1
               }"
               @click="handleAuditOpt(row)"
-            >{{ addUser.indexOf(row.id) > -1 ? '解除' : '添加' }}</el-button>
+            >{{ addUser.indexOf(row.id) > -1 || row.curType ? '解除' : '添加' }}</el-button>
             <el-button
               v-if="activeName === 'third'"
               type="text"
@@ -667,12 +667,19 @@ export default {
     },
     handleAuditOpt(row) {
       if (+row.type === 3) {
-        auditAdd({
-          id: this.currentGroudId,
-          pid: row.id
-        }).then(res => {
-          this.$message.success("添加成功")
-        })
+        if (row.curType) {
+          this.handleAuditDelete(row, this.currentGroudId)
+          this.$delete(row, 'curType')
+        } else {
+          auditAdd({
+            id: this.currentGroudId,
+            pid: row.id
+          }).then(res => {
+            this.$message.success("添加成功")
+            this.$set(row, 'curType', 1)
+            // row.curType = 1
+          })
+        }
       } else {
         const idx = this.addUser.indexOf(row.id)
         if (idx > -1) {

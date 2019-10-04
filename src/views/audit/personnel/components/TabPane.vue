@@ -367,7 +367,7 @@ export default {
     checkboxInit(row){
       return +row.status !== 1 ? 1 : 0
     },
-    uploadSuccess() {
+    uploadSuccess(res) {
       const { error, data } = res
       if (error.returnCode !== 0) {
         this.$message.error(error.returnMessage)

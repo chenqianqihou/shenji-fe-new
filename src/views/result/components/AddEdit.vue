@@ -87,10 +87,7 @@
         </el-form-item>
         <h4>审计成果</h4>
         <el-divider />
-        <el-form-item label="查出问题性质" prop="problemid" :rules="[{
-          required: true,
-          message: '查出问题性质不能为空'
-        }]">
+        <el-form-item label="查出问题性质" prop="problemid">
           <el-select v-model="form.problemid" :disabled="readonly">
             <el-option v-for="item in question1List" :key="item.id" :label="item.name" :value="+item.id" />
           </el-select>
