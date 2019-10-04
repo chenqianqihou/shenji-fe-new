@@ -570,7 +570,7 @@ export default {
         operate: +status + 1,
         id: this.projectId
       }
-      if (+status === 3) {
+      if (+params.operate === 3) {
         params.num = this.auditForm.people
       }
       updateStatus(params).then(res => {
