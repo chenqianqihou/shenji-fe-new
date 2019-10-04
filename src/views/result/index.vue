@@ -108,7 +108,7 @@
         </el-table-column>
         <el-table-column label="人员ID" align="center">
           <template slot-scope="{row}">
-            {{ row.people_msg.id }}
+            {{ row.people_msg.pid }}
           </template>
         </el-table-column>
         <el-table-column label="项目角色" align="center">
