@@ -174,7 +174,7 @@
               <el-button
                 size="mini"
                 type="text"
-                v-if="+row.status === 0"
+                v-if="+row.status === 2"
                 @click="$router.push(`/review/result/${row.id}`)"
               >去审核</el-button>
               <span v-else>-</span>
