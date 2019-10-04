@@ -201,9 +201,10 @@ import Pagination from '@/components/Pagination'
 import { statusMap } from '@/views/result/config'
 import { roleMap } from '@/views/project/config'
 const resultStatus = {
-  0: '待审核',
-  1: '审核通过',
-  2: '审核未通过'
+  1: '待提审',
+  2: '待审核',
+  3: '审核通过',
+  4: '审核未通过'
 }
 const queryString = {
   projyear: '',
