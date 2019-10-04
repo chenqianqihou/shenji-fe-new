@@ -145,7 +145,7 @@ export default {
           ptype: this.detail.people.type
         }).then(res => {
           this.$message.success(buttons[+val])
-          this.$router.push('/review/index')
+          this.$router.push('/review/index?tab=1')
         })
       })
     }

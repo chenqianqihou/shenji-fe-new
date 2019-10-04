@@ -38,7 +38,7 @@ const detailMemProps = [{
   value: 'name',
   label: '姓名'
 }, {
-  value: 'id',
+  value: 'pid',
   label: '人员ID'
 }, {
   value: 'projrole',

@@ -1,7 +1,7 @@
 <template>
   <div class="review-card">
-    <el-tabs type="border-card">
-      <el-tab-pane label="项目人员审核">
+    <el-tabs type="border-card" v-model="currentTab">
+      <el-tab-pane label="项目人员审核" name="1">
         <el-form :inline="true" class="filter-container audit-project-filter">
           <el-form-item>
             <el-input
@@ -98,7 +98,7 @@
           @pagination="getList"
         />
       </el-tab-pane>
-      <el-tab-pane label="审计成果审核">
+      <el-tab-pane label="审计成果审核" name="2">
         <el-form :inline="true" class="filter-container audit-project-filter">
           <el-form-item>
             <el-input
@@ -232,11 +232,12 @@ export default {
       originConfig: {},
       statusMap,
       roleMap,
-      resultStatus
+      resultStatus,
+      currentTab: this.$route.query.tab ? this.$route.query.tab : '1'
     }
   },
   components: { Pagination },
-  created() {
+  mounted() {
     Promise.all([this.getSelectConfig()]).then(() => {
       this.getList()
     })

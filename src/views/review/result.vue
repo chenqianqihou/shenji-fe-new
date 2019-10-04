@@ -333,7 +333,7 @@ export default {
           id: this.resultId
         }).then(res => {
           this.$message.success(buttons[+val])
-          this.$router.push('/review/index')
+          this.$router.push('/review/index?tab=2')
         })
       })
     }
