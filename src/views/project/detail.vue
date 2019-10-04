@@ -781,6 +781,7 @@ export default {
           this.addUser = []
           this.showVerify = false
           this.$message.success("提交成功")
+          this.getInfoList()
         })
       }
     },
