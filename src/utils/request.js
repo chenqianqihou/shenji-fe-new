@@ -63,10 +63,12 @@ service.interceptors.response.use(
           })
         })
       } else {
-        Message({
-          message: res.error.returnMessage || 'Error',
-          type: 'error'
-        })
+        if (document.getElementsByClassName('el-message').length === 0) {
+          Message({
+            message: res.error.returnMessage || 'Error',
+            type: 'error'
+          })
+        }
       }
       return Promise.reject(new Error(res.error.returnMessage || 'Error'))
     } else {

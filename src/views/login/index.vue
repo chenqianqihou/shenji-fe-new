@@ -151,7 +151,7 @@ export default {
             .then(() => {
               this.$store.dispatch('user/getInfo')
               this.$store.dispatch('user/getUserConfig')
-              this.$router.push({ path: this.redirect || '/', query: this.otherQuery })
+              this.$router.push({ path: this.redirect || '/profile/index', query: this.otherQuery })
               this.loading = false
             })
             .catch(() => {
