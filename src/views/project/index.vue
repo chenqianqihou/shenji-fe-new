@@ -82,7 +82,6 @@
       </el-form>
       <div class="audit-project-actions">
         <el-button
-          v-if="showCreate"
           class="filter-item"
           type="primary"
           icon="el-icon-plus"
