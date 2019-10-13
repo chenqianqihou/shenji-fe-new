@@ -180,7 +180,6 @@ export default {
       return parseTime(time * 1000, '{y}-{m}-{d}')
     },
     getList() {
-      this.listQuery.start = 0
       const _params = Object.assign({}, this.listQuery)
       this.listLoading = true
       fetchList(_params).then(response => {

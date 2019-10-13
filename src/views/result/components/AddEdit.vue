@@ -288,7 +288,9 @@ export default {
         })
         this.form = Object.assign({}, data, {
           problemid: +data.problemid,
-          problemdetailid: +data.problemdetailid
+          problemdetailid: +data.problemdetailid,
+          processorgans: +data.processorgans || '',
+          appraisal: +data.appraisal || ''
         })
         this.handleChangeProject(data.projectid)
         // this.handleChangeQuestion1(data.problemid)
