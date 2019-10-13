@@ -181,6 +181,9 @@ export default {
     },
     getList() {
       const _params = Object.assign({}, this.listQuery)
+      if (+_params.start > 0) {
+        _params.start = _params.start - 1
+      }
       this.listLoading = true
       fetchList(_params).then(response => {
         this.list = response.data.list
