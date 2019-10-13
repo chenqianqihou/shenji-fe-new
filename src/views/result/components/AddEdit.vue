@@ -287,7 +287,7 @@ export default {
           }
         })
         this.form = Object.assign({}, data, {
-          problemid: +data.problemid,
+          problemid: +data.problemid || '',
           problemdetailid: +data.problemdetailid,
           processorgans: +data.processorgans || '',
           appraisal: +data.appraisal || ''
