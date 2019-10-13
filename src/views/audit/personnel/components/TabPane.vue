@@ -300,6 +300,8 @@ const url = process.env.VUE_APP_BASE_API
 const queryString = {
   query: '',
   status: '',
+  sex: '',
+  education: '',
   page: 1,
   length: 20,
   organization: 2 // +this.$route.query.tab || ''
