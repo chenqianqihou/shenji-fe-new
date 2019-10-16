@@ -589,6 +589,9 @@ export default {
       }).then(res => {
         this.$message.success("操作成功")
         this.getInfoList()
+        if (+opt === 6) {
+          this.queryDetail()
+        }
       })
     },
     handleShowRole(row, id) {

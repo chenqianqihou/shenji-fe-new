@@ -221,7 +221,7 @@
 
 <script>
 import { selectConfig, selectList, createProject, getProjectDetail, updateProject, getProjectTypeNum, getLocationOrg } from '@/api/project'
-import { regionData } from 'element-china-area-data'
+import { regionData, CodeToText } from 'element-china-area-data'
 export default {
   name: 'AddEdit',
   data() {
@@ -269,6 +269,24 @@ export default {
         })
       }
     },
+    getRealLocation(code) {
+      const { districts } = this
+      const realCode = ['520000']
+      districts[0].children.forEach(row => {
+        if (+row.value === +code) {
+          realCode = realCode.concat([row.value])
+        } else {
+          if (row.children && row.children.length > 0) {
+            row.children.forEach(row1 => {
+              if (+row1.value === +code) {
+                realCode = realCode.concat([row.value, row1.value])
+              }
+            })
+          }
+        }
+      })
+      return realCode
+    },
     queryDetail() {
       getProjectDetail({
         id: this.formId
@@ -286,7 +304,11 @@ export default {
         })
         this.form = Object.assign({}, res.data)
         if (this.form.location) {
-          this.form.location = res.data.location.split(',')
+          this.form.location = String(res.data.location).split(',')
+          const location = this.form.location
+          if (location.length === 1 && +location[0] !== 520000) {
+            this.form.location = this.getRealLocation(location[0])
+          }
         }
         if (this.form.projorgan) {
           this.$set(this.form, 'projorgan', +res.data.projorgan)
