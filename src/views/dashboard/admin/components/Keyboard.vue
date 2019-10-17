@@ -27,15 +27,15 @@
           <el-row>
             <el-col :span="8" class="dash-statistic">
               <div class="dash-statistic-title">人员总数</div>
-              <div class="dash-statistic-content">{{ detail.people.total || 0 }}</div>
+              <div class="dash-statistic-content">{{ detail.people && detail.people.total ? detail.people.total : 0 }}</div>
             </el-col>
             <el-col :span="8" class="dash-statistic">
               <div class="dash-statistic-title">在点</div>
-              <div class="dash-statistic-content">{{ detail.people.isjob || 0 }}</div>
+              <div class="dash-statistic-content">{{ detail.people && detail.people.isjob ? detail.people.isjob : 0 }}</div>
             </el-col>
             <el-col :span="8" class="dash-statistic">
               <div class="dash-statistic-title">不在点</div>
-              <div class="dash-statistic-content">{{ detail.people.isnotjob || 0 }}</div>
+              <div class="dash-statistic-content">{{ detail.people && detail.people.isnotjob ? detail.people.isnotjob : 0 }}</div>
             </el-col>
           </el-row>
         </div>
@@ -44,27 +44,27 @@
           <el-row>
             <el-col :span="8" class="dash-statistic">
               <div class="dash-statistic-title">项目数量</div>
-              <div class="dash-statistic-content">{{ detail.project.total || 0 }}</div>
+              <div class="dash-statistic-content">{{ detail.project && detail.project.total ? detail.project.total : 0 }}</div>
             </el-col>
             <el-col :span="8" class="dash-statistic">
               <div class="dash-statistic-title">计划阶段</div>
-              <div class="dash-statistic-content">{{ detail.project.plan || 0 }}</div>
+              <div class="dash-statistic-content">{{ detail.project && detail.project.plan ? detail.project.plan : 0 }}</div>
             </el-col>
             <el-col :span="8" class="dash-statistic">
               <div class="dash-statistic-title">实施阶段</div>
-              <div class="dash-statistic-content">{{ detail.project.doing || 0 }}</div>
+              <div class="dash-statistic-content">{{ detail.project && detail.project.doing ? detail.project.doing : 0 }}</div>
             </el-col>
             <el-col :span="8" class="dash-statistic">
               <div class="dash-statistic-title">审理阶段</div>
-              <div class="dash-statistic-content">{{ detail.project.heard || 0 }}</div>
+              <div class="dash-statistic-content">{{ detail.project && detail.project.heard ? detail.project.heard : 0 }}</div>
             </el-col>
             <el-col :span="8" class="dash-statistic">
               <div class="dash-statistic-title">报告阶段</div>
-              <div class="dash-statistic-content">{{ detail.project.report || 0 }}</div>
+              <div class="dash-statistic-content">{{ detail.project && detail.project.report ? detail.project.report : 0 }}</div>
             </el-col>
             <el-col :span="8" class="dash-statistic">
               <div class="dash-statistic-title">已经结束</div>
-              <div class="dash-statistic-content">{{ detail.project.complete || 0 }}</div>
+              <div class="dash-statistic-content">{{ detail.project && detail.project.complete ? detail.project.complete : 0 }}</div>
             </el-col>
           </el-row>
         </div>
@@ -138,9 +138,11 @@ export default {
           that.form.county = county.value
         } else {
           const city = that.cityJson.find(row => row.label === params.name)
-          that.form.city = city.value
-          // that.handleChangeRegion()
-          that.handleSearch()
+          if (city) {
+            that.form.city = city.value
+            // that.handleChangeRegion()
+            that.handleSearch()
+          }
         }
       })
     },
@@ -148,19 +150,22 @@ export default {
       this.loading = true
       getUserLocation().then(res => {
         const { data } = res
-        if (+data.regnum > 520000) {
-          data.regnum = '52000,' + data.regnum
-        }
-        this.regnum = data.regnum ? data.regnum.split(',') : []
-        this.form.city = this.regnum[1] || ''
-        // this.form.county = this.regnum[2] || ''
-        // this.handleChangeRegion()
-        if (!this.form.city) {
-          this.initChart('guizhou', map)
-          this.initClick()
-          this.queryData()
-        } else {
-          this.handleSearch(true)
+        if (data) {
+          const regnum = ['520000']
+          if (+data.regnum > 520000) {
+            regnum.push(data.regnum)
+          }
+          this.regnum = data.regnum ? regnum : []
+          this.form.city = this.regnum[1] || ''
+          // this.form.county = this.regnum[2] || ''
+          // this.handleChangeRegion()
+          if (!this.form.city) {
+            this.initChart('guizhou', map)
+            this.initClick()
+            this.queryData()
+          } else {
+            this.handleSearch(true)
+          }
         }
         this.loading = false
       })
