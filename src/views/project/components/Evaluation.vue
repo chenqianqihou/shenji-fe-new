@@ -1,9 +1,9 @@
 <template>
   <div class="assess-container">
-    <div class="assess-content" v-if="!isScoring">
+    <div v-if="!isScoring" class="assess-content">
       <template v-if="list.length > 0">
         <div v-for="(item, idx) in list" :key="idx">
-          <h3>审计组{{idx + 1}}</h3>
+          <h3>审计组{{ idx + 1 }}</h3>
           <el-table border :data="item.memList" highlight-current-row height="500px" style="width: 100%;">
             <el-table-column label="人员ID" align="center" prop="pnum" show-overflow-tooltip />
             <el-table-column label="成员姓名" align="center" prop="pname" show-overflow-tooltip />
@@ -28,7 +28,7 @@
               </template>
             </el-table-column>
             <template>
-              <el-table-column label="评分状态" align="center" prop="status" v-if="!isLeader">
+              <el-table-column v-if="!isLeader" label="评分状态" align="center" prop="status">
                 <template slot-scope="{row}">
                   {{ config.scoreMap[row.status] }}
                 </template>
@@ -54,29 +54,29 @@
       </template>
       <div v-else>暂无数据</div>
     </div>
-    <div class="assess-content" v-loading="loading" v-else>
-      <el-page-header @back="goBack"/>
+    <div v-else v-loading="loading" class="assess-content">
+      <el-page-header @back="goBack" />
       <el-row class="userinfo-box">
         <el-col v-for="(item, key) in config.detailMemProps" :key="key" :span="6" class="userinfo-box-col">
           <span class="userinfo-box-label">{{ item.label }}:</span>
           <span class="userinfo-box-value">{{ detail[item.value] || '' }}</span>
         </el-col>
       </el-row>
-      <el-divider></el-divider>
-      <div class="question-title" v-if="+actionRow.typeid === 7">审计组考核</div>
-      <div class="question-box" v-for="(item, idx) in questions" :key="idx">
+      <el-divider />
+      <div v-if="+actionRow.typeid === 7" class="question-title">审计组考核</div>
+      <div v-for="(item, idx) in questions" :key="idx" class="question-box">
         <h4>
           {{ item.title }}
           <span class="question-subtitle-score">{{ [4,5,6].indexOf(+actionRow.typeid) === -1 ? `（${item.score}分）` : '' }}</span>
         </h4>
-        <el-divider></el-divider>
+        <el-divider />
         <div>
           <div v-for="(itm, key) in item.list" :key="key" class="question-box-row">
             <div>{{ key+1 }} . {{ itm.title }} {{ ([4,5,6].indexOf(+actionRow.typeid) === -1 ? `（${itm.score}分）` : '') }}</div>
             <div v-if="[4,5,6].indexOf(+actionRow.typeid) > -1">
               评分：
               <el-select :value="answers[itm.id]" @change="handleChange($event, itm.id)">
-                <el-option v-for="(row, idx) in itm.options" :key="idx" :value="row.score" :label="`${row.name}(${row.score}分)`"></el-option>
+                <el-option v-for="(row, idx) in itm.options" :key="idx" :value="row.score" :label="`${row.name}(${row.score}分)`" />
               </el-select>
             </div>
             <div v-else>
@@ -88,7 +88,7 @@
           <el-row v-if="+actionRow.typeid === 6" :gutter="50">
             <el-col :span="2">备注：</el-col>
             <el-col :span="16">
-              <el-input type="textarea" :rows="4" v-model="answers.remark" @input="handleInput"></el-input>
+              <el-input v-model="answers.remark" type="textarea" :rows="4" @input="handleInput" />
             </el-col>
             <el-col :span="6" class="question-box-other-tip">
               总分： 100
@@ -113,7 +113,7 @@ export default {
   props: {
     projectId: [String, Number]
   },
-  data () {
+  data() {
     return {
       list: [],
       isLeader: 0,
@@ -128,7 +128,7 @@ export default {
       answers: {}
     }
   },
-  created () {
+  created() {
     this.fetchList()
   },
   methods: {
@@ -147,7 +147,7 @@ export default {
       const { actionRow, projectId, config } = this
       assess.fetchForm({
         projectid: projectId,
-        objuid:actionRow.pnum,
+        objuid: actionRow.pnum,
         typeid: actionRow.typeid
       }).then(res => {
         const { content: { question, answer }, userinfo } = res.data
@@ -159,7 +159,7 @@ export default {
         Object.keys(question).forEach(key => {
           let score = 0
           question[key].forEach(row => {
-            let maxRow = row.options.sort((a, b) => b.score - a.score)[0]
+            const maxRow = row.options.sort((a, b) => b.score - a.score)[0]
             row.score = maxRow.score
             score += row.score
           })
@@ -171,7 +171,7 @@ export default {
         })
         Object.keys(answer).forEach(key => {
           if (Array.isArray(answer[key])) {
-            let find = answer[key].find(row => row.selected)
+            const find = answer[key].find(row => row.selected)
             this.$set(this.answers, key, find ? +find.score : '')
           } else {
             this.$set(this.answers, key, answer[key])
@@ -247,7 +247,7 @@ export default {
       const newAnswer = {}
       questions.forEach(question => {
         question.list.forEach(row => {
-          let newVal = answers[row.id]
+          const newVal = answers[row.id]
           newAnswer[row.id] = []
           row.options.forEach(item => {
             if (newVal === item.score) {

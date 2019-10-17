@@ -354,6 +354,9 @@ export default {
               form[row.value] = form[row.value].join()
             }
           })
+          if (form.workbegin && +form.workbegin > 0) {
+            form.workbegin = form.workbegin / 1000
+          }
           let optMethod = createUser
           if (this.$route.params.id) {
             optMethod = updateUser
