@@ -17,7 +17,11 @@
                 {{ selectConfig.type[row.ptype] }}
               </template>
             </el-table-column>
-            <el-table-column label="所属市县" align="center" prop="location" width="300px" show-overflow-tooltip />
+            <el-table-column label="所属市县" align="center" width="300px" show-overflow-tooltip>
+              <template slot-scope="{row}">
+                {{ formatArea(row.location) }}
+              </template>
+            </el-table-column>
             <el-table-column label="项目角色" align="center" prop="projrole" show-overflow-tooltip>
               <template slot-scope="{row}">
                 {{ config.roleMap[row.projrole] }}
