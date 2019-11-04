@@ -3,12 +3,6 @@
     <div class="login-container-inner">
       <div class="description">
         <div>贵州审计资源管理系统</div>
-        <p>坚持科技强审，加强审计信息化建设</p>
-        <p>强化上级审计机关对下级审计机关的领导</p>
-        <p>要加强对内部审计工作的指导和监督</p>
-        <p>调动内部审计和社会审计力量</p>
-        <p>增强审计监督合力</p>
-        <p>构建集中统一、全面覆盖、权威高效的审计监督体系</p>
       </div>
       <el-form ref="loginForm" :model="loginForm" :rules="loginRules" class="login-form" autocomplete="on" label-position="left">
 
