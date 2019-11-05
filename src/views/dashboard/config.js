@@ -22,5 +22,6 @@ export const project = {
   'province': '省厅统一组织',
   'city_local': '市州本级',
   'city_unified': '市州统一组织',
-  'country': '县级'
+  'country': '县级',
+  'province_local': '省厅本级'
 }
