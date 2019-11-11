@@ -2,7 +2,7 @@
   <div class="login-container">
     <div class="login-container-inner">
       <div class="description">
-        <div>贵州审计资源管理系统</div>
+        <center class="description-inner">贵州审计资源管理系统</center>
       </div>
       <el-form ref="loginForm" :model="loginForm" :rules="loginRules" class="login-form" autocomplete="on" label-position="left">
 
@@ -56,7 +56,7 @@
     </div>
     <div class="login-footer">
       <div>技术支持电话：张橹 0851-86615878 袁烨 0851-86617397</div>
-      <div>Copyright © 2019 All right reserved 版权所有 贵州省审计厅</div>
+      <div>Copyright © {{ curYear }} All right reserved 版权所有 贵州省审计厅</div>
     </div>
   </div>
 </template>
@@ -73,6 +73,7 @@ export default {
       }
     }
     return {
+      curYear: (new Date()).getFullYear(),
       loginForm: {
         account: '',
         password: ''
@@ -223,21 +224,28 @@ $light_gray:#eee;
   &-inner {
     background: rgba(255,255,255,0.3);
     position: absolute;
-    top: 50%;
+    top: 50vw;
     width: 100%;
     display: flex;
     padding: 50px 0;
     min-height: 30vw;
-    margin-top: -18vw;
-    justify-content: space-between;
+    margin-top: -43vw;
+    // justify-content: space-between;
 
     .description {
-      margin-left: 35px;
-      div {
+      min-width: 60vw;
+      max-width: 70vw;
+      padding-left: 17vw;
+      margin: 0 auto;
+      .description-inner {
         color: #fbfdfe;
         font-size: 3vw;
         text-shadow: black 0.1em 0.1em 0.2em;
         font-weight: 500;
+        position: absolute;
+        top: 11vw;
+        // text-align: center;
+        // margin-left: -3vw;
       }
       p {
         color: #063a87;
@@ -256,6 +264,7 @@ $light_gray:#eee;
     max-width: 40vw;
     padding: 0 35px;
     overflow: hidden;
+    margin-top: 1vw;
     .login-btn {
       height: 2.5vw;
       background: #0d6dff;
