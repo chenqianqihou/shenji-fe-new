@@ -631,9 +631,16 @@ export default {
   .audit-personnel-left {
     width: 240px;
     border-right: 1px solid #eeeeee;
-    .tree-class{
+    /deep/.el-tree{
       width: 100%;
       overflow-x: auto;
+    }
+    /deep/.el-tree > .el-tree-node{
+      display: inline-block !important;
+      padding-right: 10px;
+    }
+    .tree-class{
+      width: 100%;
       .custom-tree-node {
         font-size: 14px;
         .tree-button {
