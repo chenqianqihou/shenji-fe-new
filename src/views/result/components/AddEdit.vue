@@ -24,11 +24,11 @@
           required: true,
           message: '项目名称不能为空'
         }] : []">
+          <span v-if="readonly">{{ form.name }}</span>
           <el-select
             v-model="form.projectid"
             filterable
-            :disabled="readonly"
-            placeholder=""
+            v-else
             @change="handleChangeProject"
           >
             <el-option v-for="item in projectList" :key="item.id" :value="item.id" :label="item.name" />
@@ -277,6 +277,7 @@ export default {
         id: this.resultId
       }).then(res => {
         const { data } = res
+        const { violations } = this
         this.userinfo = data.people_msg
         if (data.transferpeople) {
           data.transferpeople = JSON.parse(data.transferpeople)
@@ -286,13 +287,41 @@ export default {
             this.$set(this.transferpeople, key, data.transferpeople[config.tsPeopleMap[key]])
           }
         })
-        this.form = Object.assign({}, data, {
+        const projtype = data.project_msg.projtype ? JSON.parse(data.project_msg.projtype) : data.project_msg.projtype
+        this.form = Object.assign({}, data, data.project_msg, {
           problemid: +data.problemid || '',
           problemdetailid: +data.problemdetailid,
           processorgans: +data.processorgans || '',
-          appraisal: +data.appraisal || ''
+          appraisal: +data.appraisal || '',
+          projtype: Array.isArray(projtype) ? projtype.join('/') : projtype
         })
-        this.handleChangeProject(data.projectid)
+        if (!this.readonly) {
+          this.form = Object.assign({}, data, {
+            problemid: +data.problemid || '',
+            problemdetailid: +data.problemdetailid,
+            processorgans: +data.processorgans || '',
+            appraisal: +data.appraisal || ''
+          })
+          this.handleChangeProject(data.projectid)
+        } else {
+          const projtype = data.project_msg.projtype ? JSON.parse(data.project_msg.projtype) : data.project_msg.projtype
+          this.form = Object.assign({}, data, data.project_msg, {
+            problemid: +data.problemid || '',
+            problemdetailid: +data.problemdetailid,
+            processorgans: +data.processorgans || '',
+            appraisal: +data.appraisal || '',
+            projtype: Array.isArray(projtype) ? projtype.join('/') : projtype
+          })
+          violations.forEach(row => {
+            if (row.name === projtype[0]) {
+              row.list.forEach(row1 => {
+                if (row1.name === projtype[1]) {
+                  this.question1List = row1.list || []
+                }
+              })
+            }
+          })
+        }
         // this.handleChangeQuestion1(data.problemid)
         this.loading = false
       })

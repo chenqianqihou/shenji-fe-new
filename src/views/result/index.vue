@@ -222,7 +222,6 @@ export default {
       const _params = Object.assign({}, this.listQuery)
       this.listLoading = true
       fetchList(_params).then(response => {
-        console.log(response)
         this.list = isArray(response.data.list) ? response.data.list : Object.values(response.data.list)
         this.total = +response.data.total
         this.listLoading = false
