@@ -277,7 +277,7 @@ export default {
         id: this.resultId
       }).then(res => {
         const { data } = res
-        const { violations } = this
+        const { violations, originConfig } = this
         this.userinfo = data.people_msg
         if (data.transferpeople) {
           data.transferpeople = JSON.parse(data.transferpeople)
@@ -312,6 +312,7 @@ export default {
             appraisal: +data.appraisal || '',
             projtype: Array.isArray(projtype) ? projtype.join('/') : projtype
           })
+          this.form.projlevel = this.form.projlevel && originConfig.projlevel ? originConfig.projlevel[+this.form.projlevel] : ''
           violations.forEach(row => {
             if (row.name === projtype[0]) {
               row.list.forEach(row1 => {
