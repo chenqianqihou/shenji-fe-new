@@ -304,7 +304,7 @@ export default {
           })
           this.handleChangeProject(data.projectid)
         } else {
-          const projtype = data.project_msg.projtype ? JSON.parse(data.project_msg.projtype) : data.project_msg.projtype
+          const roletype = data.peopleproject.roletype
           this.form = Object.assign({}, data, data.project_msg, {
             problemid: +data.problemid || '',
             problemdetailid: +data.problemdetailid,
@@ -313,6 +313,7 @@ export default {
             projtype: Array.isArray(projtype) ? projtype.join('/') : projtype
           })
           this.form.projlevel = this.form.projlevel && originConfig.projlevel ? originConfig.projlevel[+this.form.projlevel] : ''
+          this.form.roletype = projConfig.roleMap[+roletype]
           violations.forEach(row => {
             if (row.name === projtype[0]) {
               row.list.forEach(row1 => {
