@@ -9,11 +9,10 @@ export function fetchList(data) {
 }
 
 
-export function downloadData(data) {
+export function downloadData(params) {
   return request({
     url: '/auditresults/search',
-    method: 'post',
-    data
+    params
   })
 }
 
