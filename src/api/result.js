@@ -8,6 +8,15 @@ export function fetchList(data) {
   })
 }
 
+
+export function downloadData(data) {
+  return request({
+    url: '/auditresults/search',
+    method: 'post',
+    data
+  })
+}
+
 export function downloadExcel() {
   return request({
     url: '/auditresults/excel',
