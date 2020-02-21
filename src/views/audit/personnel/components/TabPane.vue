@@ -177,6 +177,14 @@
           icon="el-icon-download"
           :filename="+type === 3 ? '审计机关.xlsx': '第三方人员.xlsx'"
         >下载模板</el-button>
+        <el-button
+          v-waves
+          v-download="handleFetchDownload"
+          class="filter-item"
+          icon="el-icon-download"
+          type="danger"
+          :filename="+type === 3 ? '审计机关人员列表.xlsx': (+type === 2 ? '内审机构人员列表.xlsx' : '中介机构人员列表.xlsx')"
+        >导出</el-button>
       </div>
 
       <el-table
@@ -290,7 +298,7 @@
 </template>
 
 <script>
-import { fetchList, deleteUser, updateUserRole, resetPwd, downloadOrgUser, downloadThirdUser } from '@/api/user'
+import { fetchList, fetchDownload, deleteUser, updateUserRole, resetPwd, downloadOrgUser, downloadThirdUser } from '@/api/user'
 import { getOrgTree, createByName, updateOrg, deleteOrg } from '@/api/org'
 import waves from '@/directive/waves' // waves directive
 import { parseTime } from '@/utils'
@@ -551,6 +559,24 @@ export default {
         this.total = +response.data.total
         this.listLoading = false
       })
+    },
+    handleFetchDownload() {
+      const _params = Object.assign({}, this.listQuery, {
+        type: [1, 2, 3].includes(+this.$route.query.tab) ? +this.$route.query.tab : +this.type
+      })
+      if (_params.organid >= 520000) {
+        _params.regnum = _params.organid
+        delete _params.organid
+      }
+      if (_params.date) {
+        if (_params.date[0]) _params.auditbeginleft = Math.floor(_params.date[0]/1000)
+        if (_params.date[1]) _params.auditbeginright = Math.floor(_params.date[1]/1000)
+      }
+      delete _params.date
+      delete _params.organization
+      delete _params.page
+      delete _params.length
+      return fetchDownload(_params)
     },
     handleFilter() {
       this.listQuery.page = 1

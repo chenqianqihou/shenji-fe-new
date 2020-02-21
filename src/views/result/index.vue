@@ -70,6 +70,13 @@
           class="filter-item"
           icon="el-icon-download"
         >下载模板</el-button>
+        <el-button
+          filename="审计成果列表.xlsx"
+          v-download="getDownload"
+          class="filter-item"
+          type="danger"
+          icon="el-icon-download"
+        >导出</el-button>
       </div>
 
       <el-table
@@ -161,7 +168,7 @@
 
 <script>
 import Pagination from '@/components/Pagination'
-import { fetchList, downloadExcel, deleteResult } from '@/api/result'
+import { fetchList, fetchDownload, downloadExcel, deleteResult } from '@/api/result'
 import { selectConfig } from '@/api/project'
 import { statusMap, resultStatus } from './config'
 import { roleMap } from '../project/config'
@@ -226,6 +233,12 @@ export default {
         this.total = +response.data.total
         this.listLoading = false
       })
+    },
+    getDownload() {
+      const _params = Object.assign({}, this.listQuery)
+      delete _params.start
+      delete _params.length
+      return fetchDownload(_params)
     },
     handleFilter() {
       this.listQuery.start = 0

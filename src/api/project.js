@@ -7,6 +7,14 @@ export function fetchList(params) {
   })
 }
 
+export function fetchDownload(params) {
+  return request({
+    url: '/project/download',
+    responseType: 'blob',
+    params
+  })
+}
+
 export function deleteProject(data) {
   return request({
     url: '/project/delete',

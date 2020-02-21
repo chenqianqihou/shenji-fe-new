@@ -114,6 +114,13 @@
           class="filter-item"
           icon="el-icon-download"
         >下载模板</el-button>
+        <el-button
+          filename="项目列表.xlsx"
+          v-download="getDownload"
+          class="filter-item"
+          type="danger"
+          icon="el-icon-download"
+        >导出</el-button>
       </div>
 
       <el-table
@@ -212,7 +219,7 @@
 <script>
 import Pagination from '@/components/Pagination'
 import { getInfo } from '@/api/user'
-import { fetchList, deleteProject, selectConfig, selectList, updateStatus, downloadExcel } from '@/api/project'
+import { fetchList, fetchDownload, deleteProject, selectConfig, selectList, updateStatus, downloadExcel } from '@/api/project'
 import { statusMap, operateMap } from './config'
 const url = process.env.VUE_APP_BASE_API
 const queryString = {
@@ -311,6 +318,12 @@ export default {
         this.total = +response.data.total
         this.listLoading = false
       })
+    },
+    getDownload() {
+      const _params = Object.assign({}, this.listQuery)
+      delete _params.page
+      delete _params.length
+      return fetchDownload(_params)
     },
     handleDelete(row = '') {
       const rows = row ? [row.id] : this.checkedOptions.map(row => row.id)

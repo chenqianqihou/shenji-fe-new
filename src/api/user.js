@@ -34,6 +34,14 @@ export function fetchList(data) {
   })
 }
 
+export function fetchDownload(params) {
+  return request({
+    url: '/user/download',
+    responseType: 'blob',
+    params
+  })
+}
+
 // 获取配置信息
 export function getUserConfig() {
   return request({

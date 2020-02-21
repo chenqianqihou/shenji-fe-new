@@ -9,9 +9,10 @@ export function fetchList(data) {
 }
 
 
-export function downloadData(params) {
+export function fetchDownload(params) {
   return request({
-    url: '/auditresults/search',
+    url: '/auditresults/download',
+    responseType: 'blob',
     params
   })
 }

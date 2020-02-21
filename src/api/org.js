@@ -69,3 +69,11 @@ export function downloadOrg(params) {
     params
   })
 }
+
+export function fetchDownload(params) {
+  return request({
+    url: '/organization/download',
+    responseType: 'blob',
+    params
+  })
+}

@@ -70,6 +70,13 @@
           icon="el-icon-download"
           filename="机构.xlsx"
         >下载模板</el-button>
+        <el-button
+          v-download="handleDownloadList"
+          class="filter-item"
+          icon="el-icon-download"
+          type="danger"
+          filename="机构列表.xlsx"
+        >下载模板</el-button>
       </div>
 
       <el-table
@@ -136,7 +143,7 @@
 
 <script>
 import Pagination from '@/components/Pagination'
-import { fetchList, deleteOrg, downloadOrg } from '@/api/org'
+import { fetchList, fetchDownload, deleteOrg, downloadOrg } from '@/api/org'
 import { parseTime } from '@/utils'
 
 const url = process.env.VUE_APP_BASE_API
@@ -190,6 +197,12 @@ export default {
         this.total = +response.data.total
         this.listLoading = false
       })
+    },
+    handleDownloadList() {
+      const _params = Object.assign({}, this.listQuery)
+      delete _params.start
+      delete _params.length
+      return fetchDownload(_params)
     },
     handleDelete(row = '') {
       const rows = row ? [row.id] : this.checkedOptions.map(row => row.id)
