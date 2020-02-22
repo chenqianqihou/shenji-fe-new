@@ -8,7 +8,6 @@ export function fetchList(data) {
   })
 }
 
-
 export function fetchDownload(params) {
   return request({
     url: '/auditresults/download',

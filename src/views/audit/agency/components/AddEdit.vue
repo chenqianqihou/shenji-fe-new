@@ -74,7 +74,7 @@
 import { createOrg, updateOrg, getOrgDetail } from '@/api/org'
 import { tagList, props } from '../config'
 // import { isArray } from '@/utils/index'
-import { regionData } from 'element-china-area-data'
+import { regionData } from '@/utils/china-area'
 
 export default {
   name: 'AddEdit',

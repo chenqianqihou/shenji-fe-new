@@ -30,7 +30,7 @@ import { getInfo } from '@/api/user'
 import { getOrgListByType } from '@/api/org'
 import { tagList, props } from '../config'
 import { isArray, parseTime } from '@/utils/index'
-import { CodeToText } from 'element-china-area-data'
+import { CodeToText } from '@/utils/china-area'
 
 export default {
   data() {

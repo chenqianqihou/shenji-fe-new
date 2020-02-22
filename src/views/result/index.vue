@@ -65,14 +65,14 @@
           >上传导入</el-button>
         </el-upload>
         <el-button
-          filename="审计成果模板.xlsx"
           v-download="download"
+          filename="审计成果模板.xlsx"
           class="filter-item"
           icon="el-icon-download"
         >下载模板</el-button>
         <el-button
-          filename="审计成果列表.xlsx"
           v-download="getDownload"
+          filename="审计成果列表.xlsx"
           class="filter-item"
           type="danger"
           icon="el-icon-download"
@@ -87,7 +87,7 @@
         style="width: 100%"
         @selection-change="handleSelectionChange"
       >
-        <el-table-column type="selection" align="center" :selectable='checkboxInit' />
+        <el-table-column type="selection" align="center" :selectable="checkboxInit" />
         <el-table-column label="项目编号" align="center">
           <template slot-scope="{row}">
             {{ row.project_msg.projectnum }}
@@ -200,7 +200,7 @@ export default {
     this.getSelectConfig()
   },
   methods: {
-    checkboxInit(row){
+    checkboxInit(row) {
       return +row.status !== 2 ? 1 : 0
     },
     handleSelectionChange(rows) {

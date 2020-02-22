@@ -79,7 +79,7 @@ import resize from "./mixins/resize"
 import axios from 'axios'
 import map from "@/utils/guizhou.json"
 import { getUserLocation, getAll } from '@/api/home'
-import { regionData } from 'element-china-area-data'
+import { regionData } from '@/utils/china-area'
 const guizhouData = regionData.find(row => +row.value === 520000)
 
 export default {

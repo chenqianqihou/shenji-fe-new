@@ -221,7 +221,7 @@
 
 <script>
 import { selectConfig, selectList, createProject, getProjectDetail, updateProject, getProjectTypeNum, getLocationOrg } from '@/api/project'
-import { regionData, CodeToText } from 'element-china-area-data'
+import { regionData, CodeToText } from '@/utils/china-area'
 export default {
   name: 'AddEdit',
   data() {

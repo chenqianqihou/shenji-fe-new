@@ -108,7 +108,7 @@
 import * as assess from '@/api/assess'
 import * as config from '../config'
 import { getOrgListByType } from '@/api/org'
-import { CodeToText } from 'element-china-area-data'
+import { CodeToText } from '@/utils/china-area'
 export default {
   props: {
     projectId: [String, Number]

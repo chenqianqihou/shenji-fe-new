@@ -111,7 +111,7 @@ import { getOrgListByType } from '@/api/org'
 import { createUser, getUserDetail, updateUser } from '@/api/user'
 import { tagList, props } from '../config'
 // import { isArray } from '@/utils/index'
-import { regionData } from 'element-china-area-data'
+import { regionData } from '@/utils/china-area'
 
 const qualiArray = [
   {

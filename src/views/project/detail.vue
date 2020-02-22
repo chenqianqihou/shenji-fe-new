@@ -402,7 +402,7 @@ import {
   changeGroup,
   getAuditGroups
 } from "@/api/project"
-import { CodeToText } from 'element-china-area-data'
+import { CodeToText } from '@/utils/china-area'
 const query = {
   page: 1,
   length: 10,

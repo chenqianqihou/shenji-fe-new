@@ -109,14 +109,14 @@
           >批量导入</el-button>
         </el-upload>
         <el-button
-          filename="项目模板.xlsx"
           v-download="download"
+          filename="项目模板.xlsx"
           class="filter-item"
           icon="el-icon-download"
         >下载模板</el-button>
         <el-button
-          filename="项目列表.xlsx"
           v-download="getDownload"
+          filename="项目列表.xlsx"
           class="filter-item"
           type="danger"
           icon="el-icon-download"
@@ -205,7 +205,7 @@
             message: '请填写审理人数'
           }]"
         >
-          <el-input v-model="auditForm.num" type="number"></el-input>
+          <el-input v-model="auditForm.num" type="number" />
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -268,7 +268,7 @@ export default {
       getInfo().then(res => {
         const { data } = res
         if (data.role && data.role.length > 0) {
-          this.showCreate = data.role.includes("2")
+          this.showCreate = data.role.includes('2')
         }
       })
     },

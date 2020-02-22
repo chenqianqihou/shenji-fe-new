@@ -3,11 +3,11 @@
     <div class="audit-personnel-left">
       <el-tree
         v-if="+type === 3"
+        ref="leftTree"
         :data="treeData"
         :props="defaultProps"
         class="tree-class"
         node-key="id"
-        ref="leftTree"
         highlight-current
         :default-expanded-keys="wtTreeNodeId ? defaultExpandKeys : []"
         :current-node-key="wtTreeNodeId ? String(wtTreeNodeId) : 'type-3'"
@@ -31,10 +31,10 @@
       </el-tree>
       <el-tree
         v-else
+        ref="leftTree"
         :data="treeData"
         :props="defaultProps"
         class="tree-class"
-        ref="leftTree"
         node-key="id"
         highlight-current
         :current-node-key="wtTreeNodeId ? String(wtTreeNodeId) : `type-${$route.query.tab || 2}`"
@@ -44,7 +44,7 @@
       />
     </div>
     <div style="flex: 1;margin-left: 20px;overflow:auto;">
-      <el-form :inline="true" :model="listQuery" class="filter-container audit-personnel-filter" ref="filterForm">
+      <el-form ref="filterForm" :inline="true" :model="listQuery" class="filter-container audit-personnel-filter">
         <el-form-item label="查询条件" prop="query">
           <el-input
             v-model="listQuery.query"
@@ -127,8 +127,8 @@
               value-format="timestamp"
               range-separator="-"
               start-placeholder="开始月份"
-              end-placeholder="结束月份">
-            </el-date-picker>
+              end-placeholder="结束月份"
+            />
           </el-form-item>
         </template>
         <el-button
@@ -196,7 +196,7 @@
         style="width: 100%"
         @selection-change="handleSelectionChange"
       >
-        <el-table-column type="selection" align="center" :selectable='checkboxInit' />
+        <el-table-column type="selection" align="center" :selectable="checkboxInit" />
         <el-table-column label="姓名" align="center" prop="name" />
         <el-table-column label="人员ID" prop="pid" align="center" width="200" />
         <el-table-column label="性别" align="center" prop="sex">
@@ -374,7 +374,7 @@ export default {
     this.getList()
   },
   methods: {
-    checkboxInit(row){
+    checkboxInit(row) {
       return +row.status !== 1 ? 1 : 0
     },
     uploadSuccess(res) {
@@ -548,8 +548,8 @@ export default {
         delete _params.organid
       }
       if (_params.date) {
-        if (_params.date[0]) _params.auditbeginleft = Math.floor(_params.date[0]/1000)
-        if (_params.date[1]) _params.auditbeginright = Math.floor(_params.date[1]/1000)
+        if (_params.date[0]) _params.auditbeginleft = Math.floor(_params.date[0] / 1000)
+        if (_params.date[1]) _params.auditbeginright = Math.floor(_params.date[1] / 1000)
       }
       delete _params.date
       delete _params.organization
@@ -569,8 +569,8 @@ export default {
         delete _params.organid
       }
       if (_params.date) {
-        if (_params.date[0]) _params.auditbeginleft = Math.floor(_params.date[0]/1000)
-        if (_params.date[1]) _params.auditbeginright = Math.floor(_params.date[1]/1000)
+        if (_params.date[0]) _params.auditbeginleft = Math.floor(_params.date[0] / 1000)
+        if (_params.date[1]) _params.auditbeginright = Math.floor(_params.date[1] / 1000)
       }
       delete _params.date
       delete _params.organization

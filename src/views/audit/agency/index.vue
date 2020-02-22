@@ -76,7 +76,7 @@
           icon="el-icon-download"
           type="danger"
           filename="机构列表.xlsx"
-        >下载模板</el-button>
+        >导出</el-button>
       </div>
 
       <el-table

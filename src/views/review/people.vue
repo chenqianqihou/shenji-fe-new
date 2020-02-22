@@ -83,7 +83,7 @@ import {
   props
 } from "../project/config"
 import { reviewInfo, reviewPeople } from '@/api/review'
-import { CodeToText } from 'element-china-area-data'
+import { CodeToText } from '@/utils/china-area'
 export default {
   data() {
     return {
