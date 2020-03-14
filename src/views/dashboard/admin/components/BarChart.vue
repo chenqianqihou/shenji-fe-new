@@ -18,6 +18,10 @@ export default {
     className: {
       type: String,
       default: "chart"
+    },
+    cityCode: {
+      type: String,
+      default: null
     }
   },
   data() {
@@ -37,11 +41,18 @@ export default {
     this.chart.dispose()
     this.chart = null
   },
+  watch: {
+    cityCode() {
+      this.queryData()
+    }
+  },
   methods: {
     queryData() {
       this.data = {}
       this.chartData = []
-      getProject().then(res => {
+      getProject({
+        city: this.cityCode
+      }).then(res => {
         this.data = res.data
         const { list } = this.data
         Object.keys(list).forEach(key => {

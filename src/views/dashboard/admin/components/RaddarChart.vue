@@ -26,6 +26,10 @@ export default {
     height: {
       type: String,
       default: "100%"
+    },
+    cityCode: {
+      type: String,
+      default: null
     }
   },
   data() {
@@ -45,11 +49,18 @@ export default {
     this.chart.dispose()
     this.chart = null
   },
+  watch: {
+    cityCode() {
+      this.queryData()
+    }
+  },
   methods: {
     queryData() {
       this.data = {}
       this.chartData = []
-      getExpertise().then(res => {
+      getExpertise({
+        city: this.cityCode
+      }).then(res => {
         this.data = res.data
         const { list } = this.data
         Object.keys(list).forEach(key => {

@@ -33,6 +33,10 @@ export default {
     height: {
       type: String,
       default: '320px'
+    },
+    cityCode: {
+      type: String,
+      default: null
     }
   },
   data() {
@@ -53,11 +57,18 @@ export default {
     this.chart.dispose()
     this.chart = null
   },
+  watch: {
+    cityCode() {
+      this.queryData()
+    }
+  },
   methods: {
     queryData() {
       this.data = {}
       this.chartData = []
-      getSex().then(res => {
+      getSex({
+        city: this.cityCode
+      }).then(res => {
         this.data = res.data
         const { data } = this
         const { age } = this.data

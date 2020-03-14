@@ -182,6 +182,7 @@ export default {
     handleSearch(first = false) {
       const { form: { city }} = this
       if (city) {
+        this.$emit('on-chart-click', city)
         const url = `/map/${city}_full.json`
         axios({
           url: url
@@ -199,6 +200,7 @@ export default {
       this.form.county = ''
       this.countyJson = []
       this.initChart('guizhou', map)
+      this.$emit('on-chart-click', '')
       this.queryData()
     },
     handleChangeRegion() {
