@@ -354,7 +354,7 @@ export default {
               form[row.value] = form[row.value].join()
             }
           })
-          if (form.workbegin && +form.workbegin > 0) {
+          if (form.workbegin && +form.workbegin > 0 && String(form.workbegin).length === 13) {
             form.workbegin = form.workbegin / 1000
           }
           let optMethod = createUser
