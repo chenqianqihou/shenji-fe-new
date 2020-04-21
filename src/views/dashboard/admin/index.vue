@@ -1,26 +1,26 @@
 <template>
   <div class="dashboard-editor-container">
     <div style="background:#fff;padding:0 16px 0 16px;margin-bottom:32px;height: 40vw;min-height:700px;">
-      <chart height="100%" width="100%" />
+      <chart height="100%" width="100%" @on-chart-click="handleChangeCity" />
     </div>
 
     <el-row :gutter="32">
       <el-col :xs="24" :sm="24" :lg="8">
         <div class="chart-wrapper">
           <div class="dashboard-chart-title">审计特长</div>
-          <raddar-chart />
+          <raddar-chart :city-code="cityCode" />
         </div>
       </el-col>
       <el-col :xs="24" :sm="24" :lg="8">
         <div class="chart-wrapper">
           <div class="dashboard-chart-title">年龄性别</div>
-          <pie-chart />
+          <pie-chart :city-code="cityCode" />
         </div>
       </el-col>
       <el-col :xs="24" :sm="24" :lg="8">
         <div class="chart-wrapper">
           <div class="dashboard-chart-title">项目类型</div>
-          <bar-chart />
+          <bar-chart :city-code="cityCode" />
         </div>
       </el-col>
     </el-row>
@@ -63,12 +63,16 @@ export default {
   },
   data() {
     return {
-      lineChartData: lineChartData.newVisitis
+      lineChartData: lineChartData.newVisitis,
+      cityCode: null
     }
   },
   methods: {
     handleSetLineChartData(type) {
       this.lineChartData = lineChartData[type]
+    },
+    handleChangeCity(code = null) {
+      this.cityCode = code
     }
   }
 }
