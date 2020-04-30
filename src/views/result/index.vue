@@ -25,6 +25,23 @@
               <el-option v-for="(item, key) in resultStatus" :key="item" :value="key" :label="item" />
             </el-select>
           </el-form-item>
+          <el-form-item label="人名">
+            <el-input
+              v-model="listQuery.name"
+              placeholder="请输入人名"
+              style="width: 200px"
+              class="filter-item"
+            />
+          </el-form-item>
+          <el-form-item label="项目年度">
+            <el-select
+              v-model="listQuery.year"
+              placeholder="请选择项目年度"
+              style="width: 200px"
+              class="filter-item">
+              <el-option v-for="(item, idx) in originConfig.projyear" :key="idx" :value="item" :label="item" />
+            </el-select>
+          </el-form-item>
           <el-button
             class="filter-item"
             type="primary"
@@ -178,7 +195,10 @@ const queryString = {
   projectid: '',
   status: '',
   start: 0,
-  length: 20
+  length: 20,
+  unit: null,
+  name: null,
+  year: null
 }
 export default {
   components: { Pagination },
@@ -193,7 +213,8 @@ export default {
       originConfig: {},
       url,
       resultStatus,
-      checkedOptions: []
+      checkedOptions: [],
+      orgList: []
     }
   },
   created() {
@@ -216,14 +237,14 @@ export default {
       values.forEach((row, idx) => {
         this.originConfig[keys[idx]] = {}
         row.forEach(r => {
-          let item
           if (typeof r === 'object') {
             this.originConfig[keys[idx]][Object.keys(r)[0]] = Object.values(r)[0]
           }
         })
-        this.listQuery.start = 0
-        this.getList()
       })
+      this.originConfig.projyear = res.data.projyear || []
+      this.listQuery.start = 0
+      this.getList()
     },
     getList() {
       const _params = Object.assign({}, this.listQuery)
@@ -304,6 +325,9 @@ export default {
   }
   .full-width {
     width: 100%;
+  }
+  .el-button + .el-button {
+    margin-left: 0 !important;
   }
 }
 </style>

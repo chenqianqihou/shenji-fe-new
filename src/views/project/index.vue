@@ -49,6 +49,18 @@
             <el-option v-for="(item, idx) in selectConfig.internal" :key="idx" :value="item.value" :label="item.label" />
           </el-select>
         </el-form-item>
+        <el-form-item label="项目单位">
+          <el-select
+            v-model="listQuery.unit"
+            placeholder="请选择项目单位"
+            clearable
+            filterable
+            style="width: 200px"
+            class="filter-item"
+          >
+            <el-option v-for="(item, key) in selectList.organlist" :key="key" :value="item.id" :label="item.name" />
+          </el-select>
+        </el-form-item>
         <div>
           <el-form-item label="项目阶段">
             <el-select
@@ -230,7 +242,8 @@ const queryString = {
   projstage: '',
   query: '',
   length: 20,
-  page: 1
+  page: 1,
+  unit: ''
 }
 export default {
   components: { Pagination },
