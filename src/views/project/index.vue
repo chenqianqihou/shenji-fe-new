@@ -52,9 +52,10 @@
         <el-form-item label="项目单位">
           <el-select
             v-model="listQuery.unit"
-            placeholder="请选择项目单位"
+            placeholder="请输入项目单位"
             clearable
             filterable
+            remote
             style="width: 200px"
             class="filter-item"
           >
