@@ -55,7 +55,7 @@
                 value-format="timestamp"
                 placeholder="请选择"
               />
-              <el-input-number v-else-if="item.type === 'inputnumber'" v-model="form[item.value]" controls-position="right" :min="0" @change="handleChangeNum(item.value, item.depend)" />
+              <el-input-number v-else-if="item.type === 'inputnumber'" v-model="form[item.value]" controls-position="right" :min="0" @change="handleChangeNum(arguments, item.depend)" />
               <el-input v-else-if="!!item.sum" v-model="form[item.value]" readonly />
               <el-input v-else v-model="form[item.value]" :type="item.type==='number' ? 'number' : 'text'" />
             </el-form-item>
@@ -119,9 +119,12 @@ export default {
         callback()
       }
     },
-    handleChangeNum(value, depend) {
+    handleChangeNum(args, depend) {
+      const curVal = args[0]
+      const oldVal = args[1]
+      const cptedVal = (!oldVal || curVal > oldVal) ? 1 : -1
       if (depend) {
-        this.form[depend] = String(+this.form[depend] + this.form[value])
+        this.form[depend] = String(+this.form[depend] + cptedVal)
       }
     },
     queryDetail() {
@@ -162,8 +165,7 @@ export default {
           const props = this.mixProps()
           props.forEach(row => {
             if (
-              row.type === 'datepicker' &&
-              String(form[row.value]).length === 13
+              row.type === 'datepicker'
             ) {
               form[row.value] = form[row.value] / 1000
             }
