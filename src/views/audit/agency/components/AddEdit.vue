@@ -120,11 +120,15 @@ export default {
       }
     },
     handleChangeNum(args, depend) {
-      const curVal = args[0]
-      const oldVal = args[1]
-      const cptedVal = (!oldVal || curVal > oldVal) ? 1 : -1
       if (depend) {
-        this.form[depend] = String(+this.form[depend] + cptedVal)
+        const { formProps: { base }} = this
+        let cptedVal = 0
+        base.forEach(item => {
+          if (item.depend && item.depend === depend) {
+            cptedVal += this.form[item.value] ? this.form[item.value] : 0
+          }
+        })
+        this.form[depend] = String(cptedVal)
       }
     },
     queryDetail() {
