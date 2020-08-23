@@ -232,10 +232,11 @@
       title="添加成员"
       :visible.sync="memDialigVisible"
       width="1000px"
+      top="8vh"
       center
       @closed="closeAuditAddDialog"
     >
-      <el-form :inline="true">
+      <el-form :inline="true" size="small">
         <!-- <el-form-item label="机构类型">
           <el-select
             v-model="listQuery.type"
@@ -256,11 +257,84 @@
             <el-option v-for="(idx, item) in memStatusMap" :key="item" :value="item" :label="idx" />
           </el-select>
         </el-form-item>
-        <el-form-item>
-          <el-input v-model="listQuery.query" placeholder="请选择输入查询条件"></el-input>
+        <el-form-item label="性别" prop="sex">
+          <el-select
+            v-model="listQuery.sex"
+            placeholder="请选择"
+            clearable
+            filterable
+            style="width: 150px"
+            class="filter-item"
+          >
+            <el-option v-for="(value, name) in selectConfig.sex" :key="name" :label="value" :value="+name" />
+          </el-select>
         </el-form-item>
-        <el-button class="filter-item" type="primary" @click="queryUserList">查询</el-button>
-        <el-button class="filter-item" @click="handleResetFilter">重置</el-button>
+        <el-form-item label="所属市县" prop="location">
+          <el-cascader
+            v-model="listQuery.location"
+            placeholder="请选择"
+            :props="{ checkStrictly: true }"
+            clearable
+            style="width: 300px"
+            class="filter-item"
+            :options="districts"
+          />
+        </el-form-item>
+        <el-form-item label="学历" prop="education">
+          <el-select
+            v-model="listQuery.education"
+            placeholder="请选择"
+            clearable
+            filterable
+            style="width: 150px"
+            class="filter-item"
+          >
+            <el-option v-for="(value, name) in selectConfig.education" :key="name" :label="value" :value="+name" />
+          </el-select>
+        </el-form-item>
+        <el-form-item label="职称" prop="techtitle">
+          <el-select
+            v-model="listQuery.techtitle"
+            placeholder="请选择"
+            clearable
+            filterable
+            style="width: 150px"
+            class="filter-item"
+          >
+            <el-option v-for="(value, name) in selectConfig.techtitle" :key="name" :label="value" :value="+name" />
+          </el-select>
+        </el-form-item>
+        <el-form-item label="职务" prop="position">
+          <el-select
+            v-model="listQuery.position"
+            placeholder="请选择"
+            clearable
+            filterable
+            style="width: 150px"
+            class="filter-item"
+          >
+            <el-option v-for="(value, name) in selectConfig.position" :key="name" :label="value" :value="+name" />
+          </el-select>
+        </el-form-item>
+        <el-form-item label="审计特长" prop="expertise">
+          <el-select
+            v-model="listQuery.expertise"
+            placeholder="请选择"
+            clearable
+            filterable
+            style="width: 150px"
+            class="filter-item"
+          >
+            <el-option v-for="(value, name) in selectConfig.expertise" :key="name" :label="value" :value="+name" />
+          </el-select>
+        </el-form-item>
+        <!-- <el-form-item>
+          <el-input v-model="listQuery.query" placeholder="请选择输入查询条件"></el-input>
+        </el-form-item> -->
+        <el-form-item>
+          <el-button class="filter-item" type="primary" @click="queryUserList" size="small">查询</el-button>
+          <el-button class="filter-item" @click="handleResetFilter" size="small">重置</el-button>
+        </el-form-item>
       </el-form>
       <el-table border :data="userList" highlight-current-row height="500px" style="width: 100%;">
         <el-table-column label="人员ID" align="center" prop="pid" show-overflow-tooltip />
@@ -402,14 +476,20 @@ import {
   changeGroup,
   getAuditGroups
 } from "@/api/project"
-import { CodeToText } from '@/utils/china-area'
+import { CodeToText, regionData } from '@/utils/china-area'
 const query = {
   page: 1,
   length: 10,
   jobstatus: "",
+  expertise: null,
+  sex: null,
+  education: null,
+  position: null,
+  techtitle: null,
+  location: null,
   isinternal: 2,
   ismedium: 2,
-  query: "",
+  // query: "",
   type: ""
 }
 export default {
@@ -419,6 +499,7 @@ export default {
   },
   data() {
     return {
+      districts: regionData,
       detail: {
         head: {
           projectnum: ""
