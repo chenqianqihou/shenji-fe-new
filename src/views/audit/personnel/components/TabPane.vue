@@ -662,7 +662,7 @@ export default {
       overflow-x: auto;
     }
     /deep/.el-tree > .el-tree-node{
-      display: inline-block !important;
+      // display: inline-block !important;
       padding-right: 10px;
     }
     .tree-class{
