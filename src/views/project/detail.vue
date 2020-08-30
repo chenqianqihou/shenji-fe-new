@@ -328,7 +328,7 @@
             <el-option v-for="(value, name) in selectConfig.expertise" :key="name" :label="value" :value="+name" />
           </el-select>
         </el-form-item>
-        <el-form-item>
+        <el-form-item label="名字">
           <el-input v-model="listQuery.keyname" placeholder="请输入名字"></el-input>
         </el-form-item>
         <el-form-item>
