@@ -328,9 +328,9 @@
             <el-option v-for="(value, name) in selectConfig.expertise" :key="name" :label="value" :value="+name" />
           </el-select>
         </el-form-item>
-        <!-- <el-form-item>
-          <el-input v-model="listQuery.query" placeholder="请选择输入查询条件"></el-input>
-        </el-form-item> -->
+        <el-form-item>
+          <el-input v-model="listQuery.keyname" placeholder="请输入名字"></el-input>
+        </el-form-item>
         <el-form-item>
           <el-button class="filter-item" type="primary" @click="queryUserList" size="small">查询</el-button>
           <el-button class="filter-item" @click="handleResetFilter" size="small">重置</el-button>
@@ -489,6 +489,7 @@ const query = {
   location: null,
   isinternal: 2,
   ismedium: 2,
+  keyname: null,
   // query: "",
   type: ""
 }
